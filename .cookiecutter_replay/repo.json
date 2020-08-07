@@ -1,0 +1,27 @@
+{
+  "cookiecutter": {
+    "NOTE": "Required Attributes",
+    "team_name": "cards-data-developers",
+    "project_name": "cards-airflow",
+    "nonprod_deployment_domain": "cards-nonprod.rvapps.io",
+    "staging_deployment_domain": "cards-nonprod.rvapps.io",
+    "prod_deployment_domain": "cards.rvapps.io",
+    "username": "riteshmshukla",
+    "description": "Git repo to be used for cards airflow dags",
+    "organization": "RedVentures",
+    "github_read_access": "cdm,security-global-read",
+    "github_admin_access": "cards-data-developers,cdm-bot",
+    "NOTE2": "Optional Attributes. Hit ENTER to accept the default",
+    "deployment_type": "ecr",
+    "image_author": "rvairflow",
+    "rvairflow_version": "latest",
+    "airflow_version": "1.10.9-latest",
+    "image_distro": "alpine3.10",
+    "airflow_image": "redventures-cdm-docker.jfrog.io/rvairflow:1.10.9-latest",
+    "owner": "cards-data-developers@RedVentures.com",
+    "create_circleci_job": "yes",
+    "create_github_repo": "yes",
+    "create_astro_account": "no",
+    "_template": "/repo/"
+  }
+}

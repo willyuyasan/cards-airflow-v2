@@ -1,0 +1,101 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+# ECR Parameters
+# ARTIFACTORY_USER
+# ARTIFACTORY_TOKEN
+# AWS_DEFAULT_REGION_TESTING
+# AWS_ECR_URL_TESTING
+# AWS_SECRET_ACCESS_KEY_TESTING
+# AWS_ACCESS_KEY_ID_TESTING
+# AWS_DEFAULT_REGION_PRODUCTION
+# AWS_ECR_URL_PRODUCTION
+# AWS_SECRET_ACCESS_KEY_PRODUCTION
+# AWS_ACCESS_KEY_ID_PRODUCTION
+
+version: 2.1
+orbs:
+  aws-ecr: circleci/aws-ecr@6.8.2
+  python: circleci/python@0.3.0
+
+executors:
+  docker_build:
+    machine:
+      docker_layer_caching: true
+
+jobs:
+  test:
+    executor: python/default
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - checkout
+      - python/load-cache:
+          dependency-file: test-requirements.txt
+      - python/install-deps:
+          dependency-file: test-requirements.txt
+      - python/save-cache:
+          dependency-file: test-requirements.txt
+      - run:
+          name: run linter
+          command: pycodestyle .
+      - python/test
+  build:
+    executor: docker_build
+    steps:
+      - checkout
+      - run:
+          name: Docker Authentication (redventures-cdm-docker.jfrog.io)
+          command: docker login -u ${ARTIFACTORY_USER} -p ${ARTIFACTORY_TOKEN} redventures-cdm-docker.jfrog.io
+      - run:
+          name: Docker Build
+          command: docker build --build-arg ARTIFACTORY_USER --build-arg ARTIFACTORY_TOKEN -t ${AWS_ECR_URL_DEVELOPMENT}/airflow-development:${CIRCLE_SHA1} .
+
+workflows:
+  build_deploy:
+    jobs:
+      - test
+      # Uncomment this after ECR has been enable in the Terraform module
+      # - build:
+      #     requires:
+      #       - test
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - develop
+      #           - master
+      # - aws-ecr/build-and-push-image:
+      #     name: push-development
+      #     account-url: AWS_ECR_URL_DEVELOPMENT
+      #     aws-secret-access-key: AWS_SECRET_ACCESS_KEY_DEVELOPMENT
+      #     aws-access-key-id: AWS_ACCESS_KEY_ID_DEVELOPMENT
+      #     create-repo: false
+      #     region: AWS_DEFAULT_REGION_DEVELOPMENT
+      #     repo: airflow-development
+      #     extra-build-args: --build-arg ARTIFACTORY_USER --build-arg ARTIFACTORY_TOKEN
+      #     executor: docker_build
+      #     requires:
+      #       - test
+      #     filters:
+      #       branches:
+      #         only:
+      #           - develop
+      # - aws-ecr/build-and-push-image:
+      #     name: push-production
+      #     account-url: AWS_ECR_URL_PRODUCTION
+      #     aws-secret-access-key: AWS_SECRET_ACCESS_KEY_PRODUCTION
+      #     aws-access-key-id: AWS_ACCESS_KEY_ID_PRODUCTION
+      #     create-repo: false
+      #     region: AWS_DEFAULT_REGION_PRODUCTION
+      #     repo: airflow
+      #     tag: $TAG
+      #     extra-build-args: --build-arg ARTIFACTORY_USER --build-arg ARTIFACTORY_TOKEN
+      #     executor: docker_build
+      #     requires:
+      #       - test
+      #     filters:
+      #       branches:
+      #         ignore: /.*/
+      #       tags:
+      #         only: /^v.*/

@@ -1,0 +1,6 @@
+version: 0.2
+phases:
+  build:
+    commands:
+      - if [ ! -z ${CODEBUILD_DAGS} ]; then rsync -avz --delete dags/ ${CODEBUILD_DAGS}/; fi
+      - if [ ! -z ${CODEBUILD_PLUGINS} ]; then rsync -avz --delete plugins/ ${CODEBUILD_PLUGINS}/; fi

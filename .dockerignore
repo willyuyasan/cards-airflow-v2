@@ -1,0 +1,11 @@
+.astro
+.circleci
+.data
+.env
+.git
+.github
+.secrets
+airflow_settings.yaml
+dags
+docs
+plugins

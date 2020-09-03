@@ -3,3 +3,5 @@
 airflow_settings.yaml
 .data
 .secrets
+dags/__pycache__/
+plugins/__pycache__/

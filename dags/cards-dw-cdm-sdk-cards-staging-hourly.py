@@ -33,7 +33,7 @@ small_i3_x_1w_task_custom_cluster = {
     'spark_conf': {
         'spark.sql.sources.partitionOverwriteMode': 'dynamic',
         'spark.driver.extraJavaOptions': '-Dconfig.resource=application-cards-qa.conf',
-        'spark.databricks.clusterUsageTags.autoTerminationMinutes' : '60'
+        'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
         'java_opts': '-Dconfig.resource=application-cards-qa.conf'

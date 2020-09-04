@@ -169,7 +169,8 @@ with DAG(
     dagrun_timeout=timedelta(hours=1),
     catchup=False,
     max_active_runs=1,
-    default_args=default_args) as dag:
+    default_args=default_args
+    ) as dag:
 
     tpg_staging_tables = ExternalTaskSensor(
         task_id='external-tpg-reporting',

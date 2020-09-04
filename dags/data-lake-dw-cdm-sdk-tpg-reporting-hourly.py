@@ -24,29 +24,29 @@ airflow_svc_token = "databricks_airflow_svc_token"
 
 # Cluster Setup Step
 small_i3_x_1w_task_custom_cluster = {
-    'spark_version':            '5.3.x-scala2.11',
-    'node_type_id':             'm5.large',
-    'driver_node_type_id':      'm5.large',
-    'num_workers':              1,
+    'spark_version': '5.3.x-scala2.11',
+    'node_type_id': 'm5.large',
+    'driver_node_type_id': 'm5.large',
+    'num_workers': 1,
     'auto_termination_minutes': 0,
-    'dbfs_cluster_log_conf':    'dbfs://home/cluster_log',
+    'dbfs_cluster_log_conf': 'dbfs://home/cluster_log',
     'spark_conf': {
-      'spark.sql.sources.partitionOverwriteMode': 'dynamic',
-      'spark.driver.extraJavaOptions': '-Dconfig.resource=application-cards-qa.conf',
-      'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
+        'spark.sql.sources.partitionOverwriteMode': 'dynamic',
+        'spark.driver.extraJavaOptions': '-Dconfig.resource=application-cards-qa.conf',
+        'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
-      'java_opts': '-Dconfig.resource=application-cards-qa.conf'
+        'java_opts': '-Dconfig.resource=application-cards-qa.conf'
     },
     "aws_attributes": {
-        "availability":             "SPOT_WITH_FALLBACK",
-        'ebs_volume_count':         2,
-        'ebs_volume_size':          100,
-        'ebs_volume_type':          'GENERAL_PURPOSE_SSD',
-        'first_on_demand':          '2',
-        'spot_bid_price_percent':   '60',
-        'zone_id':                  'us-east-1c',
-        "instance_profile_arn":     Variable.get("DBX_TPG_IAM_ROLE"),
+        "availability": "SPOT_WITH_FALLBACK",
+        'ebs_volume_count': 2,
+        'ebs_volume_size': 100,
+        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
+        'first_on_demand': '2',
+        'spot_bid_price_percent': '60',
+        'zone_id': 'us-east-1c',
+        "instance_profile_arn": Variable.get("DBX_TPG_IAM_ROLE"),
     },
     'custom_tags': {
         'Partner': 'B532',
@@ -55,29 +55,29 @@ small_i3_x_1w_task_custom_cluster = {
 }
 
 small_i3_x_1w_task_cohesion_cluster = {
-    'spark_version':            '5.3.x-scala2.11',
-    'node_type_id':             'm5.large',
-    'driver_node_type_id':      'm5.large',
-    'num_workers':              1,
+    'spark_version': '5.3.x-scala2.11',
+    'node_type_id': 'm5.large',
+    'driver_node_type_id': 'm5.large',
+    'num_workers': 1,
     'auto_termination_minutes': 0,
-    'dbfs_cluster_log_conf':    'dbfs://home/cluster_log',
+    'dbfs_cluster_log_conf': 'dbfs://home/cluster_log',
     'spark_conf': {
-      'spark.sql.sources.partitionOverwriteMode': 'dynamic',
-      'spark.driver.extraJavaOptions': '-Dconfig.resource=application-cohesion-dev.conf',
-      'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
+        'spark.sql.sources.partitionOverwriteMode': 'dynamic',
+        'spark.driver.extraJavaOptions': '-Dconfig.resource=application-cohesion-dev.conf',
+        'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
-      'java_opts': '-Dconfig.resource=application-cohesion-dev.conf'
+        'java_opts': '-Dconfig.resource=application-cohesion-dev.conf'
     },
     "aws_attributes": {
-        "availability":             "SPOT_WITH_FALLBACK",
-        'ebs_volume_count':         2,
-        'ebs_volume_size':          100,
-        'ebs_volume_type':          'GENERAL_PURPOSE_SSD',
-        'first_on_demand':          '2',
-        'spot_bid_price_percent':   '60',
-        'zone_id':                  'us-east-1c',
-        "instance_profile_arn":     Variable.get("DBX_TPG_IAM_ROLE"),
+        "availability": "SPOT_WITH_FALLBACK",
+        'ebs_volume_count': 2,
+        'ebs_volume_size': 100,
+        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
+        'first_on_demand': '2',
+        'spot_bid_price_percent': '60',
+        'zone_id': 'us-east-1c',
+        "instance_profile_arn": Variable.get("DBX_TPG_IAM_ROLE"),
     },
     'custom_tags': {
         'Partner': 'B532',
@@ -87,24 +87,24 @@ small_i3_x_1w_task_cohesion_cluster = {
 
 
 medium_i3_x_3w_task_cluster = {
-    'spark_version':            '5.3.x-scala2.11',
-    'node_type_id':             'm5.large',
-    'driver_node_type_id':      'm5.large',
-    'num_workers':              3,
+    'spark_version': '5.3.x-scala2.11',
+    'node_type_id': 'm5.large',
+    'driver_node_type_id': 'm5.large',
+    'num_workers': 3,
     'auto_termination_minutes': 0,
-    'dbfs_cluster_log_conf':    'dbfs://home/cluster_log',
+    'dbfs_cluster_log_conf': 'dbfs://home/cluster_log',
     'spark_conf': {
-      'spark.sql.sources.partitionOverwriteMode': 'dynamic'
+        'spark.sql.sources.partitionOverwriteMode': 'dynamic'
     },
     "aws_attributes": {
-        "availability":             "SPOT_WITH_FALLBACK",
-        'ebs_volume_count':         3,
-        'ebs_volume_size':          100,
-        'ebs_volume_type':          'GENERAL_PURPOSE_SSD',
-        'first_on_demand':          '2',
-        'spot_bid_price_percent':   '70',
-        'zone_id':                  'us-east-1c',
-        "instance_profile_arn":     Variable.get("DBX_CCDC_IAM_ROLE"),
+        "availability": "SPOT_WITH_FALLBACK",
+        'ebs_volume_count': 3,
+        'ebs_volume_size': 100,
+        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
+        'first_on_demand': '2',
+        'spot_bid_price_percent': '70',
+        'zone_id': 'us-east-1c',
+        "instance_profile_arn": Variable.get("DBX_CCDC_IAM_ROLE"),
     },
     'custom_tags': {
         'Partner': 'B530',
@@ -113,24 +113,24 @@ medium_i3_x_3w_task_cluster = {
 }
 
 large_i3_2x_6w_task_cluster = {
-    'spark_version':            '5.3.x-scala2.11',
-    'node_type_id':             'i3.2xlarge',
-    'driver_node_type_id':      'i3.2xlarge',
-    'num_workers':              6,
+    'spark_version': '5.3.x-scala2.11',
+    'node_type_id': 'i3.2xlarge',
+    'driver_node_type_id': 'i3.2xlarge',
+    'num_workers': 6,
     'auto_termination_minutes': 0,
-    'dbfs_cluster_log_conf':    'dbfs://home/cluster_log',
+    'dbfs_cluster_log_conf': 'dbfs://home/cluster_log',
     'spark_conf': {
-      'spark.sql.sources.partitionOverwriteMode': 'dynamic'
+        'spark.sql.sources.partitionOverwriteMode': 'dynamic'
     },
     "aws_attributes": {
-        "availability":             "SPOT_WITH_FALLBACK",
-        'ebs_volume_count':         6,
-        'ebs_volume_size':          100,
-        'ebs_volume_type':          'GENERAL_PURPOSE_SSD',
-        'first_on_demand':          '2',
-        'spot_bid_price_percent':   '70',
-        'zone_id':                  'us-east-1c',
-        "instance_profile_arn":     Variable.get("DBX_CCDC_IAM_ROLE"),
+        "availability": "SPOT_WITH_FALLBACK",
+        'ebs_volume_count': 6,
+        'ebs_volume_size': 100,
+        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
+        'first_on_demand': '2',
+        'spot_bid_price_percent': '70',
+        'zone_id': 'us-east-1c',
+        "instance_profile_arn": Variable.get("DBX_CCDC_IAM_ROLE"),
     },
     'custom_tags': {
         'Partner': 'B530',
@@ -140,12 +140,12 @@ large_i3_2x_6w_task_cluster = {
 
 # Libraries
 staging_libraries = [
-  {
-    "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
-  },
-  {
-    "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
-  },
+    {
+        "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
+    },
+    {
+        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
+    },
 ]
 
 page_metrics_staging_jar_task = {
@@ -170,11 +170,11 @@ with DAG(
     catchup=False,
     max_active_runs=1,
     default_args=default_args
-    ) as dag:
+) as dag:
 
     tpg_staging_tables = ExternalTaskSensor(
         task_id='external-tpg-reporting',
-        external_dag_id='data-lake-dw-cdm-sdk-cards-staging-hourly-workflow',
+        external_dag_id='data-lake-dw-cdm-sdk-cards-staging-hourly',
         external_task_id='external-tpg-staging',
         execution_timeout=timedelta(minutes=7),
         execution_delta=timedelta(minutes=30)

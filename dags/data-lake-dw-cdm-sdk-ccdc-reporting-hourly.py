@@ -171,23 +171,23 @@ with DAG(
           max_active_runs=1,
           default_args=default_args) as dag:
 
-        ccdc_staging_tables = ExternalTaskSensor(
-            task_id='external-ccdc-reporting',
-            external_dag_id='data-lake-dw-cdm-sdk-cards-staging-hourly-workflow',
-            external_task_id='external-ccdc-staging',
-            execution_timeout=timedelta(minutes=7),
-            execution_delta=timedelta(minutes=30)
-        )
+    ccdc_staging_tables = ExternalTaskSensor(
+        task_id='external-ccdc-reporting',
+        external_dag_id='data-lake-dw-cdm-sdk-cards-staging-hourly-workflow',
+        external_task_id='external-ccdc-staging',
+        execution_timeout=timedelta(minutes=7),
+        execution_delta=timedelta(minutes=30)
+    )
 
-        page_metrics_staging = DatabricksSubmitRunOperator(
-            task_id='page-metrics-staging',
-            new_cluster=small_i3_x_1w_task_custom_cluster,
-            spark_jar_task=page_metrics_staging_jar_task,
-            libraries=staging_libraries,
-            timeout_seconds=3600,
-            databricks_conn_id=airflow_svc_token,
-            polling_period_seconds=120
-        )
+    page_metrics_staging = DatabricksSubmitRunOperator(
+        task_id='page-metrics-staging',
+        new_cluster=small_i3_x_1w_task_custom_cluster,
+        spark_jar_task=page_metrics_staging_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
 
 # Dependencies
 ccdc_staging_tables >> page_metrics_staging

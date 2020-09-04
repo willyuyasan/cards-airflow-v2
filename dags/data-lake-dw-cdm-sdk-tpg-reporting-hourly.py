@@ -39,7 +39,7 @@ small_i3_x_1w_task_custom_cluster = {
       'java_opts': '-Dconfig.resource=application-cards-qa.conf'
     },
     "aws_attributes": {
-        "availability":             "SPOT_WITH_FALLBACK", 
+        "availability":             "SPOT_WITH_FALLBACK",
         'ebs_volume_count':         2,
         'ebs_volume_size':          100,
         'ebs_volume_type':          'GENERAL_PURPOSE_SSD',
@@ -51,7 +51,7 @@ small_i3_x_1w_task_custom_cluster = {
     'custom_tags': {
         'Partner': 'B532',
         'Project': 'The Points Guy'
-    },  
+    },
 }
 
 small_i3_x_1w_task_cohesion_cluster = {
@@ -91,13 +91,13 @@ medium_i3_x_3w_task_cluster = {
     'node_type_id':             'm5.large',
     'driver_node_type_id':      'm5.large',
     'num_workers':              3,
-    'auto_termination_minutes': 0,    
+    'auto_termination_minutes': 0,
     'dbfs_cluster_log_conf':    'dbfs://home/cluster_log',
     'spark_conf': {
       'spark.sql.sources.partitionOverwriteMode': 'dynamic'
     },
     "aws_attributes": {
-        "availability":             "SPOT_WITH_FALLBACK", 
+        "availability":             "SPOT_WITH_FALLBACK",
         'ebs_volume_count':         3,
         'ebs_volume_size':          100,
         'ebs_volume_type':          'GENERAL_PURPOSE_SSD',
@@ -109,7 +109,7 @@ medium_i3_x_3w_task_cluster = {
     'custom_tags': {
         'Partner': 'B530',
         'Project': 'CreditCards.com'
-    },  
+    },
 }
 
 large_i3_2x_6w_task_cluster = {
@@ -117,13 +117,13 @@ large_i3_2x_6w_task_cluster = {
     'node_type_id':             'i3.2xlarge',
     'driver_node_type_id':      'i3.2xlarge',
     'num_workers':              6,
-    'auto_termination_minutes': 0,    
+    'auto_termination_minutes': 0,
     'dbfs_cluster_log_conf':    'dbfs://home/cluster_log',
     'spark_conf': {
       'spark.sql.sources.partitionOverwriteMode': 'dynamic'
     },
     "aws_attributes": {
-        "availability":             "SPOT_WITH_FALLBACK", 
+        "availability":             "SPOT_WITH_FALLBACK",
         'ebs_volume_count':         6,
         'ebs_volume_size':          100,
         'ebs_volume_type':          'GENERAL_PURPOSE_SSD',
@@ -135,7 +135,7 @@ large_i3_2x_6w_task_cluster = {
     'custom_tags': {
         'Partner': 'B530',
         'Project': 'CreditCards.com'
-    },  
+    },
 }
 
 # Libraries 
@@ -171,23 +171,23 @@ with DAG(
           max_active_runs=1,
           default_args=default_args) as dag:
 
-        tpg_staging_tables = ExternalTaskSensor(
-            task_id='external-tpg-reporting',
-            external_dag_id='data-lake-dw-cdm-sdk-cards-staging-hourly-workflow',
-            external_task_id='external-tpg-staging',
-            execution_timeout=timedelta(minutes=7),
-            execution_delta=timedelta(minutes=30)
-        )
+    tpg_staging_tables = ExternalTaskSensor(
+        task_id='external-tpg-reporting',
+        external_dag_id='data-lake-dw-cdm-sdk-cards-staging-hourly-workflow',
+        external_task_id='external-tpg-staging',
+        execution_timeout=timedelta(minutes=7),
+        execution_delta=timedelta(minutes=30)
+    )
 
-        page_metrics_staging = DatabricksSubmitRunOperator(
-            task_id='page-metrics-staging',
-            new_cluster=small_i3_x_1w_task_custom_cluster,
-            spark_jar_task=page_metrics_staging_jar_task,
-            libraries=staging_libraries,
-            timeout_seconds=3600,
-            databricks_conn_id=airflow_svc_token,
-            polling_period_seconds=120
-        )
+    page_metrics_staging = DatabricksSubmitRunOperator(
+        task_id='page-metrics-staging',
+        new_cluster=small_i3_x_1w_task_custom_cluster,
+        spark_jar_task=page_metrics_staging_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
 
 # Dependencies
 tpg_staging_tables >> page_metrics_staging

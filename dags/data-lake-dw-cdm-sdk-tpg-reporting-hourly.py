@@ -15,7 +15,7 @@ default_args = {
     'on_failure_callback': sh.slack_failure_callback(),
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
-    #'op_kwargs': cfg_dict,
+    # 'op_kwargs': cfg_dict,
     'provide_context': True
 }
 
@@ -33,12 +33,12 @@ small_i3_x_1w_task_custom_cluster = {
     'spark_conf': {
       'spark.sql.sources.partitionOverwriteMode': 'dynamic',
       'spark.driver.extraJavaOptions': '-Dconfig.resource=application-cards-qa.conf',
-      'spark.databricks.clusterUsageTags.autoTerminationMinutes' : '60'
+      'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
       'java_opts': '-Dconfig.resource=application-cards-qa.conf'
     },
-    "aws_attributes": { 
+    "aws_attributes": {
         "availability":             "SPOT_WITH_FALLBACK", 
         'ebs_volume_count':         2,
         'ebs_volume_size':          100,
@@ -64,7 +64,7 @@ small_i3_x_1w_task_cohesion_cluster = {
     'spark_conf': {
       'spark.sql.sources.partitionOverwriteMode': 'dynamic',
       'spark.driver.extraJavaOptions': '-Dconfig.resource=application-cohesion-dev.conf',
-      'spark.databricks.clusterUsageTags.autoTerminationMinutes' : '60'
+      'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
       'java_opts': '-Dconfig.resource=application-cohesion-dev.conf'
@@ -96,7 +96,7 @@ medium_i3_x_3w_task_cluster = {
     'spark_conf': {
       'spark.sql.sources.partitionOverwriteMode': 'dynamic'
     },
-    "aws_attributes": { 
+    "aws_attributes": {
         "availability":             "SPOT_WITH_FALLBACK", 
         'ebs_volume_count':         3,
         'ebs_volume_size':          100,
@@ -122,7 +122,7 @@ large_i3_2x_6w_task_cluster = {
     'spark_conf': {
       'spark.sql.sources.partitionOverwriteMode': 'dynamic'
     },
-    "aws_attributes": { 
+    "aws_attributes": {
         "availability":             "SPOT_WITH_FALLBACK", 
         'ebs_volume_count':         6,
         'ebs_volume_size':          100,
@@ -163,7 +163,8 @@ page_metrics_staging_jar_task = {
 }
 
 # DAG Creation Step
-with DAG('data-lake-dw-cdm-sdk-tpg-reporting-hourly',
+with DAG(
+         'data-lake-dw-cdm-sdk-tpg-reporting-hourly',
           schedule_interval='0 0-5,9-23 * * *',
           dagrun_timeout=timedelta(hours=1),
           catchup=False,

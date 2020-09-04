@@ -15,7 +15,7 @@ default_args = {
     'on_failure_callback': sh.slack_failure_callback(),
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
-    #'op_kwargs': cfg_dict,
+    # 'op_kwargs': cfg_dict,
     'provide_context': True
 }
 
@@ -33,7 +33,7 @@ small_i3_x_1w_task_custom_cluster = {
     'spark_conf': {
       'spark.sql.sources.partitionOverwriteMode': 'dynamic',
       'spark.driver.extraJavaOptions': '-Dconfig.resource=application-cards-qa.conf',
-      'spark.databricks.clusterUsageTags.autoTerminationMinutes' : '60'
+      'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
       'java_opts': '-Dconfig.resource=application-cards-qa.conf'
@@ -64,7 +64,7 @@ small_i3_x_1w_task_cohesion_cluster = {
     'spark_conf': {
       'spark.sql.sources.partitionOverwriteMode': 'dynamic',
       'spark.driver.extraJavaOptions': '-Dconfig.resource=application-cohesion-dev.conf',
-      'spark.databricks.clusterUsageTags.autoTerminationMinutes' : '60'
+      'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
       'java_opts': '-Dconfig.resource=application-cohesion-dev.conf'
@@ -163,7 +163,8 @@ page_metrics_staging_jar_task = {
 }
 
 # DAG Creation Step
-with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-hourly',
+with DAG(
+          'data-lake-dw-cdm-sdk-ccdc-reporting-hourly',
           schedule_interval='0 0-5,9-23 * * *',
           dagrun_timeout=timedelta(hours=1),
           catchup=False,

@@ -151,14 +151,14 @@ staging_libraries = [
 page_metrics_staging_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
-        "RUN_FREQUENCY="     + "hourly",
-        "START_DATE="        + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime("%Y-%m-%d"),
-        "END_DATE="          + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES="            + "com.redventures.cdm.cohesion.staging.PageMetrics",
-        "ACCOUNT="           + "cards",
-        "READ_BUCKET="       + "rv-core-pipeline",
-        "TENANTS="           + Variable.get("DBX_CCDC_Tenant_Id"),
-        "WRITE_BUCKET="      + "rv-core-ccdc-datamart-qa"
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime("%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.cohesion.staging.PageMetrics",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
+        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
     ]
 }
 
@@ -171,21 +171,21 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-hourly',
           default_args=default_args) as dag:
 
         ccdc_staging_tables = ExternalTaskSensor(
-            task_id             = 'external-ccdc-reporting',
-            external_dag_id     = 'data-lake-dw-cdm-sdk-cards-staging-hourly-workflow',
-            external_task_id    = 'external-ccdc-staging',
-            execution_timeout   = timedelta(minutes=7),
-            execution_delta     = timedelta(minutes=30)
+            task_id='external-ccdc-reporting',
+            external_dag_id='data-lake-dw-cdm-sdk-cards-staging-hourly-workflow',
+            external_task_id='external-ccdc-staging',
+            execution_timeout=timedelta(minutes=7),
+            execution_delta=timedelta(minutes=30)
         )
 
         page_metrics_staging = DatabricksSubmitRunOperator(
-            task_id                = 'page-metrics-staging',
-            new_cluster            = small_i3_x_1w_task_custom_cluster,
-            spark_jar_task         = page_metrics_staging_jar_task,
-            libraries              = staging_libraries,
-            timeout_seconds        = 3600,
-            databricks_conn_id     = airflow_svc_token,
-            polling_period_seconds = 120
+            task_id='page-metrics-staging',
+            new_cluster=small_i3_x_1w_task_custom_cluster,
+            spark_jar_task=page_metrics_staging_jar_task,
+            libraries=staging_libraries,
+            timeout_seconds=3600,
+            databricks_conn_id=airflow_svc_token,
+            polling_period_seconds=120
         )
 
 # Dependencies

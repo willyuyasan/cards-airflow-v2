@@ -387,7 +387,7 @@ paidsearch_staging_jar_task = {
 }
 
 # DAG Creation Step
-with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly-workflow',
+with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
          schedule_interval='30 0-5,9-23 * * *',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,

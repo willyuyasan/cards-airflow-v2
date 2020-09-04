@@ -138,7 +138,7 @@ large_i3_2x_6w_task_cluster = {
     },
 }
 
-# Libraries 
+# Libraries
 staging_libraries = [
   {
     "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
@@ -159,17 +159,17 @@ page_metrics_staging_jar_task = {
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
         "WRITE_BUCKET=" + "rv-core-tpg-datamart-qa"
-    ] 
+    ]
 }
 
 # DAG Creation Step
 with DAG(
-         'data-lake-dw-cdm-sdk-tpg-reporting-hourly',
-          schedule_interval='0 0-5,9-23 * * *',
-          dagrun_timeout=timedelta(hours=1),
-          catchup=False,
-          max_active_runs=1,
-          default_args=default_args) as dag:
+    'data-lake-dw-cdm-sdk-tpg-reporting-hourly',
+    schedule_interval='0 0-5,9-23 * * *',
+    dagrun_timeout=timedelta(hours=1),
+    catchup=False,
+    max_active_runs=1,
+    default_args=default_args) as dag:
 
     tpg_staging_tables = ExternalTaskSensor(
         task_id='external-tpg-reporting',

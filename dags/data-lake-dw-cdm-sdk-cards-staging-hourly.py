@@ -568,7 +568,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     paidsearch_staging = DatabricksSubmitRunOperator(
         task_id                 =   'paidsearch-staging',
-        new_cluster             =   small_i3_x_1w_task_custom_cluster,
+        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
         spark_jar_task          =   paidsearch_staging_jar_task,
         libraries               =   staging_libraries,
         timeout_seconds         =   3600,

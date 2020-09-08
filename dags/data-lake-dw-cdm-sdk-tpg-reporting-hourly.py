@@ -163,13 +163,12 @@ page_metrics_staging_jar_task = {
 }
 
 # DAG Creation Step
-with DAG(
-    'data-lake-dw-cdm-sdk-tpg-reporting-hourly',
-    schedule_interval='0 0-5,9-23 * * *',
-    dagrun_timeout=timedelta(hours=1),
-    catchup=False,
-    max_active_runs=1,
-    default_args=default_args
+with DAG( 'data-lake-dw-cdm-sdk-tpg-reporting-hourly',
+          schedule_interval='0 0-5,9-23 * * *',
+          dagrun_timeout=timedelta(hours=1),
+          catchup=False,
+          max_active_runs=1,
+          default_args=default_args
 ) as dag:
 
     tpg_staging_tables = ExternalTaskSensor(

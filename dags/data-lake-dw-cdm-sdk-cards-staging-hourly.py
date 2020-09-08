@@ -24,6 +24,38 @@ default_args = {
 airflow_svc_token = "databricks_airflow_svc_token"
 
 # Cluster Setup Step
+extra_small_m4_xlarge_1w_task_custom_cluster = {
+    'spark_version':            '5.3.x-scala2.11',
+    'node_type_id':             'm4.xlarge',
+    'driver_node_type_id':      'm4.xlarge',
+    'num_workers':              1,
+    'auto_termination_minutes': 0,
+    'dbfs_cluster_log_conf':    'dbfs://home/cluster_log',
+    'spark_conf': {
+      'spark.sql.sources.partitionOverwriteMode': 'dynamic',
+      'spark.driver.extraJavaOptions': '-Dconfig.resource=application-cards-qa.conf',
+      'spark.databricks.clusterUsageTags.autoTerminationMinutes' : '60'
+    },
+    'spark_env_vars': {
+      'java_opts': '-Dconfig.resource=application-cards-qa.conf'
+    },
+    "aws_attributes": {
+        "availability":             "SPOT_WITH_FALLBACK",
+        'ebs_volume_count':         1,
+        'ebs_volume_size':          100,
+        'ebs_volume_type':          'GENERAL_PURPOSE_SSD',
+        'first_on_demand':          '2',
+        'spot_bid_price_percent':   '60',
+        'zone_id':                  'us-east-1c',
+        "instance_profile_arn":     Variable.get("DBX_CCDC_IAM_ROLE"),
+    },
+    'custom_tags': {
+        'Partner': 'B530',
+        'Project': 'CreditCards.com'
+    },
+}
+
+
 small_i3_x_1w_task_custom_cluster = {
     'spark_version': '5.3.x-scala2.11',
     'node_type_id': 'm5.large',
@@ -393,154 +425,155 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
          catchup=False,
          max_active_runs=1,
          default_args=default_args) as dag:
+
     session_staging = DatabricksSubmitRunOperator(
-        task_id='session-staging',
-        new_cluster=small_i3_x_1w_task_custom_cluster,
-        spark_jar_task=session_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        task_id                 =   'session-staging',
+        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        spark_jar_task          =   session_staging_jar_task,
+        libraries               =   staging_libraries,
+        timeout_seconds         =   3600,
+        databricks_conn_id      =   airflow_svc_token,
+        polling_period_seconds  =   120
     )
 
     traffic_sources_staging = DatabricksSubmitRunOperator(
-        task_id='traffic-sources-staging',
-        new_cluster=small_i3_x_1w_task_custom_cluster,
-        spark_jar_task=traffic_sources_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        task_id                 =   'traffic-sources-staging',
+        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        spark_jar_task          =   traffic_sources_staging_jar_task,
+        libraries               =   staging_libraries,
+        timeout_seconds         =   3600,
+        databricks_conn_id      =   airflow_svc_token,
+        polling_period_seconds  =   120
     )
 
     page_view_staging = DatabricksSubmitRunOperator(
-        task_id='page-view-staging',
-        new_cluster=small_i3_x_1w_task_custom_cluster,
-        spark_jar_task=page_view_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        task_id                 =   'page-view-staging',
+        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        spark_jar_task          =   page_view_staging_jar_task,
+        libraries               =   staging_libraries,
+        timeout_seconds         =   3600,
+        databricks_conn_id      =   airflow_svc_token,
+        polling_period_seconds  =   120
     )
 
     cookie_identified_staging = DatabricksSubmitRunOperator(
-        task_id='cookie-identified-staging',
-        new_cluster=small_i3_x_1w_task_custom_cluster,
-        spark_jar_task=cookie_identified_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        task_id                 =   'cookie-identified-staging',
+        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        spark_jar_task          =   cookie_identified_staging_jar_task,
+        libraries               =   staging_libraries,
+        timeout_seconds         =   3600,
+        databricks_conn_id      =   airflow_svc_token,
+        polling_period_seconds  =   120
     )
 
     field_inputted_staging = DatabricksSubmitRunOperator(
-        task_id='field-inputted-staging',
-        new_cluster=small_i3_x_1w_task_custom_cluster,
-        spark_jar_task=field_inputted_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        task_id                 =   'field-inputted-staging',
+        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        spark_jar_task          =   field_inputted_staging_jar_task,
+        libraries               =   staging_libraries,
+        timeout_seconds         =   3600,
+        databricks_conn_id      =   airflow_svc_token,
+        polling_period_seconds  =   120
     )
 
     location_staging = DatabricksSubmitRunOperator(
-        task_id='location-staging',
-        new_cluster=small_i3_x_1w_task_custom_cluster,
-        spark_jar_task=location_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        task_id                 =   'location-staging',
+        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        spark_jar_task          =   location_staging_jar_task,
+        libraries               =   staging_libraries,
+        timeout_seconds         =   3600,
+        databricks_conn_id      =   airflow_svc_token,
+        polling_period_seconds  =   120
     )
 
     device_staging = DatabricksSubmitRunOperator(
-        task_id='device-staging',
-        new_cluster=small_i3_x_1w_task_custom_cluster,
-        spark_jar_task=device_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        task_id                 =   'device-staging',
+        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        spark_jar_task          =   device_staging_jar_task,
+        libraries               =   staging_libraries,
+        timeout_seconds         =   3600,
+        databricks_conn_id      =   airflow_svc_token,
+        polling_period_seconds  =   120
     )
 
     decsion_staging = DatabricksSubmitRunOperator(
-        task_id='decision-staging',
-        new_cluster=small_i3_x_1w_task_custom_cluster,
-        spark_jar_task=decision_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        task_id                 =   'decision-staging',
+        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        spark_jar_task          =   decision_staging_jar_task,
+        libraries               =   staging_libraries,
+        timeout_seconds         =   3600,
+        databricks_conn_id      =   airflow_svc_token,
+        polling_period_seconds  =   120
     )
 
     page_metrics_staging = DatabricksSubmitRunOperator(
-        task_id='page-metrics-staging',
-        new_cluster=small_i3_x_1w_task_custom_cluster,
-        spark_jar_task=page_metrics_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        task_id                 =   'page-metrics-staging',
+        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        spark_jar_task          =   page_metrics_staging_jar_task,
+        libraries               =   staging_libraries,
+        timeout_seconds         =   3600,
+        databricks_conn_id      =   airflow_svc_token,
+        polling_period_seconds  =   120
     )
 
     form_submitted_staging = DatabricksSubmitRunOperator(
-        task_id='form-submitted-staging',
-        new_cluster=small_i3_x_1w_task_custom_cluster,
-        spark_jar_task=form_submitted_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        task_id                 =   'form-submitted-staging',
+        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        spark_jar_task          =   form_submitted_staging_jar_task,
+        libraries               =   staging_libraries,
+        timeout_seconds         =   3600,
+        databricks_conn_id      =   airflow_svc_token,
+        polling_period_seconds  =   120
     )
 
     product_clicked_staging = DatabricksSubmitRunOperator(
-        task_id='product-clicked-staging',
-        new_cluster=small_i3_x_1w_task_custom_cluster,
-        spark_jar_task=product_clicked_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        task_id                 =   'product-clicked-staging',
+        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        spark_jar_task          =   product_clicked_staging_jar_task,
+        libraries               =   staging_libraries,
+        timeout_seconds         =   3600,
+        databricks_conn_id      =   airflow_svc_token,
+        polling_period_seconds  =   120
     )
 
     product_viewed_staging = DatabricksSubmitRunOperator(
-        task_id='product-viewed-staging',
-        new_cluster=small_i3_x_1w_task_custom_cluster,
-        spark_jar_task=product_viewed_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        task_id                 =   'product-viewed-staging',
+        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        spark_jar_task          =   product_viewed_staging_jar_task,
+        libraries               =   staging_libraries,
+        timeout_seconds         =   3600,
+        databricks_conn_id      =   airflow_svc_token,
+        polling_period_seconds  =   120
     )
 
     element_clicked_staging = DatabricksSubmitRunOperator(
-        task_id='element-clicked-staging',
-        new_cluster=small_i3_x_1w_task_custom_cluster,
-        spark_jar_task=element_clicked_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        task_id                 =   'element-clicked-staging',
+        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        spark_jar_task          =   element_clicked_staging_jar_task,
+        libraries               =   staging_libraries,
+        timeout_seconds         =   3600,
+        databricks_conn_id      =   airflow_svc_token,
+        polling_period_seconds  =   120
     )
 
     element_viewed_staging = DatabricksSubmitRunOperator(
-        task_id='element-viewed-staging',
-        new_cluster=small_i3_x_1w_task_custom_cluster,
-        spark_jar_task=element_viewed_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        task_id                 =   'element-viewed-staging',
+        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        spark_jar_task          =   element_viewed_staging_jar_task,
+        libraries               =   staging_libraries,
+        timeout_seconds         =   3600,
+        databricks_conn_id      =   airflow_svc_token,
+        polling_period_seconds  =   120
     )
 
     paidsearch_staging = DatabricksSubmitRunOperator(
-        task_id='paidsearch-staging',
-        new_cluster=small_i3_x_1w_task_custom_cluster,
-        spark_jar_task=paidsearch_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        task_id                 =   'paidsearch-staging',
+        new_cluster             =   small_i3_x_1w_task_custom_cluster,
+        spark_jar_task          =   paidsearch_staging_jar_task,
+        libraries               =   staging_libraries,
+        timeout_seconds         =   3600,
+        databricks_conn_id      =   airflow_svc_token,
+        polling_period_seconds  =   120
     )
 
     ccdc_staging_tables = DummyOperator(
@@ -561,23 +594,16 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
 # Staging Dependencies
 session_staging >> traffic_sources_staging
+session_staging >> paidsearch_staging
 
 # CCDC Staging Dependencies
-[page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging,
- element_viewed_staging, cookie_identified_staging, field_inputted_staging, device_staging, location_staging,
- decsion_staging, traffic_sources_staging, form_submitted_staging, paidsearch_staging] >> ccdc_staging_tables
+[ page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging, field_inputted_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging, paidsearch_staging] >> ccdc_staging_tables
 
 # TPG Staging Dependencies
-[page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging,
- element_viewed_staging, cookie_identified_staging, field_inputted_staging, device_staging, location_staging,
- decsion_staging, traffic_sources_staging, form_submitted_staging, paidsearch_staging] >> tpg_staging_tables
+[ page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging, field_inputted_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging, paidsearch_staging] >> tpg_staging_tables
 
 # Amex Business Dependencies
-[page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging,
- element_viewed_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging,
- form_submitted_staging, paidsearch_staging] >> amex_business_staging_tables
+[ page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging, paidsearch_staging] >> amex_business_staging_tables
 
 # Amex Consumer Dependencies
-[page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging,
- element_viewed_staging, device_staging, location_staging, decsion_staging,
- traffic_sources_staging, paidsearch_staging] >> amex_consumer_staging_tables
+[ page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging, paidsearch_staging] >> amex_consumer_staging_tables

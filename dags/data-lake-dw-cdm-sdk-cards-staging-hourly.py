@@ -13,7 +13,7 @@ default_args = {
     'email': ['vmalhotra@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'on_failure_callback': sh.slack_failure_callback(),
+    'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
     # 'op_kwargs': cfg_dict,
@@ -24,10 +24,10 @@ default_args = {
 airflow_svc_token = "databricks_airflow_svc_token"
 
 # Cluster Setup Step
-extra_small_m4_xlarge_1w_task_custom_cluster = {
+extra_small_m5_xlarge_1w_task_custom_cluster = {
     'spark_version':            '5.3.x-scala2.11',
-    'node_type_id':             'm4.xlarge',
-    'driver_node_type_id':      'm4.xlarge',
+    'node_type_id':             'm5.xlarge',
+    'driver_node_type_id':      'm5.xlarge',
     'num_workers':              1,
     'auto_termination_minutes': 0,
     'dbfs_cluster_log_conf':    'dbfs://home/cluster_log',
@@ -428,7 +428,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     session_staging = DatabricksSubmitRunOperator(
         task_id                 =   'session-staging',
-        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        new_cluster             =   extra_small_m5_xlarge_1w_task_custom_cluster,
         spark_jar_task          =   session_staging_jar_task,
         libraries               =   staging_libraries,
         timeout_seconds         =   3600,
@@ -438,7 +438,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     traffic_sources_staging = DatabricksSubmitRunOperator(
         task_id                 =   'traffic-sources-staging',
-        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        new_cluster             =   extra_small_m5_xlarge_1w_task_custom_cluster,
         spark_jar_task          =   traffic_sources_staging_jar_task,
         libraries               =   staging_libraries,
         timeout_seconds         =   3600,
@@ -448,7 +448,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     page_view_staging = DatabricksSubmitRunOperator(
         task_id                 =   'page-view-staging',
-        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        new_cluster             =   extra_small_m5_xlarge_1w_task_custom_cluster,
         spark_jar_task          =   page_view_staging_jar_task,
         libraries               =   staging_libraries,
         timeout_seconds         =   3600,
@@ -458,7 +458,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     cookie_identified_staging = DatabricksSubmitRunOperator(
         task_id                 =   'cookie-identified-staging',
-        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        new_cluster             =   extra_small_m5_xlarge_1w_task_custom_cluster,
         spark_jar_task          =   cookie_identified_staging_jar_task,
         libraries               =   staging_libraries,
         timeout_seconds         =   3600,
@@ -468,7 +468,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     field_inputted_staging = DatabricksSubmitRunOperator(
         task_id                 =   'field-inputted-staging',
-        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        new_cluster             =   extra_small_m5_xlarge_1w_task_custom_cluster,
         spark_jar_task          =   field_inputted_staging_jar_task,
         libraries               =   staging_libraries,
         timeout_seconds         =   3600,
@@ -478,7 +478,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     location_staging = DatabricksSubmitRunOperator(
         task_id                 =   'location-staging',
-        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        new_cluster             =   extra_small_m5_xlarge_1w_task_custom_cluster,
         spark_jar_task          =   location_staging_jar_task,
         libraries               =   staging_libraries,
         timeout_seconds         =   3600,
@@ -488,7 +488,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     device_staging = DatabricksSubmitRunOperator(
         task_id                 =   'device-staging',
-        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        new_cluster             =   extra_small_m5_xlarge_1w_task_custom_cluster,
         spark_jar_task          =   device_staging_jar_task,
         libraries               =   staging_libraries,
         timeout_seconds         =   3600,
@@ -498,7 +498,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     decsion_staging = DatabricksSubmitRunOperator(
         task_id                 =   'decision-staging',
-        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        new_cluster             =   extra_small_m5_xlarge_1w_task_custom_cluster,
         spark_jar_task          =   decision_staging_jar_task,
         libraries               =   staging_libraries,
         timeout_seconds         =   3600,
@@ -508,7 +508,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     page_metrics_staging = DatabricksSubmitRunOperator(
         task_id                 =   'page-metrics-staging',
-        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        new_cluster             =   extra_small_m5_xlarge_1w_task_custom_cluster,
         spark_jar_task          =   page_metrics_staging_jar_task,
         libraries               =   staging_libraries,
         timeout_seconds         =   3600,
@@ -518,7 +518,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     form_submitted_staging = DatabricksSubmitRunOperator(
         task_id                 =   'form-submitted-staging',
-        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        new_cluster             =   extra_small_m5_xlarge_1w_task_custom_cluster,
         spark_jar_task          =   form_submitted_staging_jar_task,
         libraries               =   staging_libraries,
         timeout_seconds         =   3600,
@@ -528,7 +528,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     product_clicked_staging = DatabricksSubmitRunOperator(
         task_id                 =   'product-clicked-staging',
-        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        new_cluster             =   extra_small_m5_xlarge_1w_task_custom_cluster,
         spark_jar_task          =   product_clicked_staging_jar_task,
         libraries               =   staging_libraries,
         timeout_seconds         =   3600,
@@ -538,7 +538,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     product_viewed_staging = DatabricksSubmitRunOperator(
         task_id                 =   'product-viewed-staging',
-        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        new_cluster             =   extra_small_m5_xlarge_1w_task_custom_cluster,
         spark_jar_task          =   product_viewed_staging_jar_task,
         libraries               =   staging_libraries,
         timeout_seconds         =   3600,
@@ -548,7 +548,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     element_clicked_staging = DatabricksSubmitRunOperator(
         task_id                 =   'element-clicked-staging',
-        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        new_cluster             =   extra_small_m5_xlarge_1w_task_custom_cluster,
         spark_jar_task          =   element_clicked_staging_jar_task,
         libraries               =   staging_libraries,
         timeout_seconds         =   3600,
@@ -558,7 +558,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     element_viewed_staging = DatabricksSubmitRunOperator(
         task_id                 =   'element-viewed-staging',
-        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        new_cluster             =   extra_small_m5_xlarge_1w_task_custom_cluster,
         spark_jar_task          =   element_viewed_staging_jar_task,
         libraries               =   staging_libraries,
         timeout_seconds         =   3600,
@@ -568,7 +568,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     paidsearch_staging = DatabricksSubmitRunOperator(
         task_id                 =   'paidsearch-staging',
-        new_cluster             =   extra_small_m4_xlarge_1w_task_custom_cluster,
+        new_cluster             =   extra_small_m5_xlarge_1w_task_custom_cluster,
         spark_jar_task          =   paidsearch_staging_jar_task,
         libraries               =   staging_libraries,
         timeout_seconds         =   3600,

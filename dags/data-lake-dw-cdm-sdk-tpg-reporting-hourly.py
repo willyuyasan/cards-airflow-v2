@@ -12,7 +12,7 @@ default_args = {
     'email': ['vmalhotra@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'on_failure_callback': sh.slack_failure_callback(),
+    'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
     # 'op_kwargs': cfg_dict,
@@ -23,10 +23,10 @@ default_args = {
 airflow_svc_token = "databricks_airflow_svc_token"
 
 # Cluster Setup Step
-small_i3_x_1w_task_custom_cluster = {
+small_m5_x_1w_task_custom_cluster = {
     'spark_version': '5.3.x-scala2.11',
-    'node_type_id': 'm5.large',
-    'driver_node_type_id': 'm5.large',
+    'node_type_id': 'm5.xlarge',
+    'driver_node_type_id': 'm5.xlarge',
     'num_workers': 1,
     'auto_termination_minutes': 0,
     'dbfs_cluster_log_conf': 'dbfs://home/cluster_log',
@@ -51,90 +51,6 @@ small_i3_x_1w_task_custom_cluster = {
     'custom_tags': {
         'Partner': 'B532',
         'Project': 'The Points Guy'
-    },
-}
-
-small_i3_x_1w_task_cohesion_cluster = {
-    'spark_version': '5.3.x-scala2.11',
-    'node_type_id': 'm5.large',
-    'driver_node_type_id': 'm5.large',
-    'num_workers': 1,
-    'auto_termination_minutes': 0,
-    'dbfs_cluster_log_conf': 'dbfs://home/cluster_log',
-    'spark_conf': {
-        'spark.sql.sources.partitionOverwriteMode': 'dynamic',
-        'spark.driver.extraJavaOptions': '-Dconfig.resource=application-cohesion-dev.conf',
-        'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
-    },
-    'spark_env_vars': {
-        'java_opts': '-Dconfig.resource=application-cohesion-dev.conf'
-    },
-    "aws_attributes": {
-        "availability": "SPOT_WITH_FALLBACK",
-        'ebs_volume_count': 2,
-        'ebs_volume_size': 100,
-        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
-        'first_on_demand': '2',
-        'spot_bid_price_percent': '60',
-        'zone_id': 'us-east-1c',
-        "instance_profile_arn": Variable.get("DBX_TPG_IAM_ROLE"),
-    },
-    'custom_tags': {
-        'Partner': 'B532',
-        'Project': 'The Points Guy'
-    },
-}
-
-
-medium_i3_x_3w_task_cluster = {
-    'spark_version': '5.3.x-scala2.11',
-    'node_type_id': 'm5.large',
-    'driver_node_type_id': 'm5.large',
-    'num_workers': 3,
-    'auto_termination_minutes': 0,
-    'dbfs_cluster_log_conf': 'dbfs://home/cluster_log',
-    'spark_conf': {
-        'spark.sql.sources.partitionOverwriteMode': 'dynamic'
-    },
-    "aws_attributes": {
-        "availability": "SPOT_WITH_FALLBACK",
-        'ebs_volume_count': 3,
-        'ebs_volume_size': 100,
-        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
-        'first_on_demand': '2',
-        'spot_bid_price_percent': '70',
-        'zone_id': 'us-east-1c',
-        "instance_profile_arn": Variable.get("DBX_CCDC_IAM_ROLE"),
-    },
-    'custom_tags': {
-        'Partner': 'B530',
-        'Project': 'CreditCards.com'
-    },
-}
-
-large_i3_2x_6w_task_cluster = {
-    'spark_version': '5.3.x-scala2.11',
-    'node_type_id': 'i3.2xlarge',
-    'driver_node_type_id': 'i3.2xlarge',
-    'num_workers': 6,
-    'auto_termination_minutes': 0,
-    'dbfs_cluster_log_conf': 'dbfs://home/cluster_log',
-    'spark_conf': {
-        'spark.sql.sources.partitionOverwriteMode': 'dynamic'
-    },
-    "aws_attributes": {
-        "availability": "SPOT_WITH_FALLBACK",
-        'ebs_volume_count': 6,
-        'ebs_volume_size': 100,
-        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
-        'first_on_demand': '2',
-        'spot_bid_price_percent': '70',
-        'zone_id': 'us-east-1c',
-        "instance_profile_arn": Variable.get("DBX_CCDC_IAM_ROLE"),
-    },
-    'custom_tags': {
-        'Partner': 'B530',
-        'Project': 'CreditCards.com'
     },
 }
 
@@ -172,21 +88,21 @@ with DAG( 'data-lake-dw-cdm-sdk-tpg-reporting-hourly',
 ) as dag:
 
     tpg_staging_tables = ExternalTaskSensor(
-        task_id='external-tpg-reporting',
-        external_dag_id='data-lake-dw-cdm-sdk-cards-staging-hourly',
-        external_task_id='external-tpg-staging',
-        execution_timeout=timedelta(minutes=7),
-        execution_delta=timedelta(minutes=30)
+        task_id             =   'external-tpg-reporting',
+        external_dag_id     =   'data-lake-dw-cdm-sdk-cards-staging-hourly',
+        external_task_id    =   'external-tpg-staging',
+        execution_timeout   =   timedelta(minutes=7),
+        execution_delta     =   timedelta(minutes=30)
     )
 
     page_metrics_staging = DatabricksSubmitRunOperator(
-        task_id='page-metrics-staging',
-        new_cluster=small_i3_x_1w_task_custom_cluster,
-        spark_jar_task=page_metrics_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        task_id                 =   'page-metrics-staging',
+        new_cluster             =   small_m5_x_1w_task_custom_cluster,
+        spark_jar_task          =   page_metrics_staging_jar_task,
+        libraries               =   staging_libraries,
+        timeout_seconds         =   3600,
+        databricks_conn_id      =   airflow_svc_token,
+        polling_period_seconds  =   120
     )
 
 # Dependencies

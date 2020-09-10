@@ -618,7 +618,7 @@ amex_consumer_staging_tables = DummyOperator(
 
 # Staging Dependencies
 session_staging >> traffic_sources_staging
-#session_staging >> paidsearch_staging
+# session_staging >> paidsearch_staging
 
 # CCDC Staging Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging,

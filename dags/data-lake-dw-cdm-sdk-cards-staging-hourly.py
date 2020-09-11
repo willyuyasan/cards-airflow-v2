@@ -401,7 +401,7 @@ product_viewed_staging_jar_task = {
     ]
 }
 
-paidsearch_staging_jar_task = {
+""" paidsearch_staging_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
@@ -416,7 +416,7 @@ paidsearch_staging_jar_task = {
         "TENANTS=" + Variable.get("DBX_CARDS_SDK_Tenants"),
         "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
     ]
-}
+} """
 
 amp_page_viewed_staging_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
@@ -579,8 +579,8 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
-'''
-    paidsearch_staging = DatabricksSubmitRunOperator(
+
+"""     paidsearch_staging = DatabricksSubmitRunOperator(
         task_id                 =   'paidsearch-staging',
         new_cluster             =   extra_small_m5_xlarge_1w_task_custom_cluster,
         spark_jar_task          =   paidsearch_staging_jar_task,
@@ -588,8 +588,8 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
         timeout_seconds         =   3600,
         databricks_conn_id      =   airflow_svc_token,
         polling_period_seconds  =   120
-    )
-'''
+    ) """
+
 amp_page_viewed_staging = DatabricksSubmitRunOperator(
     task_id='amp-page-viewed-staging',
     new_cluster=extra_small_m5_xlarge_1w_task_custom_cluster,

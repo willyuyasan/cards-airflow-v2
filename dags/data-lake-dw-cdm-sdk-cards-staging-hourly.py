@@ -590,31 +590,31 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
         polling_period_seconds  =   120
     ) """
 
-    amp_page_viewed_staging = DatabricksSubmitRunOperator(
-        task_id='amp-page-viewed-staging',
-        new_cluster=extra_small_m5_xlarge_1w_task_custom_cluster,
-        spark_jar_task=amp_page_viewed_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
+amp_page_viewed_staging = DatabricksSubmitRunOperator(
+    task_id='amp-page-viewed-staging',
+    new_cluster=extra_small_m5_xlarge_1w_task_custom_cluster,
+    spark_jar_task=amp_page_viewed_staging_jar_task,
+    libraries=staging_libraries,
+    timeout_seconds=3600,
+    databricks_conn_id=airflow_svc_token,
+    polling_period_seconds=120
+)
 
-    ccdc_staging_tables = DummyOperator(
-        task_id='external-ccdc-staging'
-    )
+ccdc_staging_tables = DummyOperator(
+    task_id='external-ccdc-staging'
+)
 
-    tpg_staging_tables = DummyOperator(
-        task_id='external-tpg-staging'
-    )
+tpg_staging_tables = DummyOperator(
+    task_id='external-tpg-staging'
+)
 
-    amex_business_staging_tables = DummyOperator(
-        task_id='external-amex-business-staging'
-    )
+amex_business_staging_tables = DummyOperator(
+    task_id='external-amex-business-staging'
+)
 
-    amex_consumer_staging_tables = DummyOperator(
-        task_id='external-amex-consumer-staging'
-    )
+amex_consumer_staging_tables = DummyOperator(
+    task_id='external-amex-consumer-staging'
+)
 
 # Staging Dependencies
 session_staging >> traffic_sources_staging

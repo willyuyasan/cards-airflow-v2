@@ -401,23 +401,6 @@ product_viewed_staging_jar_task = {
     ]
 }
 
-""" paidsearch_staging_jar_task = {
-    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
-    'parameters': [
-        "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime(
-            "%Y-%m-%d"),
-        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.PaidSearch",
-        "ACCOUNT=" + "cards",
-        "PAID_SEARCH_COMPANY_ID=" + Variable.get("CARDS_PAIDSEARCH_COMPANY_IDS"),
-        "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_CARDS_SDK_Tenants"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
-    ]
-} """
-
 amp_page_viewed_staging_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
@@ -580,45 +563,34 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
         polling_period_seconds=120
     )
 
-"""     paidsearch_staging = DatabricksSubmitRunOperator(
-        task_id                 =   'paidsearch-staging',
-        new_cluster             =   extra_small_m5_xlarge_1w_task_custom_cluster,
-        spark_jar_task          =   paidsearch_staging_jar_task,
-        libraries               =   staging_libraries,
-        timeout_seconds         =   3600,
-        databricks_conn_id      =   airflow_svc_token,
-        polling_period_seconds  =   120
-    ) """
+    amp_page_viewed_staging = DatabricksSubmitRunOperator(
+        task_id='amp-page-viewed-staging',
+        new_cluster=extra_small_m5_xlarge_1w_task_custom_cluster,
+        spark_jar_task=amp_page_viewed_staging_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
 
-amp_page_viewed_staging = DatabricksSubmitRunOperator(
-    task_id='amp-page-viewed-staging',
-    new_cluster=extra_small_m5_xlarge_1w_task_custom_cluster,
-    spark_jar_task=amp_page_viewed_staging_jar_task,
-    libraries=staging_libraries,
-    timeout_seconds=3600,
-    databricks_conn_id=airflow_svc_token,
-    polling_period_seconds=120
-)
+    ccdc_staging_tables = DummyOperator(
+        task_id='external-ccdc-staging'
+    )
 
-ccdc_staging_tables = DummyOperator(
-    task_id='external-ccdc-staging'
-)
+    tpg_staging_tables = DummyOperator(
+        task_id='external-tpg-staging'
+    )
 
-tpg_staging_tables = DummyOperator(
-    task_id='external-tpg-staging'
-)
+    amex_business_staging_tables = DummyOperator(
+        task_id='external-amex-business-staging'
+    )
 
-amex_business_staging_tables = DummyOperator(
-    task_id='external-amex-business-staging'
-)
-
-amex_consumer_staging_tables = DummyOperator(
-    task_id='external-amex-consumer-staging'
-)
+    amex_consumer_staging_tables = DummyOperator(
+        task_id='external-amex-consumer-staging'
+    )
 
 # Staging Dependencies
 session_staging >> traffic_sources_staging
-# session_staging >> paidsearch_staging
 
 # CCDC Staging Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging,

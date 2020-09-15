@@ -305,7 +305,7 @@ paidsearch_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                    datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime(
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.PaidSearch",
@@ -476,13 +476,13 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
     )
 
     paidsearch_staging = DatabricksSubmitRunOperator(
-        task_id                 =   'paidsearch-staging',
-        new_cluster             =   extra_small_task_custom_cluster,
-        spark_jar_task          =   paidsearch_staging_jar_task,
-        libraries               =   staging_libraries,
-        timeout_seconds         =   3600,
-        databricks_conn_id      =   airflow_svc_token,
-        polling_period_seconds  =   120
+        task_id='paidsearch-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=paidsearch_staging_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
     )
 
     ccdc_staging_tables = DummyOperator(

@@ -23,10 +23,10 @@ default_args = {
 airflow_svc_token = "databricks_airflow_svc_token"
 
 # Cluster Setup Step
-small_m5_x_1w_task_custom_cluster = {
+small_task_custom_cluster = {
     'spark_version': '5.3.x-scala2.11',
-    'node_type_id': 'm5.xlarge',
-    'driver_node_type_id': 'm5.xlarge',
+    'node_type_id': 'm5a.xlarge',
+    'driver_node_type_id': 'm5a.xlarge',
     'num_workers': 1,
     'auto_termination_minutes': 0,
     'dbfs_cluster_log_conf': 'dbfs://home/cluster_log',
@@ -97,7 +97,7 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-hourly',
 
     page_metrics_staging = DatabricksSubmitRunOperator(
         task_id='page-metrics-staging',
-        new_cluster=small_m5_x_1w_task_custom_cluster,
+        new_cluster=small_task_custom_cluster,
         spark_jar_task=page_metrics_staging_jar_task,
         libraries=staging_libraries,
         timeout_seconds=3600,

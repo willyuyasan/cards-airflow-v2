@@ -502,7 +502,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
     )
     
     hoppageviewed_staging = DatabricksSubmitRunOperator(
-        task_id='paidsearch-staging',
+        task_id='hoppageviewed-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=hoppageviewed_staging_jar_task,
         libraries=staging_libraries,

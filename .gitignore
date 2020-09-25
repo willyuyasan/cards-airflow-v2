@@ -5,3 +5,4 @@ airflow_settings.yaml
 .secrets
 dags/__pycache__/
 plugins/__pycache__/
+.pyc

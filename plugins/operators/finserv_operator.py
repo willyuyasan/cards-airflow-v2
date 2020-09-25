@@ -128,7 +128,7 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
                             for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n',"\n").split("\n"):
                                 self.log.error(line)
                         else:
-                            for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n',"\n").split("\n"):
+                            for line in str(hook.read_dbfs(f['path']).decode('utf-8').replace('\n',"\n").split("\n"), errors='replace') :
                                 self.log.info(line)
 
             # Retrieve Executor Logs

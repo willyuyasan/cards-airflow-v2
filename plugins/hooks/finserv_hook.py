@@ -5,10 +5,12 @@ from airflow.contrib.hooks.databricks_hook import DatabricksHook
 LIST_DBFS_ENDPOINT = ('GET', 'api/2.0/dbfs/list')
 READ_DBFS_ENDPOINT = ('GET', 'api/2.0/dbfs/read')
 
+
 class FinServDatabricksHook(DatabricksHook):
     """
     Interact with Databricks.
     """
+
     def list_dbfs(self, path):
         """list_dbfs:
         Retrieves a list of objects in dbfs from a specified path

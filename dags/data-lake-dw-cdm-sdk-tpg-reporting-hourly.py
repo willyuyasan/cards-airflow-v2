@@ -3,6 +3,7 @@ from airflow.models import Variable
 from datetime import datetime, timedelta
 from airflow.operators import ExternalTaskSensor
 from airflow.contrib.operators.databricks_operator import DatabricksSubmitRunOperator
+from operators.finserv_operator import FinServDatabricksSubmitRunOperator
 from rvairflow import slack_hook as sh
 
 default_args = {
@@ -21,6 +22,14 @@ default_args = {
 
 # token variable
 airflow_svc_token = "databricks_airflow_svc_token"
+ACCOUNT = 'cards'
+DAG_NAME = 'data-lake-dw-cdm-sdk-tpg-reporting-hourly'
+
+LOG_PATH={
+    'dbfs': { 
+        'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s' % (ACCOUNT, DAG_NAME, datetime.date(datetime.now()))
+    }
+}
 
 # Cluster Setup Step
 small_task_custom_cluster = {
@@ -29,7 +38,7 @@ small_task_custom_cluster = {
     'driver_node_type_id': 'm5a.xlarge',
     'num_workers': 1,
     'auto_termination_minutes': 0,
-    'dbfs_cluster_log_conf': 'dbfs://home/cluster_log',
+    'cluster_log_conf': LOG_PATH,
     'spark_conf': {
         'spark.sql.sources.partitionOverwriteMode': 'dynamic',
         'spark.driver.extraJavaOptions': '-Dconfig.resource=application-cards-qa.conf',
@@ -95,7 +104,7 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-hourly',
         execution_delta=timedelta(minutes=30)
     )
 
-    page_metrics_staging = DatabricksSubmitRunOperator(
+    page_metrics_staging = FinServDatabricksSubmitRunOperator(
         task_id='page-metrics-staging',
         new_cluster=small_task_custom_cluster,
         spark_jar_task=page_metrics_staging_jar_task,

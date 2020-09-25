@@ -375,6 +375,21 @@ pqo_offer_received_staging_jar_task = {
     ]
 }
 
+pzn_offers_received_staging_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.PZNOffersReceived",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_CONSUMER_SDK_Tenants"),
+        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+    ]
+}
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
@@ -574,6 +589,16 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
         polling_period_seconds=120
     )
 
+    pzn_offers_received_staging = FinServDatabricksSubmitRunOperator(
+        task_id='pzn-offers-received-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=pzn_offers_received_staging_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=1200,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
     ccdc_staging_tables = DummyOperator(
         task_id='external-ccdc-staging'
     )
@@ -607,9 +632,9 @@ session_staging >> paidsearch_staging
 # Amex Business Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging,
     device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging,
-    paidsearch_staging,cookies_staging] >> amex_business_staging_tables
+    paidsearch_staging,cookies_staging, pzn_offers_received_staging] >> amex_business_staging_tables
 
 # Amex Consumer Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging,
     element_viewed_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging,
-    paidsearch_staging,cookies_staging, pqo_offer_received_staging] >> amex_consumer_staging_tables
+    paidsearch_staging,cookies_staging, pqo_offer_received_staging, pzn_offers_received_staging] >> amex_consumer_staging_tables

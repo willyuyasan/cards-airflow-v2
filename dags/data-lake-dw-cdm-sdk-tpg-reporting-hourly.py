@@ -25,8 +25,8 @@ airflow_svc_token = "databricks_airflow_svc_token"
 ACCOUNT = 'cards'
 DAG_NAME = 'data-lake-dw-cdm-sdk-tpg-reporting-hourly'
 
-LOG_PATH={
-    'dbfs': { 
+LOG_PATH = {
+    'dbfs': {
         'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s' % (ACCOUNT, DAG_NAME, datetime.date(datetime.now()))
     }
 }

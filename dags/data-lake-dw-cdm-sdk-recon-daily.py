@@ -70,23 +70,9 @@ staging_libraries = [
         "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
     },
     {
-        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
+        "jar": "dbfs:/FileStore/jars/5168d529_c94b_4aa6_87bc_4d1cfe9b6abb-data_common_2_3_0-4f440.jar",
     },
 ]
-
-page_metrics_staging_jar_task = {
-    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
-    'parameters': [
-        "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime("%Y-%m-%d"),
-        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.cohesion.staging.PageMetrics",
-        "ACCOUNT=" + "cards",
-        "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
-    ]
-}
 
 base_params_recon = {
     "compareMode": "count",

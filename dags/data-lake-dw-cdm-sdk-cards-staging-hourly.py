@@ -26,8 +26,8 @@ airflow_svc_token = "databricks_airflow_svc_token"
 ACCOUNT = 'cards'
 DAG_NAME = 'data-lake-dw-cdm-sdk-cards-staging-hourly'
 
-LOG_PATH={
-    'dbfs': { 
+LOG_PATH = {
+    'dbfs': {
         'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s' % (ACCOUNT, DAG_NAME, datetime.date(datetime.now()))
     }
 }
@@ -60,7 +60,9 @@ extra_small_task_custom_cluster = {
     },
     'custom_tags': {
         'Partner': 'B530',
-        'Project': 'CreditCards.com'
+        'Project': 'CreditCards.com',
+        'Dag_id': "{{ ti.dag_id }}",
+        'Task_id': "{{ ti.task_id }}"
     },
 }
 
@@ -380,7 +382,7 @@ pzn_offers_received_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime(
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.PZNOffersReceived",
@@ -558,7 +560,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
-    
+
     hoppageviewed_staging = FinServDatabricksSubmitRunOperator(
         task_id='hoppageviewed-staging',
         new_cluster=extra_small_task_custom_cluster,
@@ -568,7 +570,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
-    
+
     cookies_staging = FinServDatabricksSubmitRunOperator(
         task_id='cookies-staging',
         new_cluster=extra_small_task_custom_cluster,
@@ -622,19 +624,19 @@ session_staging >> paidsearch_staging
 # CCDC Staging Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging,
     field_inputted_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging,
-    paidsearch_staging,hoppageviewed_staging] >> ccdc_staging_tables
+    paidsearch_staging, hoppageviewed_staging] >> ccdc_staging_tables
 
 # TPG Staging Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging,
     field_inputted_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging, amp_page_viewed_staging,
-    paidsearch_staging,hoppageviewed_staging] >> tpg_staging_tables
+    paidsearch_staging, hoppageviewed_staging] >> tpg_staging_tables
 
 # Amex Business Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging,
     device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging,
-    paidsearch_staging,cookies_staging, pzn_offers_received_staging] >> amex_business_staging_tables
+    paidsearch_staging, cookies_staging, pzn_offers_received_staging] >> amex_business_staging_tables
 
 # Amex Consumer Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging,
     element_viewed_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging,
-    paidsearch_staging,cookies_staging, pqo_offer_received_staging, pzn_offers_received_staging] >> amex_consumer_staging_tables
+    paidsearch_staging, cookies_staging, pqo_offer_received_staging, pzn_offers_received_staging] >> amex_consumer_staging_tables

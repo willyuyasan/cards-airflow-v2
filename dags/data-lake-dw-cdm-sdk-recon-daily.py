@@ -78,8 +78,10 @@ base_params_recon = {
     "compareMode": "count",
     "adhocRun": "no",
     "checkSchemaMatches": "yes",
-    "fromDate": 
-    "toDate":
+    "fromDate": (
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_recon_lookback_days")))))).strftime(
+            "%Y-%m-%d"),
+    "toDate": datetime.now().strftime("%Y-%m-%d"),
     "compareDiffThreashold": "0.01",
     "sdkEnv": "dev",
 }

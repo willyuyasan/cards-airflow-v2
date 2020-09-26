@@ -24,8 +24,8 @@ airflow_svc_token = "databricks_airflow_svc_token"
 ACCOUNT = 'cards'
 DAG_NAME = 'data-lake-dw-cdm-sdk-recon-daily'
 
-LOG_PATH={
-    'dbfs': { 
+LOG_PATH = {
+    'dbfs': {
         'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s' % (ACCOUNT, DAG_NAME, datetime.date(datetime.now()))
     }
 }
@@ -59,7 +59,7 @@ small_task_custom_cluster = {
     'custom_tags': {
         'Partner': 'B530',
         'Project': 'CreditCards.com',
-        'DagId':  "{{ti.dag_id}}",
+        'DagId': "{{ti.dag_id}}",
         'TaskId': "{{ti.task_id}}"
     },
 }
@@ -79,8 +79,8 @@ base_params_recon = {
     "adhocRun": "no",
     "checkSchemaMatches": "yes",
     "fromDate": (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_recon_lookback_days")))))).strftime(
-            "%Y-%m-%d"),
+        datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_recon_lookback_days")))))).strftime(
+        "%Y-%m-%d"),
     "toDate": datetime.now().strftime("%Y-%m-%d"),
     "compareDiffThreashold": "0.01",
     "sdkEnv": "dev",

@@ -35,8 +35,8 @@ LOG_PATH={
 # Cluster Setup Step
 extra_small_task_custom_cluster = {
     'spark_version': '5.3.x-scala2.11',
-    'node_type_id': 'm5a.xlarge',
-    'driver_node_type_id': 'm5a.xlarge',
+    'node_type_id': 'i3.xlarge',
+    'driver_node_type_id': 'i3.xlarge',
     'num_workers': 1,
     'auto_termination_minutes': 0,
     'spark_conf': {
@@ -83,6 +83,23 @@ test_staging_notebook_task = {
     'notebook_path': "/Users/vmalhotra@redventures.net/cards-data/DEC-714-TPG-App-Reporting-Form/test-for-dbx-logs",
 }
 
+paidsearch_staging_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.PaidSearch",
+        "ACCOUNT=" + "cards",
+        "PAID_SEARCH_COMPANY_ID=" + Variable.get("CARDS_PAIDSEARCH_COMPANY_IDS"),
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_CARDS_SDK_Tenants"),
+        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+    ]
+}
+
 # DAG Creation Step
 with DAG('data-lake-dw-dbx-logs-test-dag',
           schedule_interval='30 0-23 * * *',
@@ -99,4 +116,14 @@ with DAG('data-lake-dw-dbx-logs-test-dag',
             timeout_seconds        = 600,
             databricks_conn_id     = airflow_svc_token,
             polling_period_seconds = 60
+        )
+
+        paidsearch_staging = FinServDatabricksSubmitRunOperator(
+            task_id='paidsearch-staging',
+            new_cluster=extra_small_task_custom_cluster,
+            spark_jar_task=paidsearch_staging_jar_task,
+            libraries=staging_libraries,
+            timeout_seconds=3600,
+            databricks_conn_id=airflow_svc_token,
+            polling_period_seconds=120
         )

@@ -12,41 +12,41 @@ from airflow.contrib.operators.databricks_operator import DatabricksSubmitRunOpe
 """
 
 
-# All the required fields are documented here - 
+# All the required fields are documented here -
 # https://docs.databricks.com/dev-tools/api/latest/jobs.html#jobssparksubmittask
 
 class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
     """Execute a Spark job on Databricks."""
-    
-    def __init__(self, 
-                *,
-                json=None,
-                spark_jar_task=None,
-                notebook_task=None,
-                spark_python_task=None,
-                spark_submit_task=None,
-                new_cluster=None,
-                existing_cluster_id=None,
-                libraries=None,
-                run_name=None,
-                timeout_seconds=None,
-                databricks_conn_id='databricks_default',
-                polling_period_seconds=30,
-                databricks_retry_limit=3,
-                databricks_retry_delay=1,
-                do_xcom_push=False,
-                **kwargs,):
-        """__init__ 
+
+    def __init__(self,
+                 *,
+                 json=None,
+                 spark_jar_task=None,
+                 notebook_task=None,
+                 spark_python_task=None,
+                 spark_submit_task=None,
+                 new_cluster=None,
+                 existing_cluster_id=None,
+                 libraries=None,
+                 run_name=None,
+                 timeout_seconds=None,
+                 databricks_conn_id='databricks_default',
+                 polling_period_seconds=30,
+                 databricks_retry_limit=3,
+                 databricks_retry_delay=1,
+                 do_xcom_push=False,
+                 **kwargs,):
+        """__init__
         Generate parameters for running a job through the Databricks run-submit
-        api. 
+        api.
         See: https://docs.databricks.com/api/latest/jobs.html#runs-submit
-        
+
         Arguments:
             :param job_name: {str} -- Name of the job
             :param task: {obj} -- Instance of CdmNotebookTask or CdmJarTask classes
-            :param databricks_conn_id: {str} -- The name of the Airflow connection to use. By default 
-                and in the common case this will be ``databricks_default``. To use token based 
-                authentication, provide the key ``token`` in the extra field for the connection 
+            :param databricks_conn_id: {str} -- The name of the Airflow connection to use. By default
+                and in the common case this will be ``databricks_default``. To use token based
+                authentication, provide the key ``token`` in the extra field for the connection
                 and create the key ``host`` and leave the ``host`` field empty.
             :param timeout_seconds: {int} -- The timeout for this run. By default a value of 0 is used
                 which means to have no timeout. (default: {900})
@@ -57,7 +57,7 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
             :param databricks_retry_delay: {int} -- Number of seconds to wait between retries (it
                 might be a floating point number) (default: {1})
             :param do_xcom_push: {bool} -- Whether we should push run_id and run_page_url to xcom. (default: {False})
-        """                
+        """
         super(FinServDatabricksSubmitRunOperator, self).__init__(**kwargs)
         self.json = json or {}
         self.databricks_conn_id = databricks_conn_id
@@ -124,12 +124,12 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
                 for f in spark_filelist['files']:
                     if not f['is_dir']:                    
                         self.log.info(f['path'])
-                                        
-                        if 'stderr' in f['path']:                                
-                            for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n',"\n").split("\n"):
+                        
+                        if 'stderr' in f['path']:
+                            for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n', "\n").split("\n"):
                                 self.log.error(line)
-                        else:                           
-                            for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n',"\n").split("\n"):
+                        else:
+                            for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n', "\n").split("\n"):
                                 self.log.info(line)
 
             # Retrieve Executor Logs
@@ -140,26 +140,26 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
                     for executor in hook.list_dbfs(app['path'])['files']:
                         for f in hook.list_dbfs(executor['path'])['files']:
                             if not f['is_dir']:
-                              self.log.info(f['path'])
-                              if 'stderr' in f['path']:
-                                  for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n',"\n").split("\n"):
-                                      self.log.error(line)
-                              else:
-                                  for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n',"\n").split("\n"):
-                                      self.log.info(line)
+                                self.log.info(f['path'])
+                                if 'stderr' in f['path']:
+                                    for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n', "\n").split("\n"):
+                                        self.log.error(line)
+                                else:
+                                    for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n', "\n").split("\n"):
+                                        self.log.info(line)
 
     def _log_paths(self, context):
         """
-        Read in the cluster_log_conf parameter from the cluster running this job and extract the possible location of 
+        Read in the cluster_log_conf parameter from the cluster running this job and extract the possible location of
         spark and executor logs. These will be stored as parameters spark_logs and exec_logs within this class
         :param context: Task context
         """
         self.log_type = None
         self.log_dest = None
-        
+
         if 'cluster_log_conf' in self.json['new_cluster'] and len(self.json['new_cluster']['cluster_log_conf'].keys()):
             self.log_type = list(self.json['new_cluster']['cluster_log_conf'].keys())[0]
-            self.log_dest = self.json['new_cluster']['cluster_log_conf'][self.log_type]['destination']            
+            self.log_dest = self.json['new_cluster']['cluster_log_conf'][self.log_type]['destination']
             if self._cluster_id is not None:
                 self.spark_logs = '{}/{}/driver'.format(self.log_dest, self._cluster_id)
                 self.exec_logs = '{}/{}/executor'.format(self.log_dest, self._cluster_id)
@@ -170,7 +170,7 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
 
     def cluster_id(self):
         """
-        Return the cluster_id this run is executing from. Requires an API call back to runs/get to pull the 
+        Return the cluster_id this run is executing from. Requires an API call back to runs/get to pull the
         cluster_id
         """
         # Possible alternative "job-" + self.job_id + "-run-1"
@@ -179,6 +179,7 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
             response = self.get_hook()._do_api_call(('GET', 'api/2.0/jobs/runs/get'), json)
             if 'cluster_instance' in response:
                 self._cluster_id = response['cluster_instance']['cluster_id']
+
 
 class FinServDatabricksPlugin(AirflowPlugin):
     name = 'finserv_databricks'

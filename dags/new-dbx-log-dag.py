@@ -26,8 +26,8 @@ airflow_svc_token = "databricks_airflow_svc_token"
 ACCOUNT = 'cards'
 DAG_NAME = 'data-lake-dw-dbx-logs-test-dag'
 
-LOG_PATH={
-    'dbfs': { 
+LOG_PATH = {
+    'dbfs': {
         'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s' % (ACCOUNT, DAG_NAME, datetime.date(datetime.now()))
     }
 }
@@ -102,28 +102,18 @@ paidsearch_staging_jar_task = {
 
 # DAG Creation Step
 with DAG('data-lake-dw-dbx-logs-test-dag',
-          schedule_interval='30 0-23 * * *',
-          dagrun_timeout=timedelta(hours=1),
-          catchup=False,
-          max_active_runs=1,
-          default_args=default_args) as dag:
+         schedule_interval='30 0-23 * * *',
+         dagrun_timeout=timedelta(hours=1),
+         catchup=False,
+         max_active_runs=1,
+         default_args=default_args) as dag:
 
-        test_staging = FinServDatabricksSubmitRunOperator(
-            task_id                = 'test-dbx-logs-staging',
-            new_cluster            = extra_small_task_custom_cluster,
-            notebook_task          = test_staging_notebook_task,
-            libraries              = staging_libraries,
-            timeout_seconds        = 600,
-            databricks_conn_id     = airflow_svc_token,
-            polling_period_seconds = 60
-        )
-
-        paidsearch_staging = FinServDatabricksSubmitRunOperator(
-            task_id='paidsearch-staging',
-            new_cluster=extra_small_task_custom_cluster,
-            spark_jar_task=paidsearch_staging_jar_task,
-            libraries=staging_libraries,
-            timeout_seconds=3600,
-            databricks_conn_id=airflow_svc_token,
-            polling_period_seconds=120
-        )
+    test_staging = FinServDatabricksSubmitRunOperator(
+        task_id='test-dbx-logs-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        notebook_task=test_staging_notebook_task,
+        libraries=staging_libraries,
+        timeout_seconds=600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )

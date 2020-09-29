@@ -15,7 +15,7 @@ default_args = {
     'email_on_failure': False,
     'email_on_retry': False,
     'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
-    'retries': 1,
+    'retries': 2,
     'retry_delay': timedelta(minutes=5),
     # 'op_kwargs': cfg_dict,
     'provide_context': True
@@ -59,8 +59,8 @@ extra_small_task_custom_cluster = {
         "instance_profile_arn": Variable.get("DBX_CCDC_IAM_ROLE"),
     },
     'custom_tags': {
-        'Partner': 'B530',
-        'Project': 'CreditCards.com',
+        'Partner': 'B814',
+        'Project': 'Cards Allocation',
         'Dag_id': "{{ ti.dag_id }}",
         'Task_id': "{{ ti.task_id }}"
     },

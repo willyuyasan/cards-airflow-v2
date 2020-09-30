@@ -35,8 +35,8 @@ LOG_PATH = {
 # Cluster Setup Step
 extra_small_task_custom_cluster = {
     'spark_version': '5.3.x-scala2.11',
-    'node_type_id': 'i3.xlarge',
-    'driver_node_type_id': 'i3.xlarge',
+    'node_type_id': 'm5a.xlarge',
+    'driver_node_type_id': 'm5a.xlarge',
     'num_workers': 1,
     'auto_termination_minutes': 0,
     'spark_conf': {
@@ -55,7 +55,7 @@ extra_small_task_custom_cluster = {
         'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
         'first_on_demand': '2',
         'spot_bid_price_percent': '60',
-        'zone_id': 'us-east-1c',
+        'zone_id': 'us-east-1b',
         "instance_profile_arn": Variable.get("DBX_CCDC_IAM_ROLE"),
     },
     'custom_tags': {

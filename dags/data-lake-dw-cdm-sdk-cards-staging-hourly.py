@@ -66,6 +66,40 @@ extra_small_task_custom_cluster = {
     },
 }
 
+small_task_custom_cluster = {
+    'spark_version': '5.3.x-scala2.11',
+    'node_type_id': 'm5a.xlarge',
+    'driver_node_type_id': 'm5a.xlarge',
+    'num_workers': 4,
+    'auto_termination_minutes': 0,
+    'cluster_log_conf': LOG_PATH,
+    'spark_conf': {
+        'spark.sql.sources.partitionOverwriteMode': 'dynamic',
+        'spark.driver.extraJavaOptions': '-Dconfig.resource=application-cards-qa.conf',
+        'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
+    },
+    'spark_env_vars': {
+        'java_opts': '-Dconfig.resource=application-cards-qa.conf'
+    },
+    "aws_attributes": {
+        "availability": "SPOT_WITH_FALLBACK",
+        'ebs_volume_count': 1,
+        'ebs_volume_size': 100,
+        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
+        'first_on_demand': '2',
+        'spot_bid_price_percent': '60',
+        'zone_id': 'us-east-1b',
+        "instance_profile_arn": Variable.get("DBX_CCDC_IAM_ROLE"),
+    },
+    'custom_tags': {
+        'Partner': 'B814',
+        'Project': 'Cards Allocation',
+        'Dag_id': "{{ ti.dag_id }}",
+        'Task_id': "{{ ti.task_id }}"
+    },
+}
+
+
 # Libraries
 staging_libraries = [
     {
@@ -403,7 +437,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     session_staging = FinServDatabricksSubmitRunOperator(
         task_id='session-staging',
-        new_cluster=extra_small_task_custom_cluster,
+        new_cluster=small_task_custom_cluster,
         spark_jar_task=session_staging_jar_task,
         libraries=staging_libraries,
         timeout_seconds=3600,
@@ -553,7 +587,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     paidsearch_staging = FinServDatabricksSubmitRunOperator(
         task_id='paidsearch-staging',
-        new_cluster=extra_small_task_custom_cluster,
+        new_cluster=small_task_custom_cluster,
         spark_jar_task=paidsearch_staging_jar_task,
         libraries=staging_libraries,
         timeout_seconds=3600,

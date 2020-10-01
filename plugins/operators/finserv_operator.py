@@ -125,7 +125,9 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
                     if not f['is_dir']:                    
                         self.log.info(f['path'])
                         
-                        if 'stderr' in f['path']:
+                        if f['path'].endswith('.gz') and 'stderr' in f['path']:
+                            self.log.info("The gzipped file is present on this location, please read the file from that location %s", f['path'])
+                        elif 'stderr' in f['path']:
                             for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n', "\n").split("\n"):
                                 self.log.error(line)
                         else:
@@ -141,7 +143,10 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
                         for f in hook.list_dbfs(executor['path'])['files']:
                             if not f['is_dir']:
                                 self.log.info(f['path'])
-                                if 'stderr' in f['path']:
+
+                                if f['path'].endswith('.gz') and 'stderr' in f['path']:
+                                    self.log.info("The gzipped file is present on this location, please read the file from that location %s", f['path'])            
+                                elif 'stderr' in f['path']:
                                     for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n', "\n").split("\n"):
                                         self.log.error(line)
                                 else:

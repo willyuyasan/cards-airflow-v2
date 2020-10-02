@@ -435,7 +435,7 @@ phone_system_call_staging_jar_task = {
             datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.PhoneSystemCall",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.amex_business.staging.PhoneSystemCall",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_Tenant_Id"),

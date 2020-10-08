@@ -32,36 +32,87 @@ LOG_PATH = {
 }
 
 # Cluster Setup Step
-small_task_custom_cluster = {
-    'spark_version': '5.3.x-scala2.11',
-    'node_type_id': 'm5a.xlarge',
-    'driver_node_type_id': 'm5a.xlarge',
-    'num_workers': 1,
+small_task_cluster = {
+    'spark_version':            '5.3.x-scala2.11',
+    'node_type_id':             Variable.get("DBX_SMALL_CLUSTER"),
+    'driver_node_type_id':      Variable.get("DBX_SMALL_CLUSTER"),
+    'num_workers':              Variable.get("DBX_SMALL_CLUSTER_NUM_NODES"),
     'auto_termination_minutes': 0,
-    'cluster_log_conf': LOG_PATH,
+    'cluster_log_conf':         LOG_PATH,
     'spark_conf': {
-        'spark.sql.sources.partitionOverwriteMode': 'dynamic',
-        'spark.driver.extraJavaOptions': '-Dconfig.resource=application-cards-qa.conf',
-        'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
+      'spark.sql.sources.partitionOverwriteMode': 'dynamic'
     },
-    'spark_env_vars': {
-        'java_opts': '-Dconfig.resource=application-cards-qa.conf'
-    },
-    "aws_attributes": {
-        "availability": "SPOT_WITH_FALLBACK",
-        'ebs_volume_count': 2,
-        'ebs_volume_size': 100,
-        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
-        'first_on_demand': '2',
-        'spot_bid_price_percent': '60',
-        'zone_id': 'us-east-1c',
-        "instance_profile_arn": Variable.get("DBX_CCDC_IAM_ROLE"),
+    "aws_attributes": { 
+        "availability":             "SPOT_WITH_FALLBACK", 
+        'ebs_volume_count':         2,
+        'ebs_volume_size':          100,
+        'ebs_volume_type':          'GENERAL_PURPOSE_SSD',
+        'first_on_demand':          '2',
+        'spot_bid_price_percent':   '70',
+        'zone_id':                  'us-east-1c',
+        "instance_profile_arn":     Variable.get("DBX_CCDC_IAM_ROLE"),
     },
     'custom_tags': {
         'Partner': 'B530',
         'Project': 'CreditCards.com',
-        'Dag_id': "{{ ti.dag_id }}",
-        'Task_id': "{{ ti.task_id }}"
+        'DagId':  "{{ti.dag_id}}",
+        'TaskId': "{{ti.task_id}}"
+    },           
+}
+
+medium_task_cluster = {
+    'spark_version':            '5.3.x-scala2.11',
+    'node_type_id':             Variable.get("DBX_MEDIUM_CLUSTER"),
+    'driver_node_type_id':      Variable.get("DBX_MEDIUM_CLUSTER"),
+    'num_workers':              Variable.get("DBX_MEDIUM_CLUSTER_NUM_NODES"),
+    'auto_termination_minutes': 0,
+    'cluster_log_conf':         LOG_PATH,
+    'spark_conf': {
+        'spark.sql.sources.partitionOverwriteMode': 'dynamic'
+    },
+    "aws_attributes": {
+        "availability":             "SPOT_WITH_FALLBACK",
+        'ebs_volume_count':         2,
+        'ebs_volume_size':          100,
+        'ebs_volume_type':          'GENERAL_PURPOSE_SSD',
+        'first_on_demand':          '2',
+        'spot_bid_price_percent':   '70',
+        'zone_id':                  'us-east-1c',
+        "instance_profile_arn":     Variable.get("DBX_CCDC_IAM_ROLE"),
+    },
+    'custom_tags': {
+        'Partner': 'B530',
+        'Project': 'CreditCards.com',
+        'DagId':  "{{ti.dag_id}}",
+        'TaskId': "{{ti.task_id}}"
+    },
+}
+
+large_task_cluster = {
+    'spark_version':            '5.3.x-scala2.11',
+    'node_type_id':             Variable.get("DBX_LARGE_CLUSTER"),
+    'driver_node_type_id':      Variable.get("DBX_LARGE_CLUSTER"),
+    'num_workers':              4,
+    'auto_termination_minutes': 0,
+    'cluster_log_conf':         LOG_PATH,
+    'spark_conf': {
+      'spark.sql.sources.partitionOverwriteMode': 'dynamic'
+    },    
+    "aws_attributes": { 
+        "availability":             "SPOT_WITH_FALLBACK", 
+        'ebs_volume_count':         2,
+        'ebs_volume_size':          100,
+        'ebs_volume_type':          'GENERAL_PURPOSE_SSD',
+        'first_on_demand':          '2',
+        'spot_bid_price_percent':   '70',
+        'zone_id':                  'us-east-1c',
+        "instance_profile_arn":     Variable.get("DBX_CCDC_IAM_ROLE"),
+    },
+    'custom_tags': {
+        'Partner': 'B530',
+        'Project': 'CreditCards.com',
+        'DagId':  "{{ti.dag_id}}",
+        'TaskId': "{{ti.task_id}}"
     },
 }
 
@@ -71,23 +122,138 @@ staging_libraries = [
         "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
     },
     {
-        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
+        "jar": "dbfs:/data-warehouse/production/datawarehouse-builder-0.8.1-tmp.jar",   
     },
 ]
 
-page_metrics_staging_jar_task = {
-    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
-    'parameters': [
-        "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime("%Y-%m-%d"),
-        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.cohesion.staging.PageMetrics",
-        "ACCOUNT=" + "cards",
-        "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
-    ]
+conversion_reporting_notebook_task = {
+    'base_parameters': {
+        "toDate":                  "now",
+        "lookBackDays":            "3",
+        "environment":             "staging",
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
+        "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
+        "dimensionPath":           Variable.get("DBX_Dimensions_Path"),
+        "loggingPath":             Variable.get("DBX_CCDC_Logging_Path"),
+        "dataLakePath":            Variable.get("DBX_DataLake_Path"),
+        },         
+    'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/reporting-table-notebooks/Conversion',
 }
+
+session_reporting_notebook_task = {
+    'base_parameters': {
+        "toDate":                  "now",
+        "lookBackDays":            "3",
+        "environment":             "staging",
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
+        "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
+        "dimensionPath":           Variable.get("DBX_Dimensions_Path"),
+        "loggingPath":             Variable.get("DBX_CCDC_Logging_Path"),
+        "dataLakePath":            Variable.get("DBX_DataLake_Path"),
+        },         
+    'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/reporting-table-notebooks/Session',
+}
+
+product_reporting_notebook_task = {
+    'base_parameters': {
+        "toDate":                  "now",
+        "lookBackDays":            "3",
+        "environment":             "staging",
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
+        "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
+        "dimensionPath":           Variable.get("DBX_Dimensions_Path"),
+        "loggingPath":             Variable.get("DBX_CCDC_Logging_Path"),
+        "dataLakePath":            Variable.get("DBX_DataLake_Path"),
+        },         
+    'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/reporting-table-notebooks/Product',
+}
+
+page_view_reporting_notebook_task = {
+    'base_parameters': {
+        "toDate":                  "now",
+        "lookBackDays":            "3",
+        "environment":             "staging",
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
+        "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
+        "dimensionPath":           Variable.get("DBX_Dimensions_Path"),
+        "loggingPath":             Variable.get("DBX_CCDC_Logging_Path"),
+        "dataLakePath":            Variable.get("DBX_DataLake_Path"),
+        },         
+    'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/reporting-table-notebooks/PageView',
+}
+
+latency_record_new_session_notebook_task = {
+    'base_parameters': {        
+        "lookBackDays":            "1",        
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
+        "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
+        "metaLatencyPath":         Variable.get("DBX_CCDC_Meta_Latency_Path"),
+        "dataLakePath":            Variable.get("DBX_DataLake_Path"),
+        "tenantId":                Variable.get("DBX_CCDC_Tenant_Id"),
+    },
+    'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/helper-scripts/latency-notebooks/Record New Session Ids',
+}
+
+latency_calculation_new_session_notebook_task = {
+    'base_parameters': {        
+        "lookBackDays":            "1",        
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
+        "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
+        "metaLatencyPath":         Variable.get("DBX_CCDC_Meta_Latency_Path"),
+        "dataLakePath":            Variable.get("DBX_DataLake_Path"),
+        "tenantId":                Variable.get("DBX_CCDC_Tenant_Id"),
+    },
+    'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/helper-scripts/latency-notebooks/Timestamp New Session Ids',
+}
+
+latency_record_new_page_views_notebook_task = {
+    'base_parameters': {        
+        "lookBackDays":            "1",        
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
+        "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
+        "metaLatencyPath":         Variable.get("DBX_CCDC_Meta_Latency_Path"),
+        "dataLakePath":            Variable.get("DBX_DataLake_Path"),
+        "tenantId":                Variable.get("DBX_CCDC_Tenant_Id"),
+    },
+    'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/helper-scripts/latency-notebooks/Record New Page View Ids',
+}
+
+latency_calculation_new_page_views_notebook_task = {
+    'base_parameters': {        
+        "lookBackDays":            "1",        
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
+        "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
+        "metaLatencyPath":         Variable.get("DBX_CCDC_Meta_Latency_Path"),
+        "dataLakePath":            Variable.get("DBX_DataLake_Path"),
+        "tenantId":                Variable.get("DBX_CCDC_Tenant_Id"),
+    },
+    'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/helper-scripts/latency-notebooks/Timestamp New Page View Ids',
+}
+
+latency_record_new_clicks_notebook_task = {
+    'base_parameters': {        
+        "lookBackDays":            "1",        
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
+        "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
+        "metaLatencyPath":         Variable.get("DBX_CCDC_Meta_Latency_Path"),
+        "dataLakePath":            Variable.get("DBX_DataLake_Path"),
+        "tenantId":                Variable.get("DBX_CCDC_Tenant_Id"),
+    },
+    'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/helper-scripts/latency-notebooks/Record New Clicks Ids',
+}
+
+latency_calculation_new_clicks_notebook_task = {
+    'base_parameters': {        
+        "lookBackDays":            "1",        
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
+        "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
+        "metaLatencyPath":         Variable.get("DBX_CCDC_Meta_Latency_Path"),
+        "dataLakePath":            Variable.get("DBX_DataLake_Path"),
+        "tenantId":                Variable.get("DBX_CCDC_Tenant_Id"),
+    },
+    'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/helper-scripts/latency-notebooks/Timestamp New Conversion Ids',
+}
+
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-hourly',
@@ -106,15 +272,121 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-hourly',
         execution_delta=timedelta(minutes=30)
     )
 
-    page_metrics_staging = FinServDatabricksSubmitRunOperator(
-        task_id='page-metrics-staging',
-        new_cluster=small_task_custom_cluster,
-        spark_jar_task=page_metrics_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+    conversion_reporting = FinServDatabricksSubmitRunOperator(
+        task_id                = 'conversion-reporting',
+        new_cluster            = small_task_cluster,
+        notebook_task          = conversion_reporting_notebook_task,
+        libraries              = staging_libraries,
+        timeout_seconds        = 3600,
+        databricks_conn_id     = airflow_svc_token,
+        polling_period_seconds = 120
     )
 
+    session_reporting = FinServDatabricksSubmitRunOperator(
+        task_id                = 'session-reporting',
+        new_cluster            = small_task_cluster,
+        notebook_task          = session_reporting_notebook_task,
+        libraries              = staging_libraries,
+        timeout_seconds        = 3600,
+        databricks_conn_id     = airflow_svc_token,
+        polling_period_seconds = 120
+    )
+
+    product_reporting = FinServDatabricksSubmitRunOperator(
+        task_id                = 'product-reporting',
+        new_cluster            = small_task_cluster,
+        notebook_task          = product_reporting_notebook_task,
+        libraries              = staging_libraries,
+        timeout_seconds        = 3600,
+        databricks_conn_id     = airflow_svc_token,
+        polling_period_seconds = 120
+    )
+
+    page_view_reporting = FinServDatabricksSubmitRunOperator(
+        task_id                = 'page-view-reporting',
+        new_cluster            = small_task_cluster,
+        notebook_task          = page_view_reporting_notebook_task,
+        libraries              = staging_libraries,
+        timeout_seconds        = 3600,
+        databricks_conn_id     = airflow_svc_token,
+        polling_period_seconds = 120
+    )    
+
+    latency_tracking_new_session = FinServDatabricksSubmitRunOperator(
+        task_id                = 'latency-tracking-new-sessions',
+        new_cluster            = small_task_cluster,
+        notebook_task          = latency_record_new_session_notebook_task,
+        libraries              = staging_libraries,
+        timeout_seconds        = 3600,
+        databricks_conn_id     = airflow_svc_token,
+        polling_period_seconds = 120
+    )
+
+    latency_calculation_new_session = FinServDatabricksSubmitRunOperator(
+        task_id                = 'latency-calculation-new-sessions',
+        new_cluster            = small_task_cluster,
+        notebook_task          = latency_calculation_new_session_notebook_task,
+        libraries              = staging_libraries,
+        timeout_seconds        = 3600,
+        databricks_conn_id     = airflow_svc_token,
+        polling_period_seconds = 120
+    )      
+
+    latency_tracking_new_page_views = FinServDatabricksSubmitRunOperator(
+        task_id                = 'latency-tracking-new-page-views',
+        new_cluster            = small_task_cluster,
+        notebook_task          = latency_record_new_page_views_notebook_task,
+        libraries              = staging_libraries,
+        timeout_seconds        = 3600,
+        databricks_conn_id     = airflow_svc_token,
+        polling_period_seconds = 120
+    )
+
+    latency_calculation_new_page_views = FinServDatabricksSubmitRunOperator(
+        task_id                = 'latency-calculation-new-page-views',
+        new_cluster            = small_task_cluster,
+        notebook_task          = latency_calculation_new_page_views_notebook_task,
+        libraries              = staging_libraries,
+        timeout_seconds        = 3600,
+        databricks_conn_id     = airflow_svc_token,
+        polling_period_seconds = 120
+    )  
+
+    latency_tracking_new_clicks = FinServDatabricksSubmitRunOperator(
+        task_id                = 'latency-tracking-new-clicks',
+        new_cluster            = small_task_cluster,
+        notebook_task          = latency_record_new_clicks_notebook_task,
+        libraries              = staging_libraries,
+        timeout_seconds        = 3600,
+        databricks_conn_id     = airflow_svc_token,
+        polling_period_seconds = 120
+    )
+
+    latency_calculation_new_clicks = FinServDatabricksSubmitRunOperator(
+        task_id                = 'latency-calculation-new-clicks',
+        new_cluster            = small_task_cluster,
+        notebook_task          = latency_calculation_new_clicks_notebook_task,
+        libraries              = staging_libraries,
+        timeout_seconds        = 3600,
+        databricks_conn_id     = airflow_svc_token,
+        polling_period_seconds = 120
+    )  
+
 # Dependencies
-ccdc_staging_tables >> page_metrics_staging
+ccdc_staging_tables     >> conversion_reporting
+
+# latency mapping
+latency_tracking_new_session    >> session_reporting
+latency_tracking_new_page_views >> page_view_reporting
+latency_tracking_new_clicks     >> conversion_reporting
+
+# reporting dependencies
+conversion_reporting    >> session_reporting
+conversion_reporting    >> product_reporting
+conversion_reporting    >> page_view_reporting
+
+# Latency Calculation Depedencies
+session_reporting    >> latency_calculation_new_session
+page_view_reporting  >> latency_calculation_new_page_views 
+conversion_reporting >> latency_calculation_new_clicks
+

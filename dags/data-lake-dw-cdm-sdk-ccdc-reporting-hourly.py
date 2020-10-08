@@ -131,7 +131,7 @@ conversion_reporting_notebook_task = {
         "toDate":                  "now",
         "lookBackDays":            "3",
         "environment":             "staging",
-        "stagingPath":             Variable.get("DBX_CCDC_Staging_Path"),
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
         "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
         "dimensionPath":           Variable.get("DBX_Dimensions_Path"),
         "loggingPath":             Variable.get("DBX_CCDC_Logging_Path"),
@@ -145,7 +145,7 @@ session_reporting_notebook_task = {
         "toDate":                  "now",
         "lookBackDays":            "3",
         "environment":             "staging",
-        "stagingPath":             Variable.get("DBX_CCDC_Staging_Path"),
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
         "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
         "dimensionPath":           Variable.get("DBX_Dimensions_Path"),
         "loggingPath":             Variable.get("DBX_CCDC_Logging_Path"),
@@ -159,7 +159,7 @@ product_reporting_notebook_task = {
         "toDate":                  "now",
         "lookBackDays":            "3",
         "environment":             "staging",
-        "stagingPath":             Variable.get("DBX_CCDC_Staging_Path"),
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
         "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
         "dimensionPath":           Variable.get("DBX_Dimensions_Path"),
         "loggingPath":             Variable.get("DBX_CCDC_Logging_Path"),
@@ -173,7 +173,7 @@ page_view_reporting_notebook_task = {
         "toDate":                  "now",
         "lookBackDays":            "3",
         "environment":             "staging",
-        "stagingPath":             Variable.get("DBX_CCDC_Staging_Path"),
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
         "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
         "dimensionPath":           Variable.get("DBX_Dimensions_Path"),
         "loggingPath":             Variable.get("DBX_CCDC_Logging_Path"),
@@ -185,7 +185,7 @@ page_view_reporting_notebook_task = {
 latency_record_new_session_notebook_task = {
     'base_parameters': {        
         "lookBackDays":            "1",        
-        "stagingPath":             Variable.get("DBX_CCDC_Staging_Path"),
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
         "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
         "metaLatencyPath":         Variable.get("DBX_CCDC_Meta_Latency_Path"),
         "dataLakePath":            Variable.get("DBX_DataLake_Path"),
@@ -197,7 +197,7 @@ latency_record_new_session_notebook_task = {
 latency_calculation_new_session_notebook_task = {
     'base_parameters': {        
         "lookBackDays":            "1",        
-        "stagingPath":             Variable.get("DBX_CCDC_Staging_Path"),
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
         "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
         "metaLatencyPath":         Variable.get("DBX_CCDC_Meta_Latency_Path"),
         "dataLakePath":            Variable.get("DBX_DataLake_Path"),
@@ -209,7 +209,7 @@ latency_calculation_new_session_notebook_task = {
 latency_record_new_page_views_notebook_task = {
     'base_parameters': {        
         "lookBackDays":            "1",        
-        "stagingPath":             Variable.get("DBX_CCDC_Staging_Path"),
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
         "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
         "metaLatencyPath":         Variable.get("DBX_CCDC_Meta_Latency_Path"),
         "dataLakePath":            Variable.get("DBX_DataLake_Path"),
@@ -221,7 +221,7 @@ latency_record_new_page_views_notebook_task = {
 latency_calculation_new_page_views_notebook_task = {
     'base_parameters': {        
         "lookBackDays":            "1",        
-        "stagingPath":             Variable.get("DBX_CCDC_Staging_Path"),
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
         "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
         "metaLatencyPath":         Variable.get("DBX_CCDC_Meta_Latency_Path"),
         "dataLakePath":            Variable.get("DBX_DataLake_Path"),
@@ -233,7 +233,7 @@ latency_calculation_new_page_views_notebook_task = {
 latency_record_new_clicks_notebook_task = {
     'base_parameters': {        
         "lookBackDays":            "1",        
-        "stagingPath":             Variable.get("DBX_CCDC_Staging_Path"),
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
         "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
         "metaLatencyPath":         Variable.get("DBX_CCDC_Meta_Latency_Path"),
         "dataLakePath":            Variable.get("DBX_DataLake_Path"),
@@ -245,7 +245,7 @@ latency_record_new_clicks_notebook_task = {
 latency_calculation_new_clicks_notebook_task = {
     'base_parameters': {        
         "lookBackDays":            "1",        
-        "stagingPath":             Variable.get("DBX_CCDC_Staging_Path"),
+        "stagingPath":             Variable.get("DBX_CARDS_Staging_Path"),
         "reportingPath":           Variable.get("DBX_CCDC_Reporting_Path"),
         "metaLatencyPath":         Variable.get("DBX_CCDC_Meta_Latency_Path"),
         "dataLakePath":            Variable.get("DBX_DataLake_Path"),

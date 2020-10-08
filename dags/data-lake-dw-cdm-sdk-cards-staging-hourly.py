@@ -119,7 +119,7 @@ session_staging_jar_task = {
         "TENANTS=" + Variable.get("DBX_CARDS_SDK_Tenants"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.Session",
         "lookBackDays=" + "10",
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -135,7 +135,7 @@ page_view_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_CARDS_SDK_Tenants"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -151,7 +151,7 @@ cookie_identified_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_CCDC_SDK_Tenants"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -167,7 +167,7 @@ field_inputted_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_CCDC_SDK_Tenants"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -183,7 +183,7 @@ location_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_CARDS_SDK_Tenants"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -199,7 +199,7 @@ device_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_CARDS_SDK_Tenants"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -215,7 +215,7 @@ decision_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_CARDS_SDK_Tenants"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -231,7 +231,7 @@ traffic_sources_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_CARDS_SDK_Tenants"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -247,7 +247,7 @@ page_metrics_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_CARDS_SDK_Tenants"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -263,7 +263,7 @@ form_submitted_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_CCDC_AMEX_BUSINESS_SDK_Tenants"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -279,7 +279,7 @@ element_viewed_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_CARDS_SDK_Tenants"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -295,7 +295,7 @@ element_clicked_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_CARDS_SDK_Tenants"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -311,7 +311,7 @@ product_clicked_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_CARDS_SDK_Tenants"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -327,7 +327,7 @@ product_viewed_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_CARDS_SDK_Tenants"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -341,7 +341,7 @@ amp_page_viewed_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -358,7 +358,7 @@ paidsearch_staging_jar_task = {
         "PAID_SEARCH_COMPANY_ID=" + Variable.get("CARDS_PAIDSEARCH_COMPANY_IDS"),
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_CARDS_SDK_Tenants"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -374,7 +374,7 @@ hoppageviewed_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_CCDC_SDK_Tenants"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -390,7 +390,7 @@ cookies_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_CONSUMER_SDK_Tenants"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -407,7 +407,7 @@ pqo_offer_received_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_AMEX_CONSUMER_Tenant_Id"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -423,7 +423,7 @@ pzn_offers_received_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_CONSUMER_SDK_Tenants"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
@@ -439,7 +439,7 @@ phone_system_call_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_Tenant_Id"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 

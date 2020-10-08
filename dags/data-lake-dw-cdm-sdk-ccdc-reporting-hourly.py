@@ -373,7 +373,7 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-hourly',
     )  
 
 # Dependencies
-ccdc_staging_tables     >> conversion_reporting
+ccdc_staging_tables     >> [latency_tracking_new_session, latency_tracking_new_page_views, latency_tracking_new_clicks, conversion_reporting]
 
 # latency mapping
 latency_tracking_new_session    >> session_reporting

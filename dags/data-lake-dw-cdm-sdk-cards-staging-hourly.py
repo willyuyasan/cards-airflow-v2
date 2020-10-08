@@ -426,7 +426,7 @@ pqo_offer_requested_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_AMEX_CONSUMER_Tenant_Id"),
-        "WRITE_BUCKET=" + "rv-core-ccdc-datamart-qa"
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 

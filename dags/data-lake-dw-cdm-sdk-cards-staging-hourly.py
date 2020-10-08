@@ -56,7 +56,7 @@ extra_small_task_custom_cluster = {
         'first_on_demand': '2',
         'spot_bid_price_percent': '60',
         'zone_id': 'us-east-1b',
-        "instance_profile_arn": Variable.get("DBX_CCDC_IAM_ROLE"),
+        "instance_profile_arn": Variable.get("DBX_CARDS_IAM_ROLE"),
     },
     'custom_tags': {
         'Partner': 'B814',
@@ -89,7 +89,7 @@ small_task_custom_cluster = {
         'first_on_demand': '2',
         'spot_bid_price_percent': '60',
         'zone_id': 'us-east-1b',
-        "instance_profile_arn": Variable.get("DBX_CCDC_IAM_ROLE"),
+        "instance_profile_arn": Variable.get("DBX_CARDS_IAM_ROLE"),
     },
     'custom_tags': {
         'Partner': 'B814',

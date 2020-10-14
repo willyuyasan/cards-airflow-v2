@@ -122,9 +122,9 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
             spark_filelist = hook.list_dbfs(self.spark_logs)
             if spark_filelist is not None:
                 for f in spark_filelist['files']:
-                    if not f['is_dir']:                    
+                    if not f['is_dir']:
                         self.log.info(f['path'])
-                        
+
                         if f['path'].endswith('.gz') and 'stderr' in f['path']:
                             self.log.info("The gzipped file is present on this location, please read the file from that location %s", f['path'])
                         elif 'stderr' in f['path']:
@@ -145,7 +145,7 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
                                 self.log.info(f['path'])
 
                                 if f['path'].endswith('.gz') and 'stderr' in f['path']:
-                                    self.log.info("The gzipped file is present on this location, please read the file from that location %s", f['path'])            
+                                    self.log.info("The gzipped file is present on this location, please read the file from that location %s", f['path'])
                                 elif 'stderr' in f['path']:
                                     for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n', "\n").split("\n"):
                                         self.log.error(line)

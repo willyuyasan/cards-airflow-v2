@@ -419,7 +419,7 @@ pqo_offer_requested_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime(
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.amex_consumer.staging.PQOOfferRequested",
@@ -680,7 +680,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
         polling_period_seconds=120
     )
 
-    phone_system_call_staging = FinServDatabricksSubmitRunOperator(        
+    phone_system_call_staging = FinServDatabricksSubmitRunOperator(
         task_id='phone-system-call-staging',
         new_cluster=small_task_custom_cluster,
         spark_jar_task=phone_system_call_staging_jar_task,
@@ -713,20 +713,20 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 # CCDC Staging Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging,
     field_inputted_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging,
-     hoppageviewed_staging] >> ccdc_staging_tables
+ hoppageviewed_staging] >> ccdc_staging_tables
 
 # TPG Staging Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging,
     field_inputted_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging, amp_page_viewed_staging,
-     hoppageviewed_staging] >> tpg_staging_tables
+ hoppageviewed_staging] >> tpg_staging_tables
 
 # Amex Business Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging,
     device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging,
-     cookies_staging, pzn_offers_received_staging, phone_system_call_staging] >> amex_business_staging_tables
+ cookies_staging, pzn_offers_received_staging, phone_system_call_staging] >> amex_business_staging_tables
 
 # Amex Consumer Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging,
     element_viewed_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging,
-     cookies_staging, pqo_offer_received_staging, pzn_offers_received_staging,
+ cookies_staging, pqo_offer_received_staging, pzn_offers_received_staging,
     pqo_offer_requested_staging] >> amex_consumer_staging_tables

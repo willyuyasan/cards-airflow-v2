@@ -542,10 +542,10 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     decsion_staging = FinServDatabricksSubmitRunOperator(
         task_id='decision-staging',
-        new_cluster=small_task_custom_cluster,
+        new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=decision_staging_jar_task,
         libraries=staging_libraries,
-        timeout_seconds=14400,
+        timeout_seconds=28400,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )

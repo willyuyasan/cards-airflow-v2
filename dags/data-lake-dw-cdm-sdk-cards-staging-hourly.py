@@ -35,9 +35,9 @@ LOG_PATH = {
 # Cluster Setup Step
 extra_small_task_custom_cluster = {
     'spark_version': '5.3.x-scala2.11',
-    'node_type_id': 'm5a.2xlarge',
-    'driver_node_type_id': 'm5a.2xlarge',
-    'num_workers': 4,
+    'node_type_id': 'm5a.xlarge',
+    'driver_node_type_id': 'm5a.xlarge',
+    'num_workers': 1,
     'auto_termination_minutes': 0,
     'cluster_log_conf': LOG_PATH,
     'spark_conf': {
@@ -492,10 +492,10 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     page_view_staging = FinServDatabricksSubmitRunOperator(
         task_id='page-view-staging',
-        new_cluster=extra_small_task_custom_cluster,
+        new_cluster=small_task_custom_cluster,
         spark_jar_task=page_view_staging_jar_task,
         libraries=staging_libraries,
-        timeout_seconds=28400,
+        timeout_seconds=14400,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
@@ -552,10 +552,10 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     page_metrics_staging = FinServDatabricksSubmitRunOperator(
         task_id='page-metrics-staging',
-        new_cluster=extra_small_task_custom_cluster,
+        new_cluster=small_task_custom_cluster,
         spark_jar_task=page_metrics_staging_jar_task,
         libraries=staging_libraries,
-        timeout_seconds=28400,
+        timeout_seconds=14400,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
@@ -582,10 +582,10 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     product_viewed_staging = FinServDatabricksSubmitRunOperator(
         task_id='product-viewed-staging',
-        new_cluster=extra_small_task_custom_cluster,
+        new_cluster=small_task_custom_cluster,
         spark_jar_task=product_viewed_staging_jar_task,
         libraries=staging_libraries,
-        timeout_seconds=28400,
+        timeout_seconds=14400,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
@@ -602,10 +602,10 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     element_viewed_staging = FinServDatabricksSubmitRunOperator(
         task_id='element-viewed-staging',
-        new_cluster=extra_small_task_custom_cluster,
+        new_cluster=small_task_custom_cluster,
         spark_jar_task=element_viewed_staging_jar_task,
         libraries=staging_libraries,
-        timeout_seconds=28400,
+        timeout_seconds=14400,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )

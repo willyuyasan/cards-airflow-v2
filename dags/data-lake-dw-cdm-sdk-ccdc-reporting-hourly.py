@@ -389,4 +389,3 @@ conversion_reporting    >> page_view_reporting
 session_reporting    >> latency_calculation_new_session
 page_view_reporting  >> latency_calculation_new_page_views 
 conversion_reporting >> latency_calculation_new_clicks
-

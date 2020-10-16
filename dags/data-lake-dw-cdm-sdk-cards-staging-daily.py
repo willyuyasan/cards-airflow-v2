@@ -729,7 +729,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    phone_system_call_staging = FinServDatabricksSubmitRunOperator(        
+    phone_system_call_staging = FinServDatabricksSubmitRunOperator(
         task_id='phone-system-call-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=phone_system_call_staging_jar_task,
@@ -739,7 +739,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    ot_details_staging = FinServDatabricksSubmitRunOperator(        
+    ot_details_staging = FinServDatabricksSubmitRunOperator(
         task_id='ot-details-staging',
         new_cluster=medium_task_custom_cluster,
         spark_jar_task=ot_details_staging_jar_task,

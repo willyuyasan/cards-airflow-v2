@@ -436,7 +436,7 @@ ot_details_staging_jar_task = {
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-cards-staging-backfill',
-         schedule_interval='None',
+         schedule_interval=None,
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
          max_active_runs=1,

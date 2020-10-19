@@ -75,6 +75,7 @@ staging_libraries = [
 credit_report_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
             datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CREDIT_REPORT_lookback_days")))))).strftime(
             "%Y-%m-%d"),

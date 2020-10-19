@@ -101,7 +101,7 @@ with DAG(DAG_NAME,
     credit_report_task = FinServDatabricksSubmitRunOperator(
         task_id='credit-report-reporting',
         new_cluster=small_task_custom_cluster,
-        notebook_task=credit_report_jar_task,
+        spark_jar_task=credit_report_jar_task,
         libraries=staging_libraries,
         timeout_seconds=1800,
         databricks_conn_id=airflow_svc_token,

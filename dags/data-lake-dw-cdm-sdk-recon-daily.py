@@ -54,7 +54,7 @@ small_task_custom_cluster = {
         'first_on_demand': '0',
         'spot_bid_price_percent': '60',
         'zone_id': 'us-east-1c',
-        "instance_profile_arn": Variable.get("DBX_CCDC_IAM_ROLE"),
+        "instance_profile_arn": Variable.get("DBX_CARDS_IAM_ROLE"),
     },
     'custom_tags': {
         'Partner': 'B530',

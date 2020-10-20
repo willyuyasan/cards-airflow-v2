@@ -43,7 +43,7 @@ small_task_custom_cluster = {
     },
     'spark_env_vars': {
         'java_opts': '-Dconfig.resource=application-cards-qa.conf',
-         'cdm.runner.customParameters.dataLakeTempDir': Variable.get("DBX_DATALAKE_TEMP_DIR")
+        'cdm.runner.customParameters.dataLakeTempDir': Variable.get("DBX_DATALAKE_TEMP_DIR")
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",

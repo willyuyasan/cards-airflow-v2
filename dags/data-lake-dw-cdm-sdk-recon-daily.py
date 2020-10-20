@@ -88,7 +88,7 @@ base_params_recon = {
 
 table_count_recon_notebook_task = {
     'base_parameters': base_params_recon,
-    'notebook_path': '/Production/cards-data-mart-ccdc/cdm-sdk-recon/recon_sdk',
+    'notebook_path': '/Production/cards-data-mart-ccdc/qa-environment/cdm-sdk-recon/recon_sdk',
 }
 
 # DAG Creation Step

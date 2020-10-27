@@ -133,8 +133,6 @@ medium_task_custom_cluster = {
 }
 
 
-
-
 # Libraries
 staging_libraries = [
     {

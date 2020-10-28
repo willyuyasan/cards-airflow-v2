@@ -724,14 +724,14 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
     )
 
     tpgccdcoutcometrackedsummary_staging = FinServDatabricksSubmitRunOperator(
-            task_id='tpgccdcoutcometrackedsummary-staging',
-            new_cluster=extra_small_task_custom_cluster,
-            spark_jar_task=tpgccdcoutcometrackedsummary_staging_jar_task,
-            libraries=staging_libraries,
-            timeout_seconds=3600,
-            databricks_conn_id=airflow_svc_token,
-            polling_period_seconds=120
-        )
+        task_id='tpgccdcoutcometrackedsummary-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=tpgccdcoutcometrackedsummary_staging_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
 
     cookies_staging = FinServDatabricksSubmitRunOperator(
         task_id='cookies-staging',
@@ -826,12 +826,12 @@ session_staging >> paidsearch_staging
 # CCDC Staging Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging,
     field_inputted_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging,
-    paidsearch_staging, hoppageviewed_staging,tpgccdcoutcometrackedsummary_staging] >> ccdc_staging_tables
+    paidsearch_staging, hoppageviewed_staging, tpgccdcoutcometrackedsummary_staging] >> ccdc_staging_tables
 
 # TPG Staging Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging,
     field_inputted_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging, amp_page_viewed_staging,
-    paidsearch_staging, hoppageviewed_staging,tpgccdcoutcometrackedsummary_staging] >> tpg_staging_tables
+    paidsearch_staging, hoppageviewed_staging, tpgccdcoutcometrackedsummary_staging] >> tpg_staging_tables
 
 # Amex Business Dependencies
 ot_details_staging >> ot_summary_staging

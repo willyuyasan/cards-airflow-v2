@@ -119,7 +119,7 @@ large_task_cluster = {
 base_params_reporting = {
     "lookBackDays"  : Variable.get("AMEX_BUSINESS_REPORTING_SHORT_LOOKBACK_DAYS"),
     "environment"   : "reporting",
-    "stagingPath"   : Variable.get("DBX_AMEX_BUSINESS_Staging_Path"),
+    "stagingPath"   : Variable.get("DBX_CARDS_Staging_Path"),
     "reportingPath" : Variable.get("DBX_AMEX_BUSINESS_Reporting_Path"),
     "dimensionPath" : Variable.get("DBX_AMEX_BUSINESS_Dimensions_Path"),
     "loggingPath"   : Variable.get("DBX_AMEX_BUSINESS_Logging_Path"),

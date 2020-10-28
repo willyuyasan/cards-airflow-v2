@@ -70,7 +70,7 @@ small_task_custom_cluster = {
     'spark_version': '5.3.x-scala2.11',
     'node_type_id': 'm5a.2xlarge',
     'driver_node_type_id': 'm5a.2xlarge',
-    'num_workers': 4,
+    'num_workers': 6,
     'auto_termination_minutes': 0,
     'cluster_log_conf': LOG_PATH,
     'spark_conf': {
@@ -83,7 +83,7 @@ small_task_custom_cluster = {
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",
-        'ebs_volume_count': 3,
+        'ebs_volume_count': 5,
         'ebs_volume_size': 400,
         'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
         'first_on_demand': '2',

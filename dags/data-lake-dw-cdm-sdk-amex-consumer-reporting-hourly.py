@@ -36,7 +36,7 @@ LOG_PATH = {
 base_params_reporting = {
     "lookBackDays"  : Variable.get("AMEX_CONSUMER_REPORTING_SHORT_LOOKBACK_DAYS"),
     "environment"   : "reporting",
-    "stagingPath"   : Variable.get("DBX_AMEX_CONSUMER_Staging_Path"),
+    "stagingPath"   : Variable.get("DBX_CARDS_Staging_Path"),
     "reportingPath" : Variable.get("DBX_AMEX_CONSUMER_Reporting_Path"),
     "dimensionPath" : Variable.get("DBX_AMEX_CONSUMER_Dimensions_Path"),
     "loggingPath"   : Variable.get("DBX_AMEX_CONSUMER_Logging_Path"),

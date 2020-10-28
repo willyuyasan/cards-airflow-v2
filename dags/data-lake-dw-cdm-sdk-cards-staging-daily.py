@@ -425,13 +425,28 @@ tpgccdcoutcometrackedsummary_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_CCDC_SDK_Tenants"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-    ]
-    'custom_parameters': [
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
         "READ_DATA_BASE=" + Variable.get("DBX_REDSHIFT_READ_DATABASE"),
         "WRITE_DATA_BASE=" + Variable.get("DBX_REDSHIFT_WRITE_DATABASE")
     ]
+
 }
+
+
+'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.TpgCcdcOutcomeTrackedSummary",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_TPG_CCDC_SDK_Tenants"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
+        "CUSTOMPARAMETER=" + Variable.get("DBX_REDSHIFT_READ_DATABASE"),
+        "CUSTOMPARAMETER=" + Variable.get("DBX_REDSHIFT_READ_DATABASE"),
+]
 
 cookies_staging_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",

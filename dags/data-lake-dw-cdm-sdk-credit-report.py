@@ -84,11 +84,9 @@ credit_report_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_CREDIT_REPORT_TENANTS"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-    ]
-    'custom_parameters': [
-            "READ_DATA_BASE=" + Variable.get("DBX_REDSHIFT_READ_DATABASE"),
-            "WRITE_DATA_BASE=" + Variable.get("DBX_REDSHIFT_WRITE_DATABASE")
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
+        "READ_DATA_BASE=" + Variable.get("DBX_REDSHIFT_READ_DATABASE"),
+        "WRITE_DATA_BASE=" + Variable.get("DBX_REDSHIFT_WRITE_DATABASE")
     ]
 }
 

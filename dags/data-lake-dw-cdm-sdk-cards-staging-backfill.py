@@ -70,7 +70,7 @@ small_task_custom_cluster = {
     'spark_version': '5.3.x-scala2.11',
     'node_type_id': 'm5a.2xlarge',
     'driver_node_type_id': 'm5a.2xlarge',
-    'num_workers': 4,
+    'num_workers': 6,
     'auto_termination_minutes': 0,
     'cluster_log_conf': LOG_PATH,
     'spark_conf': {
@@ -83,7 +83,7 @@ small_task_custom_cluster = {
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",
-        'ebs_volume_count': 3,
+        'ebs_volume_count': 5,
         'ebs_volume_size': 400,
         'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
         'first_on_demand': '2',
@@ -592,15 +592,15 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-backfill',
     #     polling_period_seconds=120
     # )
     #
-    # paidsearch_staging = FinServDatabricksSubmitRunOperator(
-    #     task_id='paidsearch-staging',
-    #     new_cluster=small_task_custom_cluster,
-    #     spark_jar_task=paidsearch_staging_jar_task,
-    #     libraries=staging_libraries,
-    #     timeout_seconds=14400,
-    #     databricks_conn_id=airflow_svc_token,
-    #     polling_period_seconds=120
-    # )
+    paidsearch_staging = FinServDatabricksSubmitRunOperator(
+        task_id='paidsearch-staging',
+        new_cluster=small_task_custom_cluster,
+        spark_jar_task=paidsearch_staging_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=14400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
     #
     # hoppageviewed_staging = FinServDatabricksSubmitRunOperator(
     #     task_id='hoppageviewed-staging',
@@ -690,7 +690,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-backfill',
 
 # Staging Dependencies
 # session_staging >> traffic_sources_staging
-# session_staging >> paidsearch_staging
+session_staging >> paidsearch_staging
 
 # # CCDC Staging Dependencies
 # [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging,

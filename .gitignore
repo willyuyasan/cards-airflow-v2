@@ -8,3 +8,4 @@ plugins/__pycache__/
 plugins/hooks/__pycache__/
 plugins/operators/__pycache__/
 .pyc
+.idea

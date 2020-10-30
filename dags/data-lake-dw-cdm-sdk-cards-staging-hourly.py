@@ -99,6 +99,39 @@ small_task_custom_cluster = {
     },
 }
 
+medium_task_custom_cluster = {
+    'spark_version': '5.3.x-scala2.11',
+    'node_type_id': 'm5a.2xlarge',
+    'driver_node_type_id': 'm5a.2xlarge',
+    'num_workers': 6,
+    'auto_termination_minutes': 0,
+    'cluster_log_conf': LOG_PATH,
+    'spark_conf': {
+        'spark.sql.sources.partitionOverwriteMode': 'dynamic',
+        'spark.driver.extraJavaOptions': '-Dconfig.resource=application-cards-qa.conf',
+        'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
+    },
+    'spark_env_vars': {
+        'java_opts': '-Dconfig.resource=application-cards-qa.conf'
+    },
+    "aws_attributes": {
+        "availability": "SPOT_WITH_FALLBACK",
+        'ebs_volume_count': 3,
+        'ebs_volume_size': 100,
+        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
+        'first_on_demand': '2',
+        'spot_bid_price_percent': '60',
+        'zone_id': 'us-east-1b',
+        "instance_profile_arn": Variable.get("DBX_CARDS_IAM_ROLE"),
+    },
+    'custom_tags': {
+        'Partner': 'B814',
+        'Project': 'Cards Allocation',
+        'Dag_id': "{{ ti.dag_id }}",
+        'Task_id': "{{ ti.task_id }}"
+    },
+}
+
 
 # Libraries
 staging_libraries = [
@@ -381,6 +414,24 @@ hoppageviewed_staging_jar_task = {
     ]
 }
 
+tpgccdcoutcometrackedsummary_staging_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.TpgCcdcOutcomeTrackedSummary",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_TPG_CCDC_SDK_Tenants"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
+        "READ_DATA_BASE=" + Variable.get("DBX_REDSHIFT_READ_DATABASE"),
+        "WRITE_DATA_BASE=" + Variable.get("DBX_REDSHIFT_WRITE_DATABASE")
+    ]
+}
+
 cookies_staging_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
@@ -471,6 +522,22 @@ ot_details_staging_jar_task = {
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.OutcomeTrackedDetails",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_CONSUMER_SDK_Tenants"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
+ot_summary_staging_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Hourly_AMEX_OT_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.OutcomeTrackedSummary",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_CONSUMER_SDK_Tenants"),
@@ -656,6 +723,16 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
         polling_period_seconds=120
     )
 
+    tpgccdcoutcometrackedsummary_staging = FinServDatabricksSubmitRunOperator(
+        task_id='tpgccdcoutcometrackedsummary-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=tpgccdcoutcometrackedsummary_staging_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
     cookies_staging = FinServDatabricksSubmitRunOperator(
         task_id='cookies-staging',
         new_cluster=extra_small_task_custom_cluster,
@@ -708,8 +785,18 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     ot_details_staging = FinServDatabricksSubmitRunOperator(
         task_id='ot-details-staging',
-        new_cluster=small_task_custom_cluster,
+        new_cluster=medium_task_custom_cluster,
         spark_jar_task=ot_details_staging_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=2400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=240
+    )
+
+    ot_summary_staging = FinServDatabricksSubmitRunOperator(
+        task_id='ot-summary-staging',
+        new_cluster=medium_task_custom_cluster,
+        spark_jar_task=ot_summary_staging_jar_task,
         libraries=staging_libraries,
         timeout_seconds=2400,
         databricks_conn_id=airflow_svc_token,
@@ -739,20 +826,22 @@ session_staging >> paidsearch_staging
 # CCDC Staging Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging,
     field_inputted_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging,
-    paidsearch_staging, hoppageviewed_staging] >> ccdc_staging_tables
+    paidsearch_staging, hoppageviewed_staging, tpgccdcoutcometrackedsummary_staging] >> ccdc_staging_tables
 
 # TPG Staging Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging,
     field_inputted_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging, amp_page_viewed_staging,
-    paidsearch_staging, hoppageviewed_staging] >> tpg_staging_tables
+    paidsearch_staging, hoppageviewed_staging, tpgccdcoutcometrackedsummary_staging] >> tpg_staging_tables
 
 # Amex Business Dependencies
+ot_details_staging >> ot_summary_staging
+
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging,
     device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging,
-    paidsearch_staging, cookies_staging, pzn_offers_received_staging, phone_system_call_staging, ot_details_staging] >> amex_business_staging_tables
+    paidsearch_staging, cookies_staging, pzn_offers_received_staging, phone_system_call_staging, ot_summary_staging] >> amex_business_staging_tables
 
 # Amex Consumer Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging,
     element_viewed_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging,
     paidsearch_staging, cookies_staging, pqo_offer_received_staging, pzn_offers_received_staging,
-    pqo_offer_requested_staging, ot_details_staging] >> amex_consumer_staging_tables
+    pqo_offer_requested_staging, ot_summary_staging] >> amex_consumer_staging_tables

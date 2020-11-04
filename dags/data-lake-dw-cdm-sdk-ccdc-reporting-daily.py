@@ -336,7 +336,7 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=240
     )
- 
+
     session_outcomes_update_reporting = FinServDatabricksSubmitRunOperator(
         task_id='session-outcomes-update-reporting',
         new_cluster=medium_task_cluster,

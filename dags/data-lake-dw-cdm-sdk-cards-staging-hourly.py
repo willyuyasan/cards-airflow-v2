@@ -373,7 +373,7 @@ amp_page_viewed_staging_jar_task = {
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime("%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.AmpPageViewed",
+        "TABLES=" + "com.redventures.cdm.cohesion.staging.AmpPageViewed",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),

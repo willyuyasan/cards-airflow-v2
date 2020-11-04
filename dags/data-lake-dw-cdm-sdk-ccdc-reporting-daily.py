@@ -138,7 +138,7 @@ conversion_reporting_notebook_task = {
         "dimensionPath":           Variable.get("DBX_Dimensions_Path"),
         "loggingPath":             Variable.get("DBX_CCDC_Logging_Path"),
         "dataLakePath":            Variable.get("DBX_DataLake_Path"),
-        },         
+        },
     'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/reporting-table-notebooks/Conversion'
 }
 
@@ -152,7 +152,7 @@ session_reporting_notebook_task = {
         "dimensionPath":           Variable.get("DBX_Dimensions_Path"),
         "loggingPath":             Variable.get("DBX_CCDC_Logging_Path"),
         "dataLakePath":            Variable.get("DBX_DataLake_Path"),
-        },         
+        },
     'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/reporting-table-notebooks/Session'
 }
 
@@ -166,7 +166,7 @@ product_reporting_notebook_task = {
         "dimensionPath":           Variable.get("DBX_Dimensions_Path"),
         "loggingPath":             Variable.get("DBX_CCDC_Logging_Path"),
         "dataLakePath":            Variable.get("DBX_DataLake_Path"),
-        },         
+        },
     'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/reporting-table-notebooks/Product'
 }
 
@@ -180,7 +180,7 @@ page_view_reporting_notebook_task = {
         "dimensionPath":           Variable.get("DBX_Dimensions_Path"),
         "loggingPath":             Variable.get("DBX_CCDC_Logging_Path"),
         "dataLakePath":            Variable.get("DBX_DataLake_Path"),
-        },         
+        },
     'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/reporting-table-notebooks/PageView'
 }
 
@@ -194,7 +194,7 @@ anonymous_reporting_notebook_task = {
         "dimensionPath":           Variable.get("DBX_Dimensions_Path"),
         "loggingPath":             Variable.get("DBX_CCDC_Logging_Path"),
         "dataLakePath":            Variable.get("DBX_DataLake_Path"),
-        },         
+        },
     'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/reporting-table-notebooks/Anonymous',
 }
 
@@ -208,7 +208,7 @@ attribution_reporting_notebook_task = {
         "dimensionPath":           Variable.get("DBX_Dimensions_Path"),
         "loggingPath":             Variable.get("DBX_CCDC_Logging_Path"),
         "dataLakePath":            Variable.get("DBX_DataLake_Path"),
-        },         
+        },
     'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/reporting-table-notebooks/Attribution',
 }
 
@@ -278,103 +278,102 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
     )
 
     conversion_reporting = FinServDatabricksSubmitRunOperator(
-        task_id                = 'conversion-reporting',
-        new_cluster            = medium_task_cluster,
-        notebook_task          = conversion_reporting_notebook_task,
-        libraries              = staging_libraries,
-        timeout_seconds        = 7200,
-        databricks_conn_id     = airflow_svc_token,
-        polling_period_seconds = 120
+        task_id='conversion-reporting',
+        new_cluster=medium_task_cluster,
+        notebook_task=conversion_reporting_notebook_task,
+        libraries=staging_libraries,
+        timeout_seconds=7200,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
     )
 
     session_reporting = FinServDatabricksSubmitRunOperator(
-        task_id                = 'session-reporting',
-        new_cluster            = medium_task_cluster,
-        notebook_task          = session_reporting_notebook_task,
-        libraries              = staging_libraries,
-        timeout_seconds        = 7200,
-        databricks_conn_id     = airflow_svc_token,
-        polling_period_seconds = 120
+        task_id='session-reporting',
+        new_cluster=medium_task_cluster,
+        notebook_task=session_reporting_notebook_task,
+        libraries=staging_libraries,
+        timeout_seconds=7200,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
     )
 
     product_reporting = FinServDatabricksSubmitRunOperator(
-        task_id                = 'product-reporting',
-        new_cluster            = medium_task_cluster,
-        notebook_task          = product_reporting_notebook_task,
-        libraries              = staging_libraries,
-        timeout_seconds        = 7200,
-        databricks_conn_id     = airflow_svc_token,
-        polling_period_seconds = 240
+        task_id='product-reporting',
+        new_cluster=medium_task_cluster,
+        notebook_task=product_reporting_notebook_task,
+        libraries=staging_libraries,
+        timeout_seconds=7200,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=240
     )
 
-    
     page_view_reporting = FinServDatabricksSubmitRunOperator(
-        task_id                = 'page-view-reporting',
-        new_cluster            = medium_task_cluster,
-        notebook_task          = page_view_reporting_notebook_task,
-        libraries              = staging_libraries,
-        timeout_seconds        = 7200,
-        databricks_conn_id     = airflow_svc_token,
-        polling_period_seconds = 120
-    )         
+        task_id='page-view-reporting',
+        new_cluster=medium_task_cluster,
+        notebook_task=page_view_reporting_notebook_task,
+        libraries=staging_libraries,
+        timeout_seconds=7200,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
 
     anonymous_reporting = FinServDatabricksSubmitRunOperator(
-        task_id                = 'anonymous-reporting',
-        new_cluster            = medium_task_cluster,
-        notebook_task          = anonymous_reporting_notebook_task,
-        libraries              = staging_libraries,
-        timeout_seconds        = 8400,
-        databricks_conn_id     = airflow_svc_token,
-        polling_period_seconds = 240
-    ) 
+        task_id='anonymous-reporting',
+        new_cluster=medium_task_cluster,
+        notebook_task=anonymous_reporting_notebook_task,
+        libraries=staging_libraries,
+        timeout_seconds=8400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=240
+    )
 
     attribution_reporting = FinServDatabricksSubmitRunOperator(
-        task_id                = 'attribution-reporting',
-        new_cluster            = large_task_cluster,
-        notebook_task          = attribution_reporting_notebook_task,
-        libraries              = staging_libraries,
-        timeout_seconds        = 8400,
-        databricks_conn_id     = airflow_svc_token,
-        polling_period_seconds = 240
-    ) 
-    
+        task_id='attribution-reporting',
+        new_cluster=large_task_cluster,
+        notebook_task=attribution_reporting_notebook_task,
+        libraries=staging_libraries,
+        timeout_seconds=8400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=240
+    )
+
     session_outcomes_update_reporting = FinServDatabricksSubmitRunOperator(
-        task_id                = 'session-outcomes-update-reporting',
-        new_cluster            = medium_task_cluster,
-        notebook_task          = session_outcomes_update_reporting_notebook_task,
-        libraries              = staging_libraries,
-        timeout_seconds        = 7200,
-        databricks_conn_id     = airflow_svc_token,
-        polling_period_seconds = 120
+        task_id='session-outcomes-update-reporting',
+        new_cluster=medium_task_cluster,
+        notebook_task=session_outcomes_update_reporting_notebook_task,
+        libraries=staging_libraries,
+        timeout_seconds=7200,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
     )
 
     conversion_outcomes_update_reporting = FinServDatabricksSubmitRunOperator(
-        task_id                = 'conversion-outcomes-update-reporting',
-        new_cluster            = medium_task_cluster,
-        notebook_task          = conversion_outcomes_update_reporting_notebook_task,
-        libraries              = staging_libraries,
-        timeout_seconds        = 7200,
-        databricks_conn_id     = airflow_svc_token,
-        polling_period_seconds = 120
+        task_id='conversion-outcomes-update-reporting',
+        new_cluster=medium_task_cluster,
+        notebook_task=conversion_outcomes_update_reporting_notebook_task,
+        libraries=staging_libraries,
+        timeout_seconds=7200,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
     )
 
     page_view_outcomes_update_reporting = FinServDatabricksSubmitRunOperator(
-        task_id                = 'page-view-outcomes-update-reporting',
-        new_cluster            = medium_task_cluster,
-        notebook_task          = page_view_outcomes_update_reporting_notebook_task,
-        libraries              = staging_libraries,
-        timeout_seconds        = 7200,
-        databricks_conn_id     = airflow_svc_token,
-        polling_period_seconds = 120
+        task_id='page-view-outcomes-update-reporting',
+        new_cluster=medium_task_cluster,
+        notebook_task=page_view_outcomes_update_reporting_notebook_task,
+        libraries=staging_libraries,
+        timeout_seconds=7200,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
     )
 
 # Dependencies
 ccdc_staging_tables >> [conversion_reporting, session_reporting, page_view_reporting, product_reporting]
 
 # outcomes update reporting dependencies
-conversion_reporting            >> conversion_outcomes_update_reporting
-session_reporting               >> session_outcomes_update_reporting
-page_view_reporting             >> page_view_outcomes_update_reporting
+conversion_reporting >> conversion_outcomes_update_reporting
+session_reporting >> session_outcomes_update_reporting
+page_view_reporting >> page_view_outcomes_update_reporting
 
 # Anonymous reporting dependencies
 session_outcomes_update_reporting >> anonymous_reporting

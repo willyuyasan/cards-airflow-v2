@@ -315,7 +315,7 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
         timeout_seconds=7200,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
-    )    
+    )
 
     anonymous_reporting = FinServDatabricksSubmitRunOperator(
         task_id='anonymous-reporting',
@@ -325,7 +325,7 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
         timeout_seconds=8400,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=240
-    ) 
+    )
 
     attribution_reporting = FinServDatabricksSubmitRunOperator(
         task_id='attribution-reporting',
@@ -336,7 +336,7 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=240
     )
-    
+ 
     session_outcomes_update_reporting = FinServDatabricksSubmitRunOperator(
         task_id='session-outcomes-update-reporting',
         new_cluster=medium_task_cluster,

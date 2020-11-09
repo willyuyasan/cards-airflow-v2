@@ -34,7 +34,7 @@ LOG_PATH = {
 
 # Cluster Setup Step
 extra_small_task_custom_cluster = {
-    'spark_version': '5.3.x-scala2.11',
+    'spark_version': '7.3.x-scala2.12',
     'node_type_id': 'm5a.xlarge',
     'driver_node_type_id': 'm5a.xlarge',
     'num_workers': 1,
@@ -67,7 +67,7 @@ extra_small_task_custom_cluster = {
 }
 
 small_task_custom_cluster = {
-    'spark_version': '5.3.x-scala2.11',
+    'spark_version': '7.3.x-scala2.12',
     'node_type_id': 'm5a.xlarge',
     'driver_node_type_id': 'm5a.xlarge',
     'num_workers': 4,
@@ -100,7 +100,7 @@ small_task_custom_cluster = {
 }
 
 medium_task_custom_cluster = {
-    'spark_version': '5.3.x-scala2.11',
+    'spark_version': '7.3.x-scala2.12',
     'node_type_id': 'm5a.2xlarge',
     'driver_node_type_id': 'm5a.2xlarge',
     'num_workers': 6,
@@ -426,9 +426,7 @@ tpg_ccdc_ot_summary_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_CCDC_SDK_Tenants"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
-        "READ_DATA_BASE=" + Variable.get("DBX_REDSHIFT_READ_DATABASE"),
-        "WRITE_DATA_BASE=" + Variable.get("DBX_REDSHIFT_WRITE_DATABASE")
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")        
     ]
 }
 

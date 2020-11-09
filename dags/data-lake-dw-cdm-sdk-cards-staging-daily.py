@@ -263,7 +263,7 @@ traffic_sources_staging_jar_task = {
             datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.trafficsources.staging.TrafficSources",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.TrafficSources",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_CARDS_SDK_Tenants"),
@@ -426,9 +426,7 @@ tpg_ccdc_ot_summary_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_CCDC_SDK_Tenants"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
-        "READ_DATA_BASE=" + Variable.get("DBX_REDSHIFT_READ_DATABASE"),
-        "WRITE_DATA_BASE=" + Variable.get("DBX_REDSHIFT_WRITE_DATABASE")
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 
 }
@@ -823,6 +821,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
 # Staging Dependencies
 session_staging >> traffic_sources_staging
 session_staging >> paidsearch_staging
+paidsearch_staging >> traffic_sources_staging
 
 # CCDC Staging Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging,

@@ -262,7 +262,7 @@ conversion_outcomes_update_reporting_notebook_task = {
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
-         schedule_interval='30 7 * * *',
+         schedule_interval='0 7 * * *',
          dagrun_timeout=timedelta(hours=3),
          catchup=False,
          max_active_runs=1,

@@ -280,13 +280,13 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-hourly',
     )
 
     dimension_tables = FinServDatabricksSubmitRunOperator(
-        task_id = 'dimension-tables',
-        new_cluster = medium_task_cluster,
-        notebook_task = dimension_tables_notebook_task,
-        libraries = staging_libraries,
-        timeout_seconds = 3600,
-        databricks_conn_id = airflow_svc_token,
-        polling_period_seconds = 120
+        task_id= 'dimension-tables',
+        new_cluster= medium_task_cluster,
+        notebook_task= dimension_tables_notebook_task,
+        libraries= staging_libraries,
+        timeout_seconds= 3600,
+        databricks_conn_id= airflow_svc_token,
+        polling_period_seconds= 120
     )
 
     conversion_reporting = FinServDatabricksSubmitRunOperator(
@@ -404,7 +404,7 @@ tpg_staging_tables >> [dimension_tables, latency_tracking_new_clicks, latency_tr
 
 dimension_tables >> conversion_reporting
 
-##Latency
+## Latency
 latency_tracking_new_clicks     >> conversion_reporting
 latency_tracking_new_page_views >> page_view_reporting
 latency_tracking_new_session    >> session_reporting

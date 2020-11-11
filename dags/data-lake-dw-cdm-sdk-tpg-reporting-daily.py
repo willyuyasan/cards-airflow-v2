@@ -23,7 +23,7 @@ default_args = {
 # token variable
 airflow_svc_token = "databricks_airflow_svc_token"
 ACCOUNT = 'cards'
-DAG_NAME = 'data-lake-dw-cdm-sdk-tpg-reporting-hourly'
+DAG_NAME = 'data-lake-dw-cdm-sdk-tpg-reporting-daily'
 
 LOG_PATH = {
     'dbfs': {
@@ -61,107 +61,133 @@ small_task_cluster = {
 }
 
 medium_task_cluster = {
-    'spark_version': '5.3.x-scala2.11',
-    'node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
-    'driver_node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
-    'num_workers': Variable.get("DBX_MEDIUM_CLUSTER_NUM_NODES"),
+    'spark_version':            '5.3.x-scala2.11',
+    'node_type_id':             Variable.get("DBX_MEDIUM_CLUSTER"),
+    'driver_node_type_id':      Variable.get("DBX_MEDIUM_CLUSTER"),
+    'num_workers':              4,
     'auto_termination_minutes': 0,
-    'cluster_log_conf': LOG_PATH,
-    'spark_conf': {
-      'spark.sql.sources.partitionOverwriteMode': 'dynamic',
-      'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
-    },
-    'aws_attributes': {
-        'ebs_volume_count': 2,
-        'ebs_volume_size': 100,
-        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
-        'first_on_demand': '2',
-        'spot_bid_price_percent': '70',
-        'zone_id': 'us-east-1c',
-        'availability': 'SPOT_WITH_FALLBACK',
-        'instance_profile_arn': Variable.get("DBX_TPG_IAM_ROLE"),
-    },
-    'custom_tags': {
-        'Partner': ' B532',
-        'Project': 'The Points Guy',
-        'DagId':  "{{ti.dag_id}}",
-        'TaskId': "{{ti.task_id}}"
-    },
-}
-
-large_task_cluster = {
-    'spark_version': '5.3.x-scala2.11',
-    'node_type_id': Variable.get("DBX_LARGE_CLUSTER"),
-    'driver_node_type_id': Variable.get("DBX_LARGE_CLUSTER"),
-    'num_workers': Variable.get("DBX_LARGE_CLUSTER_NUM_NODES"),
-    'auto_termination_minutes': 0,    
     'cluster_log_conf': LOG_PATH,
     'spark_conf': {
       'spark.sql.sources.partitionOverwriteMode': 'dynamic'
     },
-    'aws_attributes': {
-        'ebs_volume_count': 2,
-        'ebs_volume_size': 100,
-        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
-        'first_on_demand': '2',
-        'spot_bid_price_percent': '70',
-        'zone_id': 'us-east-1c',
-        'availability': 'SPOT_WITH_FALLBACK',
-        'instance_profile_arn': Variable.get("DBX_TPG_IAM_ROLE"),
+    "aws_attributes": { 
+        "availability": "SPOT_WITH_FALLBACK", 
+        "ebs_volume_count": 2, 
+        "ebs_volume_size": 100, 
+        "ebs_volume_type": "GENERAL_PURPOSE_SSD", 
+        "first_on_demand": "2", 
+        "spot_bid_price_percent": "70", 
+        "zone_id": "us-east-1c", 
+        "instance_profile_arn": Variable.get("DBX_TPG_IAM_ROLE"),
     },
     'custom_tags': {
-        'Partner': ' B532',
+        'Partner': 'B532',
         'Project': 'The Points Guy',
         'DagId':  "{{ti.dag_id}}",
         'TaskId': "{{ti.task_id}}"
     },
 }
 
-# variables
+large_5w_task_cluster = {
+    'spark_version':            '5.3.x-scala2.11',
+    'node_type_id':             Variable.get("DBX_LARGE_CLUSTER"),
+    'driver_node_type_id':      Variable.get("DBX_LARGE_CLUSTER"),
+    'num_workers':              5,
+    'auto_termination_minutes': 0,
+    'cluster_log_conf': LOG_PATH,
+    'spark_conf': {
+      'spark.sql.sources.partitionOverwriteMode': 'dynamic'
+    },
+    "aws_attributes": { 
+        "availability": "SPOT_WITH_FALLBACK", 
+        "ebs_volume_count": 2,
+        "ebs_volume_size": 100, 
+        "ebs_volume_type": "GENERAL_PURPOSE_SSD", 
+        "first_on_demand": "2", 
+        "spot_bid_price_percent": "70", 
+        "zone_id": "us-east-1c", 
+        "instance_profile_arn": Variable.get("DBX_TPG_IAM_ROLE"),
+    },
+    'custom_tags': {
+        'Partner': 'B532',
+        'Project': 'The Points Guy',
+        'DagId':  "{{ti.dag_id}}",
+        'TaskId': "{{ti.task_id}}"
+    },
+}
+
+large_11w_task_cluster = {
+    'spark_version':            '5.3.x-scala2.11',
+    'node_type_id':             'i3.4xlarge',
+    'driver_node_type_id':      'i3.4xlarge',
+    'num_workers':              11,
+    'auto_termination_minutes': 0,    
+    'cluster_log_conf': LOG_PATH,
+    'spark_conf': {
+      'spark.sql.sources.partitionOverwriteMode': 'dynamic',
+      'spark.rpc.askTimeout': '800s'
+    },
+    'aws_attributes': {
+        'ebs_volume_count':         9,
+        'ebs_volume_size':          400,
+        'ebs_volume_type':          'GENERAL_PURPOSE_SSD',
+        'first_on_demand':          '2',
+        'spot_bid_price_percent':   '70',
+        'zone_id':                  'us-east-1c',
+        'availability': 'SPOT_WITH_FALLBACK',
+        'instance_profile_arn': Variable.get("DBX_TPG_IAM_ROLE"),
+    },
+    'custom_tags': {
+        'Partner': 'B532',
+        'Project': 'The Points Guy',
+        'DagId':  "{{ti.dag_id}}",
+        'TaskId': "{{ti.task_id}}"
+    },
+}
+
 base_params_staging = {
-    "lookBackDays": Variable.get("TPG_SHORT_LOOKBACK_DAYS"),
-    "environment": "staging",
-    "stagingPath": Variable.get("DBX_CARDS_Staging_Path"),
-    "reportingPath": Variable.get("DBX_TPG_Reporting_Path"),
-    "dimensionPath": Variable.get("DBX_TPG_Dimension_Path"),
-    "loggingPath": Variable.get("DBX_TPG_Logging_Path"),
-    "dataLakePath": Variable.get("DBX_DataLake_Path"),
-    "tenantName": "tpg",
-    "toDate": "now"
+    "lookBackDays"          : Variable.get("TPG_SHORT_LOOKBACK_DAYS"),
+    "environment"           : "staging",
+    "stagingPath"           : Variable.get("DBX_CARDS_Staging_Path"),
+    "reportingPath"         : Variable.get("DBX_TPG_Reporting_Path"),
+    "dimensionPath"         : Variable.get("DBX_TPG_Dimension_Path"),
+    "loggingPath"           : Variable.get("DBX_TPG_Logging_Path"),
+    "dataLakePath"          : Variable.get("DBX_DataLake_Path"),
+    "tenantName"            : "tpg",
+    "toDate"                : "now"
 }
 
 base_params_reporting = {
-    "lookBackDays": Variable.get("TPG_SHORT_LOOKBACK_DAYS"),
-    "environment": "reporting",
-    "stagingPath": Variable.get("DBX_CARDS_Staging_Path"),
-    "reportingPath": Variable.get("DBX_TPG_Reporting_Path"),
-    "dimensionPath": Variable.get("DBX_TPG_Dimension_Path"),
-    "loggingPath": Variable.get("DBX_TPG_Logging_Path"),
-    "dataLakePath": Variable.get("DBX_DataLake_Path"),
-    "tenantName": "tpg",
-    "toDate": "now",
+    "lookBackDays"  : Variable.get("TPG_LONG_LOOKBACK_DAYS"),
+    "environment"   : "reporting",
+    "stagingPath"   : Variable.get("DBX_CARDS_Staging_Path"),
+    "reportingPath" : Variable.get("DBX_TPG_Reporting_Path"),
+    "dimensionPath" : Variable.get("DBX_TPG_Dimension_Path"),
+    "loggingPath"   : Variable.get("DBX_TPG_Logging_Path"),
+    "dataLakePath"  : Variable.get("DBX_DataLake_Path"),
+    "tenantName"    : "tpg",
+    "toDate"        : "now",
 }
 
-#The Conversion task always needs to set lookBackDays as Variable.get("TPG_LONG_LOOKBACK_DAYS")
-base_params_reporting_conversion = {
-    "lookBackDays": Variable.get("TPG_LONG_LOOKBACK_DAYS"),
-    "environment": "reporting",
-    "stagingPath": Variable.get("DBX_CARDS_Staging_Path"),
-    "reportingPath": Variable.get("DBX_TPG_Reporting_Path"),
-    "dimensionPath": Variable.get("DBX_TPG_Dimension_Path"),
-    "loggingPath": Variable.get("DBX_TPG_Logging_Path"),
-    "dataLakePath": Variable.get("DBX_DataLake_Path"),
-    "tenantName": "tpg",
-    "toDate": "now",
+base_params_reporting_attribution = {
+    "lookBackDays"  : Variable.get("TPG_SHORT_LOOKBACK_DAYS"),
+    "environment"   : "reporting",
+    "stagingPath"   : Variable.get("DBX_CARDS_Staging_Path"),
+    "reportingPath" : Variable.get("DBX_TPG_Reporting_Path"),
+    "dimensionPath" : Variable.get("DBX_TPG_Dimension_Path"),
+    "loggingPath"   : Variable.get("DBX_TPG_Logging_Path"),
+    "dataLakePath"  : Variable.get("DBX_DataLake_Path"),
+    "tenantName"    : "tpg",
+    "toDate"        : "now",
 }
 
 base_params_latency = {
-    "lookBackDays": "1",
-    "stagingPath": Variable.get("DBX_CARDS_Staging_Path"),
-    "reportingPath": Variable.get("DBX_TPG_Reporting_Path"),
-    "metaLatencyPath": Variable.get("DBX_TPG_Meta_Latency_Path"),
-    "dataLakePath": Variable.get("DBX_DataLake_Path"),
-    "tenantId": Variable.get("DBX_TPG_Tenant_Id"),
+    "lookBackDays"    : "1",
+    "stagingPath"     : Variable.get("DBX_CARDS_Staging_Path"),
+    "reportingPath"   : Variable.get("DBX_TPG_Reporting_Path"),
+    "metaLatencyPath" : Variable.get("DBX_TPG_Meta_Latency_Path"),
+    "dataLakePath"    : Variable.get("DBX_DataLake_Path"),
+    "tenantId"        : Variable.get("DBX_TPG_Tenant_Id"),
 }
 
 base_params = {
@@ -177,6 +203,8 @@ staging_libraries = [
     "jar": "dbfs:/data-warehouse/production/datawarehouse-builder-0.5.4.jar",
   },
 ]
+
+adzerk_clicks_notebook_path = '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/tpg-adzerk/clicks'
 
 #Dimension tables task
 dimension_tables_notebook_task = {
@@ -203,6 +231,16 @@ product_reporting_notebook_task = {
 page_view_reporting_notebook_task = {
     'base_parameters': {},
     'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/reporting-table-notebooks/PageView'
+}
+
+attribution_reporting_notebook_task = {
+    'base_parameters': {},
+    'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/reporting-table-notebooks/Attribution',
+}
+
+anonymous_reporting_notebook_task = {
+    'base_parameters': {},
+    'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/reporting-table-notebooks/Anonymous',
 }
 
 amp_reporting_notebook_task = {
@@ -242,6 +280,15 @@ latency_calculation_new_clicks_notebook_task = {
     'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/helper-scripts/latency-notebooks/Timestamp New Conversion Ids',
 }
 
+# Adzerk Notebook Task Parameter Setup:
+adzerk_clicks_notebook_task = {
+    'base_parameters': {
+        "toDate":              "now",
+        "eventName":           "clicks",
+     },
+    'notebook_path': adzerk_clicks_notebook_path,
+}
+
 #########Update latency base params
 latency_calculation_new_clicks_notebook_task['base_parameters'].update(base_params_latency)
 latency_calculation_new_page_views_notebook_task['base_parameters'].update(base_params_latency)
@@ -258,13 +305,13 @@ amp_reporting_notebook_task['base_parameters'].update(base_params_reporting)
 page_view_reporting_notebook_task['base_parameters'].update(base_params_reporting)
 product_reporting_notebook_task['base_parameters'].update(base_params_reporting)
 session_reporting_notebook_task['base_parameters'].update(base_params_reporting)
-
-#updated base params conversion - Long lookback
-conversion_reporting_notebook_task['base_parameters'].update(base_params_reporting_conversion)
+anonymous_reporting_notebook_task['base_parameters'].update(base_params_reporting)
+attribution_reporting_notebook_task['base_parameters'].update(base_params_reporting_attribution)
+conversion_reporting_notebook_task['base_parameters'].update(base_params_reporting)
 
 # DAG Creation Step
-with DAG('data-lake-dw-cdm-sdk-tpg-reporting-hourly',
-         schedule_interval='0 0-3,7-23 * * *',
+with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
+         schedule_interval='0 7 * * *',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
          max_active_runs=1,
@@ -339,6 +386,26 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-hourly',
         polling_period_seconds = 240
     )
 
+    anonymous_reporting = FinServDatabricksSubmitRunOperator(
+        task_id                = 'anonymous-reporting',
+        new_cluster            = large_5w_task_cluster,
+        notebook_task          = anonymous_reporting_notebook_task,
+        libraries              = staging_libraries,
+        timeout_seconds        = 8400,
+        databricks_conn_id     = airflow_svc_token,
+        polling_period_seconds = 240
+    )
+
+    attribution_reporting = FinServDatabricksSubmitRunOperator(
+        task_id                = 'attribution-reporting',
+        new_cluster            = large_11w_task_cluster,      
+        notebook_task          = attribution_reporting_notebook_task,
+        libraries              = staging_libraries,
+        timeout_seconds        = 14000,
+        databricks_conn_id     = airflow_svc_token,
+        polling_period_seconds = 240
+    )
+
     latency_tracking_new_session = FinServDatabricksSubmitRunOperator(
         task_id = 'latency-tracking-new-sessions',
         new_cluster = medium_task_cluster,
@@ -410,6 +477,7 @@ latency_tracking_new_page_views >> page_view_reporting
 latency_tracking_new_session    >> session_reporting
 
 conversion_reporting >> amp_reporting
+session_reporting >> [anonymous_reporting, attribution_reporting]
 
 latency_calculation_new_clicks     << conversion_reporting
 latency_calculation_new_page_views << page_view_reporting

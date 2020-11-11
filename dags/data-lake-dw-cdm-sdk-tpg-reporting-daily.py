@@ -311,7 +311,7 @@ conversion_reporting_notebook_task['base_parameters'].update(base_params_reporti
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
-         schedule_interval='0 7 * * *',
+         schedule_interval='0 5 * * *',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
          max_active_runs=1,
@@ -338,7 +338,7 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
 
     conversion_reporting = FinServDatabricksSubmitRunOperator(
         task_id = 'conversion-reporting',
-        new_cluster = large_task_cluster,
+        new_cluster = large_5w_task_cluster,
         notebook_task = conversion_reporting_notebook_task,
         libraries = staging_libraries,
         timeout_seconds = 7200,
@@ -348,7 +348,7 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
 
     session_reporting = FinServDatabricksSubmitRunOperator(
         task_id = 'session-reporting',
-        new_cluster = medium_task_cluster,
+        new_cluster = large_5w_task_cluster,
         notebook_task = session_reporting_notebook_task,
         libraries = staging_libraries,
         timeout_seconds = 7200,
@@ -358,7 +358,7 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
 
     page_view_reporting = FinServDatabricksSubmitRunOperator(
         task_id = 'page-view-reporting',
-        new_cluster = medium_task_cluster,
+        new_cluster = large_5w_task_cluster,
         notebook_task = page_view_reporting_notebook_task,
         libraries = staging_libraries,
         timeout_seconds = 7200,

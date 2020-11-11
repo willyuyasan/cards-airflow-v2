@@ -454,7 +454,7 @@ content_meta_data_tracked_staging_jar_task = {
             datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.ContentMetadataTracked",
+        "TABLES=" + "com.redventures.cdm.cohesion.staging.ContentMetadataTracked",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),

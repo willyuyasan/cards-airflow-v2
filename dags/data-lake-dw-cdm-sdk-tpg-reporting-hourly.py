@@ -264,7 +264,7 @@ conversion_reporting_notebook_task['base_parameters'].update(base_params_reporti
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-tpg-reporting-hourly',
-         schedule_interval='0 0-3,7-23 * * *',
+         schedule_interval='0 0-5,10-23 * * *',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
          max_active_runs=1,

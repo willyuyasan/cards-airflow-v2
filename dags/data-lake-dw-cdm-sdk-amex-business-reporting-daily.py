@@ -221,7 +221,7 @@ latency_calculation_new_clicks_notebook_task['base_parameters'].update(base_para
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-amex-business-reporting-daily',
-         schedule_interval='0 5 * * *',
+         schedule_interval='0 7 * * *',
          dagrun_timeout=timedelta(hours=3),
          catchup=False,
          max_active_runs=1,

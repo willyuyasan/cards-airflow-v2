@@ -311,7 +311,7 @@ conversion_reporting_notebook_task['base_parameters'].update(base_params_reporti
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
-         schedule_interval='0 5 * * *',
+         schedule_interval='0 7 * * *',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
          max_active_runs=1,
@@ -320,7 +320,7 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
 
     tpg_staging_tables = ExternalTaskSensor(
         task_id='external-tpg-reporting',
-        external_dag_id='data-lake-dw-cdm-sdk-cards-staging-hourly',
+        external_dag_id='data-lake-dw-cdm-sdk-cards-staging-daily',
         external_task_id='external-tpg-staging',
         execution_timeout=timedelta(minutes=7),
         execution_delta=timedelta(minutes=30)
@@ -368,7 +368,7 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
 
     product_reporting = FinServDatabricksSubmitRunOperator(
         task_id = 'product-reporting',
-        new_cluster = medium_task_cluster,
+        new_cluster = large_5w_task_cluster,
         notebook_task = product_reporting_notebook_task,
         libraries = staging_libraries,
         timeout_seconds = 7200,

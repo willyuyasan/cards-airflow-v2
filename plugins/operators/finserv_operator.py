@@ -7,6 +7,7 @@ from hooks.finserv_hook import FinServDatabricksHook
 from airflow.plugins_manager import AirflowPlugin
 from airflow.exceptions import AirflowException
 from airflow.contrib.operators.databricks_operator import DatabricksSubmitRunOperator
+import zlib
 
 """
 """
@@ -116,42 +117,44 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
         """
         if self.log_type is not None:
             hook = self.get_hook()
+            try:
+                # Retrieve Spark Logs
+                self.log.info(f"Spark logs will be stored in {self.spark_logs}")
+                spark_filelist = hook.list_dbfs(self.spark_logs)
+                if spark_filelist is not None:
+                    for f in spark_filelist['files']:
+                        if not f['is_dir']:
+                            self.log.info(f['path'])
 
-            # Retrieve Spark Logs
-            self.log.info(f"Spark logs will be stored in {self.spark_logs}")
-            spark_filelist = hook.list_dbfs(self.spark_logs)
-            if spark_filelist is not None:
-                for f in spark_filelist['files']:
-                    if not f['is_dir']:
-                        self.log.info(f['path'])
+                            if f['path'].endswith('.gz') and 'stderr' in f['path']:
+                                self.log.info("The gzipped file is present on this location, please read the file from that location %s", f['path'])
+                            elif 'stderr' in f['path']:
+                                for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n', "\n").split("\n"):
+                                    self.log.error(line)
+                            else:
+                                for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n', "\n").split("\n"):
+                                    self.log.info(line)
 
-                        if f['path'].endswith('.gz') and 'stderr' in f['path']:
-                            self.log.info("The gzipped file is present on this location, please read the file from that location %s", f['path'])
-                        elif 'stderr' in f['path']:
-                            for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n', "\n").split("\n"):
-                                self.log.error(line)
-                        else:
-                            for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n', "\n").split("\n"):
-                                self.log.info(line)
+                # Retrieve Executor Logs
+                self.log.info(f"Executor logs will be stored in {self.exec_logs}")
+                exec_filelist = hook.list_dbfs(self.exec_logs)
+                if exec_filelist is not None:
+                    for app in exec_filelist['files']:
+                        for executor in hook.list_dbfs(app['path'])['files']:
+                            for f in hook.list_dbfs(executor['path'])['files']:
+                                if not f['is_dir']:
+                                    self.log.info(f['path'])
 
-            # Retrieve Executor Logs
-            self.log.info(f"Executor logs will be stored in {self.exec_logs}")
-            exec_filelist = hook.list_dbfs(self.exec_logs)
-            if exec_filelist is not None:
-                for app in exec_filelist['files']:
-                    for executor in hook.list_dbfs(app['path'])['files']:
-                        for f in hook.list_dbfs(executor['path'])['files']:
-                            if not f['is_dir']:
-                                self.log.info(f['path'])
-
-                                if f['path'].endswith('.gz') and 'stderr' in f['path']:
-                                    self.log.info("The gzipped file is present on this location, please read the file from that location %s", f['path'])
-                                elif 'stderr' in f['path']:
-                                    for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n', "\n").split("\n"):
-                                        self.log.error(line)
-                                else:
-                                    for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n', "\n").split("\n"):
-                                        self.log.info(line)
+                                    if f['path'].endswith('.gz') and 'stderr' in f['path']:
+                                        self.log.info("The gzipped file is present on this location, please read the file from that location %s", f['path'])
+                                    elif 'stderr' in f['path']:
+                                        for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n', "\n").split("\n"):
+                                            self.log.error(line)
+                                    else:
+                                        for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n', "\n").split("\n"):
+                                            self.log.info(line)
+            except zlib.error as e:
+                self.log.info(e)
 
     def _log_paths(self, context):
         """

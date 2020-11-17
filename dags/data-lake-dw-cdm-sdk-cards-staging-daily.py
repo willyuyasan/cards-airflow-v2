@@ -28,7 +28,7 @@ DAG_NAME = 'data-lake-dw-cdm-sdk-cards-staging-daily'
 
 LOG_PATH = {
     'dbfs': {
-        'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s' % (ACCOUNT, DAG_NAME, datetime.date(datetime.now()))
+        'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s/%s' % (ACCOUNT, Variable.get("log-environment"), DAG_NAME, datetime.date(datetime.now()))
     }
 }
 

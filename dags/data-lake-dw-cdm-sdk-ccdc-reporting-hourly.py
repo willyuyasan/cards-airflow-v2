@@ -27,7 +27,7 @@ DAG_NAME = 'data-lake-dw-cdm-sdk-ccdc-reporting-hourly'
 
 LOG_PATH = {
     'dbfs': {
-        'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s' % (ACCOUNT, DAG_NAME, datetime.date(datetime.now()))
+        'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s/%s' % (ACCOUNT, Variable.get("log-environment"), DAG_NAME, datetime.date(datetime.now()))
     }
 }
 
@@ -257,7 +257,7 @@ latency_calculation_new_clicks_notebook_task = {
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-hourly',
-         schedule_interval='0 0-5,9-23 * * *',
+         schedule_interval='0 0-5,10-23 * * *',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
          max_active_runs=1,

@@ -28,13 +28,13 @@ DAG_NAME = 'data-lake-dw-cdm-sdk-cards-staging-hourly'
 
 LOG_PATH = {
     'dbfs': {
-        'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s' % (ACCOUNT, DAG_NAME, datetime.date(datetime.now()))
+        'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s/%s' % (ACCOUNT, Variable.get("log-environment"), DAG_NAME, datetime.date(datetime.now()))
     }
 }
 
 # Cluster Setup Step
 extra_small_task_custom_cluster = {
-    'spark_version': '5.3.x-scala2.11',
+    'spark_version': '7.3.x-scala2.12',
     'node_type_id': 'm5a.xlarge',
     'driver_node_type_id': 'm5a.xlarge',
     'num_workers': 1,
@@ -67,7 +67,7 @@ extra_small_task_custom_cluster = {
 }
 
 small_task_custom_cluster = {
-    'spark_version': '5.3.x-scala2.11',
+    'spark_version': '7.3.x-scala2.12',
     'node_type_id': 'm5a.xlarge',
     'driver_node_type_id': 'm5a.xlarge',
     'num_workers': 4,
@@ -100,7 +100,7 @@ small_task_custom_cluster = {
 }
 
 medium_task_custom_cluster = {
-    'spark_version': '5.3.x-scala2.11',
+    'spark_version': '7.3.x-scala2.12',
     'node_type_id': 'm5a.2xlarge',
     'driver_node_type_id': 'm5a.2xlarge',
     'num_workers': 6,
@@ -139,7 +139,7 @@ staging_libraries = [
         "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
     },
     {
-        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
+        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
     },
 ]
 
@@ -263,7 +263,7 @@ traffic_sources_staging_jar_task = {
             datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.trafficsources.staging.TrafficSources",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.TrafficSources",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_CARDS_SDK_Tenants"),
@@ -442,6 +442,22 @@ cookies_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_CONSUMER_SDK_Tenants"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
+content_meta_data_tracked_staging_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.cohesion.staging.ContentMetadataTracked",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
@@ -801,6 +817,16 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
         polling_period_seconds=240
     )
 
+    content_meta_data_tracked_staging = FinServDatabricksSubmitRunOperator(
+        task_id='content-meta-data-tracked-staging',
+        new_cluster=small_task_custom_cluster,
+        spark_jar_task=content_meta_data_tracked_staging_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=2400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=240
+    )
+
     ccdc_staging_tables = DummyOperator(
         task_id='external-ccdc-staging'
     )
@@ -820,6 +846,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 # Staging Dependencies
 session_staging >> traffic_sources_staging
 session_staging >> paidsearch_staging
+paidsearch_staging >> traffic_sources_staging
 
 # CCDC Staging Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging,
@@ -829,7 +856,7 @@ session_staging >> paidsearch_staging
 # TPG Staging Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging,
     field_inputted_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging, amp_page_viewed_staging,
-    paidsearch_staging, hoppageviewed_staging, tpg_ccdc_ot_summary_staging] >> tpg_staging_tables
+    paidsearch_staging, hoppageviewed_staging, tpg_ccdc_ot_summary_staging, content_meta_data_tracked_staging] >> tpg_staging_tables
 
 # Amex Business Dependencies
 amex_ot_details_staging >> amex_ot_summary_staging

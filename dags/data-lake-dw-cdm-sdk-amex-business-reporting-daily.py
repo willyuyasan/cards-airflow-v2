@@ -14,7 +14,7 @@ default_args = {
     'email_on_failure': False,
     'email_on_retry': False,
     'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
-    'retries': 2,
+    'retries': 3,
     'retry_delay': timedelta(minutes=5),
     # 'op_kwargs': cfg_dict,
     'provide_context': True
@@ -23,35 +23,12 @@ default_args = {
 # token variable
 airflow_svc_token = "databricks_airflow_svc_token"
 ACCOUNT = 'cards'
-DAG_NAME = 'data-lake-dw-cdm-sdk-amex-consumer-reporting-hourly'
+DAG_NAME = 'data-lake-dw-cdm-sdk-amex-business-reporting-daily'
 
 LOG_PATH = {
     'dbfs': {
         'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s/%s' % (ACCOUNT, Variable.get("log-environment"), DAG_NAME, datetime.date(datetime.now()))
     }
-}
-
-# Base parameters update
-
-base_params_reporting = {
-    "lookBackDays": Variable.get("AMEX_CONSUMER_REPORTING_SHORT_LOOKBACK_DAYS"),
-    "environment": "reporting",
-    "stagingPath": Variable.get("DBX_CARDS_Staging_Path"),
-    "reportingPath": Variable.get("DBX_AMEX_CONSUMER_Reporting_Path"),
-    "dimensionPath": Variable.get("DBX_AMEX_CONSUMER_Dimensions_Path"),
-    "loggingPath": Variable.get("DBX_AMEX_CONSUMER_Logging_Path"),
-    "dataLakePath": Variable.get("DBX_DataLake_Path"),
-    "tenantName": "amex_consumer",
-    "toDate": "now",
-}
-
-base_params_latency = {
-    "lookBackDays": "1",
-    "stagingPath": Variable.get("DBX_AMEX_CONSUMER_Staging_Path"),
-    "reportingPath": Variable.get("DBX_AMEX_CONSUMER_Reporting_Path"),
-    "metaLatencyPath": Variable.get("DBX_AMEX_CONSUMER_Meta_Latency_Path"),
-    "dataLakePath": Variable.get("DBX_DataLake_Path"),
-    "tenantId": Variable.get("DBX_AMEX_CONSUMER_Tenant_Id"),
 }
 
 # Cluster Setup Step
@@ -76,8 +53,8 @@ small_task_cluster = {
         "instance_profile_arn": Variable.get("DBX_AMEX_IAM_ROLE"),
     },
     'custom_tags': {
-        'Partner': 'B131',
-        'Project': 'American Express - Consumer',
+        'Partner': 'B130',
+        'Project': 'American Express - OPEN',
         'DagId': "{{ti.dag_id}}",
         'TaskId': "{{ti.task_id}}"
     },
@@ -104,8 +81,8 @@ medium_task_cluster = {
         "instance_profile_arn": Variable.get("DBX_AMEX_IAM_ROLE"),
     },
     'custom_tags': {
-        'Partner': 'B131',
-        'Project': 'American Express - Consumer',
+        'Partner': 'B130',
+        'Project': 'American Express - OPEN',
         'DagId': "{{ti.dag_id}}",
         'TaskId': "{{ti.task_id}}"
     },
@@ -132,11 +109,32 @@ large_task_cluster = {
         "instance_profile_arn": Variable.get("DBX_AMEX_IAM_ROLE"),
     },
     'custom_tags': {
-        'Partner': 'B131',
-        'Project': 'American Express - Consumer',
+        'Partner': 'B130',
+        'Project': 'American Express - OPEN',
         'DagId': "{{ti.dag_id}}",
         'TaskId': "{{ti.task_id}}"
     },
+}
+
+base_params_reporting = {
+    "lookBackDays": Variable.get("AMEX_BUSINESS_REPORTING_SHORT_LOOKBACK_DAYS"),
+    "environment": "reporting",
+    "stagingPath": Variable.get("DBX_CARDS_Staging_Path"),
+    "reportingPath": Variable.get("DBX_AMEX_BUSINESS_Reporting_Path"),
+    "dimensionPath": Variable.get("DBX_AMEX_BUSINESS_Dimensions_Path"),
+    "loggingPath": Variable.get("DBX_AMEX_BUSINESS_Logging_Path"),
+    "dataLakePath": Variable.get("DBX_DataLake_Path"),
+    "tenantName": "amex_business",
+    "toDate": "now",
+}
+
+base_params_latency = {
+    "lookBackDays": "1",
+    "stagingPath": Variable.get("DBX_AMEX_BUSINESS_Staging_Path"),
+    "reportingPath": Variable.get("DBX_AMEX_BUSINESS_Reporting_Path"),
+    "metaLatencyPath": Variable.get("DBX_AMEX_BUSINESS_Meta_Latency_Path"),
+    "dataLakePath": Variable.get("DBX_DataLake_Path"),
+    "tenantId": Variable.get("DBX_AMEX_BUSINESS_Tenant_Id"),
 }
 
 # Libraries
@@ -152,61 +150,61 @@ staging_libraries = [
 # Reporting table tasks
 conversion_reporting_notebook_task = {
     'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-consumer/' + Variable.get("DBX_AMEX_CONSUMER_CODE_ENV") + '/reporting-table-notebooks/Conversion'
+    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/reporting-table-notebooks/Conversion'
 }
 
 session_reporting_notebook_task = {
     'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-consumer/' + Variable.get("DBX_AMEX_CONSUMER_CODE_ENV") + '/reporting-table-notebooks/Session'
+    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/reporting-table-notebooks/Session'
 }
 
 product_reporting_notebook_task = {
     'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-consumer/' + Variable.get("DBX_AMEX_CONSUMER_CODE_ENV") + '/reporting-table-notebooks/Product'
+    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/reporting-table-notebooks/Product'
 }
 
 page_view_reporting_notebook_task = {
     'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-consumer/' + Variable.get("DBX_AMEX_CONSUMER_CODE_ENV") + '/reporting-table-notebooks/PageView'
+    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/reporting-table-notebooks/PageView'
 }
 
 paid_search_reporting_notebook_task = {
     'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-consumer/' + Variable.get("DBX_AMEX_CONSUMER_CODE_ENV") + '/reporting-table-notebooks/PaidSearchSummary',
+    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/reporting-table-notebooks/PaidSearchSummary',
 }
 
 # latency tasks
 latency_record_new_session_notebook_task = {
     'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-consumer/' + Variable.get("DBX_AMEX_CONSUMER_CODE_ENV") + '/helper-scripts/latency-notebooks/Record New Session Ids',
+    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/helper-scripts/latency-notebooks/Record New Session Ids',
 }
 
 latency_calculation_new_session_notebook_task = {
     'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-consumer/' + Variable.get("DBX_AMEX_CONSUMER_CODE_ENV") + '/helper-scripts/latency-notebooks/Timestamp New Session Ids',
+    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/helper-scripts/latency-notebooks/Timestamp New Session Ids',
 }
 
 latency_record_new_page_views_notebook_task = {
     'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-consumer/' + Variable.get("DBX_AMEX_CONSUMER_CODE_ENV") + '/helper-scripts/latency-notebooks/Record New Page View Ids',
+    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/helper-scripts/latency-notebooks/Record New Page View Ids',
 }
 
 latency_calculation_new_page_views_notebook_task = {
     'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-consumer/' + Variable.get("DBX_AMEX_CONSUMER_CODE_ENV") + '/helper-scripts/latency-notebooks/Timestamp New Page View Ids',
+    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/helper-scripts/latency-notebooks/Timestamp New Page View Ids',
 }
 
 latency_record_new_clicks_notebook_task = {
     'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-consumer/' + Variable.get("DBX_AMEX_CONSUMER_CODE_ENV") + '/helper-scripts/latency-notebooks/Record New Clicks Ids',
+    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/helper-scripts/latency-notebooks/Record New Clicks Ids',
 }
 
 latency_calculation_new_clicks_notebook_task = {
     'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-consumer/' + Variable.get("DBX_AMEX_CONSUMER_CODE_ENV") + '/helper-scripts/latency-notebooks/Timestamp New Conversion Ids',
+    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/helper-scripts/latency-notebooks/Timestamp New Conversion Ids',
 }
 
-# updating base params reporting
+# update base params reporting
 conversion_reporting_notebook_task['base_parameters'].update(base_params_reporting)
 session_reporting_notebook_task['base_parameters'].update(base_params_reporting)
 product_reporting_notebook_task['base_parameters'].update(base_params_reporting)
@@ -221,19 +219,18 @@ latency_calculation_new_page_views_notebook_task['base_parameters'].update(base_
 latency_record_new_clicks_notebook_task['base_parameters'].update(base_params_latency)
 latency_calculation_new_clicks_notebook_task['base_parameters'].update(base_params_latency)
 
-
 # DAG Creation Step
-with DAG('data-lake-dw-cdm-sdk-amex-consumer-reporting-hourly',
-         schedule_interval='0 0-5,10-23 * * *',
-         dagrun_timeout=timedelta(hours=1),
+with DAG('data-lake-dw-cdm-sdk-amex-business-reporting-daily',
+         schedule_interval='0 7 * * *',
+         dagrun_timeout=timedelta(hours=3),
          catchup=False,
          max_active_runs=1,
          default_args=default_args) as dag:
 
-    amex_consumer_staging_tables = ExternalTaskSensor(
-        task_id='external-amex-consumer-reporting',
-        external_dag_id='data-lake-dw-cdm-sdk-cards-staging-hourly',
-        external_task_id='external-amex-consumer-staging',
+    amex_business_staging_tables = ExternalTaskSensor(
+        task_id='external-amex-business-reporting',
+        external_dag_id='data-lake-dw-cdm-sdk-cards-staging-daily',
+        external_task_id='external-amex-business-staging',
         execution_timeout=timedelta(minutes=10),
         execution_delta=timedelta(minutes=30)
     )
@@ -349,7 +346,7 @@ with DAG('data-lake-dw-cdm-sdk-amex-consumer-reporting-hourly',
     )
 
 # Dependencies
-amex_consumer_staging_tables >> [latency_tracking_new_session, latency_tracking_new_page_views, latency_tracking_new_clicks, product_reporting]
+amex_business_staging_tables >> [latency_tracking_new_session, latency_tracking_new_page_views, latency_tracking_new_clicks, product_reporting]
 
 # Defining additional reporting dependencies
 session_reporting >> paid_search_reporting

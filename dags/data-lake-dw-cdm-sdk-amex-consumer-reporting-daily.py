@@ -14,7 +14,7 @@ default_args = {
     'email_on_failure': False,
     'email_on_retry': False,
     'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
-    'retries': 2,
+    'retries': 3,
     'retry_delay': timedelta(minutes=5),
     # 'op_kwargs': cfg_dict,
     'provide_context': True
@@ -23,7 +23,7 @@ default_args = {
 # token variable
 airflow_svc_token = "databricks_airflow_svc_token"
 ACCOUNT = 'cards'
-DAG_NAME = 'data-lake-dw-cdm-sdk-amex-consumer-reporting-hourly'
+DAG_NAME = 'data-lake-dw-cdm-sdk-amex-consumer-reporting-daily'
 
 LOG_PATH = {
     'dbfs': {
@@ -223,16 +223,16 @@ latency_calculation_new_clicks_notebook_task['base_parameters'].update(base_para
 
 
 # DAG Creation Step
-with DAG('data-lake-dw-cdm-sdk-amex-consumer-reporting-hourly',
-         schedule_interval='0 0-5,10-23 * * *',
-         dagrun_timeout=timedelta(hours=1),
+with DAG('data-lake-dw-cdm-sdk-amex-consumer-reporting-daily',
+         schedule_interval='0 7 * * *',
+         dagrun_timeout=timedelta(hours=3),
          catchup=False,
          max_active_runs=1,
          default_args=default_args) as dag:
 
     amex_consumer_staging_tables = ExternalTaskSensor(
         task_id='external-amex-consumer-reporting',
-        external_dag_id='data-lake-dw-cdm-sdk-cards-staging-hourly',
+        external_dag_id='data-lake-dw-cdm-sdk-cards-staging-daily',
         external_task_id='external-amex-consumer-staging',
         execution_timeout=timedelta(minutes=10),
         execution_delta=timedelta(minutes=30)

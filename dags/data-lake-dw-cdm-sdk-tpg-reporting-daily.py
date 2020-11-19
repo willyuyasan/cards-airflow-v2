@@ -14,7 +14,7 @@ default_args = {
     'email_on_failure': False,
     'email_on_retry': False,
     'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
-    'retries': 1,
+    'retries': 3,
     'retry_delay': timedelta(minutes=5),
     # 'op_kwargs': cfg_dict,
     'provide_context': True
@@ -322,7 +322,7 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
         task_id='external-tpg-reporting',
         external_dag_id='data-lake-dw-cdm-sdk-cards-staging-daily',
         external_task_id='external-tpg-staging',
-        execution_timeout=timedelta(minutes=7),
+        execution_timeout=timedelta(minutes=15),
         execution_delta=timedelta(minutes=30)
     )
 

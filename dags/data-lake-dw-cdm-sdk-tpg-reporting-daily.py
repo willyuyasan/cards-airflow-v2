@@ -248,7 +248,7 @@ amp_reporting_notebook_task = {
     'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/reporting-table-notebooks/Amp',
 }
 
-############################Notebook params for Latency################################
+# ############################Notebook params for Latency################################
 
 latency_record_new_session_notebook_task = {
     'base_parameters': {},

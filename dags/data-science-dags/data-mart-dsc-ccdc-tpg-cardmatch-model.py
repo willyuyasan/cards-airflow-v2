@@ -195,7 +195,8 @@ icommissions_model_training_notebook_task = {
 # Model Deployment Notebook Task
 model_deployment_notebook_task = {
     'base_parameters': {
-        "environment": "staging"
+        "environment": "staging",
+        "notebook": '/Projects/CardMatch/Airflow-capable/CardMatch_python_combine'
     },
     'notebook_path': '/Projects/CardMatch/Airflow-capable/CardMatch_python_combine',
 }

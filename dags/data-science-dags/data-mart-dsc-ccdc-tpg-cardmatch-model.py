@@ -106,6 +106,9 @@ model_step_libraries = [
     {
         "pypi": {"package": "scikit-learn==0.22"}
     },
+    {
+        "pypi": {"package": "joblibspark"}
+    }
 ]
 
 # ETL Notebook Task

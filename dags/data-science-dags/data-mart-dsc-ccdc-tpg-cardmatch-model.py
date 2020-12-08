@@ -89,22 +89,22 @@ model_step_libraries = [
         "whl": "dbfs:/Libraries/Python/python-client/dradis_client-0.8-py3-none-any.whl"
     },
     {
-        "pypi": "pandas==1.0.3"
+        "pypi": {"package": "pandas==1.0.3"}
     },
     {
-        "pypi": "matplotlib"
+        "pypi": {"package": "matplotlib"}
     },
     {
-        "pypi": "cloudpickle"
+        "pypi": {"package": "cloudpickle"}
     },
     {
-        "pypi": "auth0-python"
+        "pypi": {"package": "auth0-python"}
     },
     {
-        "pypi": "numpy==1.18.4"
+        "pypi": {"package": "numpy==1.18.4"}
     },
     {
-        "pypi": "scikit-learn==0.22"
+        "pypi": {"package": "scikit-learn==0.22"}
     },
 ]
 

@@ -182,79 +182,6 @@ page_view_reporting_notebook_task = {
     'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/reporting-table-notebooks/PageView',
 }
 
-latency_record_new_session_notebook_task = {
-    'base_parameters': {
-        "lookBackDays": "1",
-        "stagingPath": Variable.get("DBX_CARDS_Staging_Path"),
-        "reportingPath": Variable.get("DBX_CCDC_Reporting_Path"),
-        "metaLatencyPath": Variable.get("DBX_CCDC_Meta_Latency_Path"),
-        "dataLakePath": Variable.get("DBX_DataLake_Path"),
-        "tenantId": Variable.get("DBX_CCDC_Tenant_Id"),
-    },
-    'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/helper-scripts/latency-notebooks/Record New Session Ids',
-}
-
-latency_calculation_new_session_notebook_task = {
-    'base_parameters': {
-        "lookBackDays": "1",
-        "stagingPath": Variable.get("DBX_CARDS_Staging_Path"),
-        "reportingPath": Variable.get("DBX_CCDC_Reporting_Path"),
-        "metaLatencyPath": Variable.get("DBX_CCDC_Meta_Latency_Path"),
-        "dataLakePath": Variable.get("DBX_DataLake_Path"),
-        "tenantId": Variable.get("DBX_CCDC_Tenant_Id"),
-    },
-    'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/helper-scripts/latency-notebooks/Timestamp New Session Ids',
-}
-
-latency_record_new_page_views_notebook_task = {
-    'base_parameters': {
-        "lookBackDays": "1",
-        "stagingPath": Variable.get("DBX_CARDS_Staging_Path"),
-        "reportingPath": Variable.get("DBX_CCDC_Reporting_Path"),
-        "metaLatencyPath": Variable.get("DBX_CCDC_Meta_Latency_Path"),
-        "dataLakePath": Variable.get("DBX_DataLake_Path"),
-        "tenantId": Variable.get("DBX_CCDC_Tenant_Id"),
-    },
-    'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/helper-scripts/latency-notebooks/Record New Page View Ids',
-}
-
-latency_calculation_new_page_views_notebook_task = {
-    'base_parameters': {
-        "lookBackDays": "1",
-        "stagingPath": Variable.get("DBX_CARDS_Staging_Path"),
-        "reportingPath": Variable.get("DBX_CCDC_Reporting_Path"),
-        "metaLatencyPath": Variable.get("DBX_CCDC_Meta_Latency_Path"),
-        "dataLakePath": Variable.get("DBX_DataLake_Path"),
-        "tenantId": Variable.get("DBX_CCDC_Tenant_Id"),
-    },
-    'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/helper-scripts/latency-notebooks/Timestamp New Page View Ids',
-}
-
-latency_record_new_clicks_notebook_task = {
-    'base_parameters': {
-        "lookBackDays": "1",
-        "stagingPath": Variable.get("DBX_CARDS_Staging_Path"),
-        "reportingPath": Variable.get("DBX_CCDC_Reporting_Path"),
-        "metaLatencyPath": Variable.get("DBX_CCDC_Meta_Latency_Path"),
-        "dataLakePath": Variable.get("DBX_DataLake_Path"),
-        "tenantId": Variable.get("DBX_CCDC_Tenant_Id"),
-    },
-    'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/helper-scripts/latency-notebooks/Record New Clicks Ids',
-}
-
-latency_calculation_new_clicks_notebook_task = {
-    'base_parameters': {
-        "lookBackDays": "1",
-        "stagingPath": Variable.get("DBX_CARDS_Staging_Path"),
-        "reportingPath": Variable.get("DBX_CCDC_Reporting_Path"),
-        "metaLatencyPath": Variable.get("DBX_CCDC_Meta_Latency_Path"),
-        "dataLakePath": Variable.get("DBX_DataLake_Path"),
-        "tenantId": Variable.get("DBX_CCDC_Tenant_Id"),
-    },
-    'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/helper-scripts/latency-notebooks/Timestamp New Conversion Ids',
-}
-
-
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-hourly',
          schedule_interval='0 0-5,11-23 * * *',
@@ -312,80 +239,11 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-hourly',
         polling_period_seconds=120
     )
 
-    latency_tracking_new_session = FinServDatabricksSubmitRunOperator(
-        task_id='latency-tracking-new-sessions',
-        new_cluster=small_task_cluster,
-        notebook_task=latency_record_new_session_notebook_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    latency_calculation_new_session = FinServDatabricksSubmitRunOperator(
-        task_id='latency-calculation-new-sessions',
-        new_cluster=small_task_cluster,
-        notebook_task=latency_calculation_new_session_notebook_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    latency_tracking_new_page_views = FinServDatabricksSubmitRunOperator(
-        task_id='latency-tracking-new-page-views',
-        new_cluster=small_task_cluster,
-        notebook_task=latency_record_new_page_views_notebook_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    latency_calculation_new_page_views = FinServDatabricksSubmitRunOperator(
-        task_id='latency-calculation-new-page-views',
-        new_cluster=small_task_cluster,
-        notebook_task=latency_calculation_new_page_views_notebook_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    latency_tracking_new_clicks = FinServDatabricksSubmitRunOperator(
-        task_id='latency-tracking-new-clicks',
-        new_cluster=small_task_cluster,
-        notebook_task=latency_record_new_clicks_notebook_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    latency_calculation_new_clicks = FinServDatabricksSubmitRunOperator(
-        task_id='latency-calculation-new-clicks',
-        new_cluster=small_task_cluster,
-        notebook_task=latency_calculation_new_clicks_notebook_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
 # Dependencies
-ccdc_staging_tables >> [latency_tracking_new_session, latency_tracking_new_page_views, latency_tracking_new_clicks]
-
-# latency mapping
-latency_tracking_new_session >> session_reporting
-latency_tracking_new_page_views >> page_view_reporting
-latency_tracking_new_clicks >> conversion_reporting
 
 # reporting dependencies
+ccdc_staging_tables >> conversion_reporting
 conversion_reporting >> session_reporting
 conversion_reporting >> product_reporting
 conversion_reporting >> page_view_reporting
 
-# Latency Calculation Depedencies
-session_reporting >> latency_calculation_new_session
-page_view_reporting >> latency_calculation_new_page_views
-conversion_reporting >> latency_calculation_new_clicks

@@ -211,13 +211,6 @@ product_reporting_notebook_task['base_parameters'].update(base_params_reporting)
 page_view_reporting_notebook_task['base_parameters'].update(base_params_reporting)
 paid_search_reporting_notebook_task['base_parameters'].update(base_params_reporting)
 
-# update base params latency
-latency_record_new_session_notebook_task['base_parameters'].update(base_params_latency)
-latency_calculation_new_session_notebook_task['base_parameters'].update(base_params_latency)
-latency_record_new_page_views_notebook_task['base_parameters'].update(base_params_latency)
-latency_calculation_new_page_views_notebook_task['base_parameters'].update(base_params_latency)
-latency_record_new_clicks_notebook_task['base_parameters'].update(base_params_latency)
-latency_calculation_new_clicks_notebook_task['base_parameters'].update(base_params_latency)
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-amex-business-reporting-daily',
@@ -285,78 +278,8 @@ with DAG('data-lake-dw-cdm-sdk-amex-business-reporting-daily',
         polling_period_seconds=120
     )
 
-    latency_tracking_new_session = FinServDatabricksSubmitRunOperator(
-        task_id='latency-tracking-new-sessions',
-        new_cluster=small_task_cluster,
-        notebook_task=latency_record_new_session_notebook_task,
-        libraries=staging_libraries,
-        timeout_seconds=1800,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    latency_calculation_new_session = FinServDatabricksSubmitRunOperator(
-        task_id='latency-calculation-new-sessions',
-        new_cluster=small_task_cluster,
-        notebook_task=latency_calculation_new_session_notebook_task,
-        libraries=staging_libraries,
-        timeout_seconds=1800,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    latency_tracking_new_page_views = FinServDatabricksSubmitRunOperator(
-        task_id='latency-tracking-new-page-views',
-        new_cluster=small_task_cluster,
-        notebook_task=latency_record_new_page_views_notebook_task,
-        libraries=staging_libraries,
-        timeout_seconds=1800,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    latency_calculation_new_page_views = FinServDatabricksSubmitRunOperator(
-        task_id='latency-calculation-new-page-views',
-        new_cluster=small_task_cluster,
-        notebook_task=latency_calculation_new_page_views_notebook_task,
-        libraries=staging_libraries,
-        timeout_seconds=1800,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    latency_tracking_new_clicks = FinServDatabricksSubmitRunOperator(
-        task_id='latency-tracking-new-clicks',
-        new_cluster=small_task_cluster,
-        notebook_task=latency_record_new_clicks_notebook_task,
-        libraries=staging_libraries,
-        timeout_seconds=1800,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    latency_calculation_new_clicks = FinServDatabricksSubmitRunOperator(
-        task_id='latency-calculation-new-clicks',
-        new_cluster=small_task_cluster,
-        notebook_task=latency_calculation_new_clicks_notebook_task,
-        libraries=staging_libraries,
-        timeout_seconds=1800,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
 
 # Dependencies
-amex_business_staging_tables >> [latency_tracking_new_session, latency_tracking_new_page_views, latency_tracking_new_clicks, product_reporting]
-
-# Defining additional reporting dependencies
+amex_business_staging_tables >> [product_reporting, conversion_reporting, page_view_reporting, session_reporting]
 session_reporting >> paid_search_reporting
 conversion_reporting >> paid_search_reporting
-
-# Latency recording task dependencies
-latency_tracking_new_session >> session_reporting
-latency_tracking_new_page_views >> page_view_reporting
-latency_tracking_new_clicks >> conversion_reporting
-
-session_reporting >> latency_calculation_new_session
-page_view_reporting >> latency_calculation_new_page_views
-conversion_reporting >> latency_calculation_new_clicks

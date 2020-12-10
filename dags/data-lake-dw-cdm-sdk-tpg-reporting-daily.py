@@ -248,37 +248,6 @@ amp_reporting_notebook_task = {
     'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/reporting-table-notebooks/Amp',
 }
 
-# ############################Notebook params for Latency################################
-
-latency_record_new_session_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/helper-scripts/latency-notebooks/Record New Session Ids',
-}
-
-latency_calculation_new_session_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/helper-scripts/latency-notebooks/Timestamp New Session Ids',
-}
-
-latency_record_new_page_views_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/helper-scripts/latency-notebooks/Record New Page View Ids',
-}
-
-latency_calculation_new_page_views_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/helper-scripts/latency-notebooks/Timestamp New Page View Ids',
-}
-
-latency_record_new_clicks_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/helper-scripts/latency-notebooks/Record New Clicks Ids',
-}
-
-latency_calculation_new_clicks_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/helper-scripts/latency-notebooks/Timestamp New Conversion Ids',
-}
 
 # Adzerk Notebook Task Parameter Setup:
 adzerk_clicks_notebook_task = {
@@ -288,14 +257,6 @@ adzerk_clicks_notebook_task = {
     },
     'notebook_path': adzerk_clicks_notebook_path,
 }
-
-# Update latency base params
-latency_calculation_new_clicks_notebook_task['base_parameters'].update(base_params_latency)
-latency_calculation_new_page_views_notebook_task['base_parameters'].update(base_params_latency)
-latency_calculation_new_session_notebook_task['base_parameters'].update(base_params_latency)
-latency_record_new_clicks_notebook_task['base_parameters'].update(base_params_latency)
-latency_record_new_page_views_notebook_task['base_parameters'].update(base_params_latency)
-latency_record_new_session_notebook_task['base_parameters'].update(base_params_latency)
 
 # dimension base params
 dimension_tables_notebook_task['base_parameters'].update(base_params_staging)
@@ -406,79 +367,10 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
         polling_period_seconds=240
     )
 
-    latency_tracking_new_session = FinServDatabricksSubmitRunOperator(
-        task_id='latency-tracking-new-sessions',
-        new_cluster=medium_task_cluster,
-        notebook_task=latency_record_new_session_notebook_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    latency_calculation_new_session = FinServDatabricksSubmitRunOperator(
-        task_id='latency-calculation-new-sessions',
-        new_cluster=medium_task_cluster,
-        notebook_task=latency_calculation_new_session_notebook_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    latency_tracking_new_page_views = FinServDatabricksSubmitRunOperator(
-        task_id='latency-tracking-new-page-views',
-        new_cluster=medium_task_cluster,
-        notebook_task=latency_record_new_page_views_notebook_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    latency_calculation_new_page_views = FinServDatabricksSubmitRunOperator(
-        task_id='latency-calculation-new-page-views',
-        new_cluster=medium_task_cluster,
-        notebook_task=latency_calculation_new_page_views_notebook_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    latency_tracking_new_clicks = FinServDatabricksSubmitRunOperator(
-        task_id='latency-tracking-new-clicks',
-        new_cluster=medium_task_cluster,
-        notebook_task=latency_record_new_clicks_notebook_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    latency_calculation_new_clicks = FinServDatabricksSubmitRunOperator(
-        task_id='latency-calculation-new-clicks',
-        new_cluster=medium_task_cluster,
-        notebook_task=latency_calculation_new_clicks_notebook_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
 # Dependencies
-tpg_staging_tables >> [dimension_tables, latency_tracking_new_clicks, latency_tracking_new_page_views, latency_tracking_new_session, product_reporting]
+tpg_staging_tables >> [dimension_tables, product_reporting, page_view_reporting, session_reporting]
 
 dimension_tables >> conversion_reporting
 
-# Latency
-latency_tracking_new_clicks >> conversion_reporting
-latency_tracking_new_page_views >> page_view_reporting
-latency_tracking_new_session >> session_reporting
-
 conversion_reporting >> amp_reporting
 session_reporting >> [anonymous_reporting, attribution_reporting]
-
-latency_calculation_new_clicks << conversion_reporting
-latency_calculation_new_page_views << page_view_reporting
-latency_calculation_new_session << session_reporting

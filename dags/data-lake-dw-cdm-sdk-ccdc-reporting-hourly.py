@@ -246,4 +246,3 @@ ccdc_staging_tables >> conversion_reporting
 conversion_reporting >> session_reporting
 conversion_reporting >> product_reporting
 conversion_reporting >> page_view_reporting
-

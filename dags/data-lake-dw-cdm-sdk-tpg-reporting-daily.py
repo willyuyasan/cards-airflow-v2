@@ -374,4 +374,3 @@ dimension_tables >> conversion_reporting
 
 conversion_reporting >> amp_reporting
 session_reporting >> [anonymous_reporting, attribution_reporting]
-

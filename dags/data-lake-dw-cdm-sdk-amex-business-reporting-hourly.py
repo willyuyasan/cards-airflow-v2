@@ -284,4 +284,3 @@ amex_business_staging_tables >> [product_reporting, conversion_reporting, page_v
 # Defining additional reporting dependencies
 session_reporting >> paid_search_reporting
 conversion_reporting >> paid_search_reporting
-

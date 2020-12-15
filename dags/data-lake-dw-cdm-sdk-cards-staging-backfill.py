@@ -34,7 +34,8 @@ LOG_PATH = {
 
 # Cluster Setup Step
 extra_small_task_custom_cluster = {
-    'spark_version': '5.3.x-scala2.11',
+    'spark_version': '7.3.x-scala2.12',
+    'spark_version': '7.3.x-scala2.12',
     'node_type_id': 'm5a.2xlarge',
     'driver_node_type_id': 'm5a.2xlarge',
     'num_workers': 1,
@@ -67,7 +68,8 @@ extra_small_task_custom_cluster = {
 }
 
 small_task_custom_cluster = {
-    'spark_version': '5.3.x-scala2.11',
+    'spark_version': '7.3.x-scala2.12',
+    'spark_version': '7.3.x-scala2.12',
     'node_type_id': 'm5a.2xlarge',
     'driver_node_type_id': 'm5a.2xlarge',
     'num_workers': 6,

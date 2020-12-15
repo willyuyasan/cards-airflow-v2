@@ -442,15 +442,15 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-backfill',
          max_active_runs=1,
          default_args=default_args) as dag:
 
-    session_staging = FinServDatabricksSubmitRunOperator(
-        task_id='session-staging',
-        new_cluster=small_task_custom_cluster,
-        spark_jar_task=session_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=14400,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
+    # session_staging = FinServDatabricksSubmitRunOperator(
+    #     task_id='session-staging',
+    #     new_cluster=small_task_custom_cluster,
+    #     spark_jar_task=session_staging_jar_task,
+    #     libraries=staging_libraries,
+    #     timeout_seconds=14400,
+    #     databricks_conn_id=airflow_svc_token,
+    #     polling_period_seconds=120
+    # )
 
     # traffic_sources_staging = FinServDatabricksSubmitRunOperator(
     #     task_id='traffic-sources-staging',
@@ -597,7 +597,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-backfill',
         new_cluster=small_task_custom_cluster,
         spark_jar_task=paidsearch_staging_jar_task,
         libraries=staging_libraries,
-        timeout_seconds=14400,
+        timeout_seconds=21600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
@@ -690,7 +690,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-backfill',
 
 # Staging Dependencies
 # session_staging >> traffic_sources_staging
-session_staging >> paidsearch_staging
+# session_staging >> paidsearch_staging
 
 # # CCDC Staging Dependencies
 # [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging,

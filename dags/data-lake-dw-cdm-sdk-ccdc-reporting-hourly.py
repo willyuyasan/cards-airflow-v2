@@ -152,7 +152,7 @@ session_reporting_jar_task = {
         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.ccdc.reporting.Session",
         "ACCOUNT=" + Variable.get("DBX_CCDC_Account"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+        "WRITE_BUCKET=" + Variable.get("DBX_CCDC_Bucket")
     ]
 }
 
@@ -167,7 +167,7 @@ conversion_reporting_jar_task = {
         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.ccdc.reporting.Conversion",
         "ACCOUNT=" + Variable.get("DBX_CCDC_Account"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+        "WRITE_BUCKET=" + Variable.get("DBX_CCDC_Bucket")
     ]
 }
 
@@ -182,7 +182,7 @@ page_view_reporting_jar_task = {
         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.ccdc.reporting.PageView",
         "ACCOUNT=" + Variable.get("DBX_CCDC_Account"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+        "WRITE_BUCKET=" + Variable.get("DBX_CCDC_Bucket")
     ]
 }
 
@@ -197,7 +197,7 @@ product_reporting_jar_task = {
         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.ccdc.reporting.Product",
         "ACCOUNT=" + Variable.get("DBX_CCDC_Account"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+        "WRITE_BUCKET=" + Variable.get("DBX_CCDC_Bucket")
     ]
 }
 

@@ -214,7 +214,7 @@ session_reporting_jar_task = {
         "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.reporting.Session",
         "ACCOUNT=" + Variable.get("DBX_TPG_Account"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+        "WRITE_BUCKET=" + Variable.get("DBX_TPG_Bucket")
     ]
 }
 
@@ -229,7 +229,7 @@ conversion_reporting_jar_task = {
         "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.reporting.Conversion",
         "ACCOUNT=" + Variable.get("DBX_TPG_Account"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+        "WRITE_BUCKET=" + Variable.get("DBX_TPG_Bucket")
     ]
 }
 
@@ -244,7 +244,7 @@ page_view_reporting_jar_task = {
         "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.reporting.PageView",
         "ACCOUNT=" + Variable.get("DBX_TPG_Account"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+        "WRITE_BUCKET=" + Variable.get("DBX_TPG_Bucket")
     ]
 }
 
@@ -259,7 +259,7 @@ product_reporting_jar_task = {
         "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.reporting.Product",
         "ACCOUNT=" + Variable.get("DBX_TPG_Account"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+        "WRITE_BUCKET=" + Variable.get("DBX_TPG_Bucket")
     ]
 }
 

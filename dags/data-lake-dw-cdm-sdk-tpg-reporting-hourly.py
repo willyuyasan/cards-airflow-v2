@@ -293,7 +293,7 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-hourly',
 
     dimension_tables = FinServDatabricksSubmitRunOperator(
         task_id='dimension-tables',
-        new_cluster=medium_task_cluster,
+        new_cluster=older_medium_task_cluster,
         notebook_task=dimension_tables_notebook_task,
         libraries=staging_libraries,
         timeout_seconds=3600,
@@ -343,7 +343,7 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-hourly',
 
     amp_reporting = FinServDatabricksSubmitRunOperator(
         task_id='amp-reporting',
-        new_cluster=medium_task_cluster,
+        new_cluster=older_medium_task_cluster,
         notebook_task=amp_reporting_notebook_task,
         libraries=staging_libraries,
         timeout_seconds=8400,

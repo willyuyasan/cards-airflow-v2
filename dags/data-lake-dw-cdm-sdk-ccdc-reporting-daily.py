@@ -397,7 +397,7 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
 
     session_outcomes_update_reporting = FinServDatabricksSubmitRunOperator(
         task_id='session-outcomes-update-reporting',
-        new_cluster=medium_task_cluster,
+        new_cluster=old_medium_task_cluster,
         notebook_task=session_outcomes_update_reporting_notebook_task,
         libraries=staging_libraries,
         timeout_seconds=7200,
@@ -407,7 +407,7 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
 
     conversion_outcomes_update_reporting = FinServDatabricksSubmitRunOperator(
         task_id='conversion-outcomes-update-reporting',
-        new_cluster=medium_task_cluster,
+        new_cluster=old_medium_task_cluster,
         notebook_task=conversion_outcomes_update_reporting_notebook_task,
         libraries=staging_libraries,
         timeout_seconds=7200,
@@ -417,7 +417,7 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
 
     page_view_outcomes_update_reporting = FinServDatabricksSubmitRunOperator(
         task_id='page-view-outcomes-update-reporting',
-        new_cluster=medium_task_cluster,
+        new_cluster=old_medium_task_cluster,
         notebook_task=page_view_outcomes_update_reporting_notebook_task,
         libraries=staging_libraries,
         timeout_seconds=7200,

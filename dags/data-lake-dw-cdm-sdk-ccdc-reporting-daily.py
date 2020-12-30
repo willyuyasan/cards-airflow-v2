@@ -60,7 +60,7 @@ small_task_cluster = {
     },
 }
 
-medium_task_cluster = {
+old_medium_task_cluster = {
     'spark_version': '5.3.x-scala2.11',
     'node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
     'driver_node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
@@ -88,15 +88,53 @@ medium_task_cluster = {
     },
 }
 
+medium_task_cluster = {
+    'spark_version': '7.3.x-scala2.12',
+    'node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
+    'driver_node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
+    'num_workers': Variable.get("DBX_MEDIUM_CLUSTER_NUM_NODES"),
+    'auto_termination_minutes': 0,
+    'cluster_log_conf': LOG_PATH,
+    'spark_conf': {
+        'spark.sql.sources.partitionOverwriteMode': 'dynamic',
+        'spark.driver.extraJavaOptions': '-Dconfig.resource='+Variable.get("SDK_CONFIG_FILE"),
+        'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
+    },
+    'spark_env_vars': {
+        'java_opts': '-Dconfig.resource='+Variable.get("SDK_CONFIG_FILE")
+    },
+    "aws_attributes": {
+        "availability": "SPOT_WITH_FALLBACK",
+        'ebs_volume_count': 2,
+        'ebs_volume_size': 100,
+        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
+        'first_on_demand': '2',
+        'spot_bid_price_percent': '70',
+        'zone_id': 'us-east-1c',
+        "instance_profile_arn": Variable.get("DBX_CCDC_IAM_ROLE"),
+    },
+    'custom_tags': {
+        'Partner': 'B530',
+        'Project': 'CreditCards.com',
+        'DagId': "{{ti.dag_id}}",
+        'TaskId': "{{ti.task_id}}"
+    },
+}
+
 large_task_cluster = {
-    'spark_version': '5.3.x-scala2.11',
+    'spark_version': '7.3.x-scala2.12',
     'node_type_id': Variable.get("DBX_LARGE_CLUSTER"),
     'driver_node_type_id': Variable.get("DBX_LARGE_CLUSTER"),
     'num_workers': 4,
     'auto_termination_minutes': 0,
     'cluster_log_conf': LOG_PATH,
     'spark_conf': {
-        'spark.sql.sources.partitionOverwriteMode': 'dynamic'
+        'spark.sql.sources.partitionOverwriteMode': 'dynamic',
+        'spark.driver.extraJavaOptions': '-Dconfig.resource='+Variable.get("SDK_CONFIG_FILE"),
+        'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
+    },
+    'spark_env_vars': {
+        'java_opts': '-Dconfig.resource='+Variable.get("SDK_CONFIG_FILE")
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",

@@ -60,7 +60,7 @@ small_task_cluster = {
     },
 }
 
-medium_task_cluster = {
+old_medium_task_cluster = {
     'spark_version': '5.3.x-scala2.11',
     'node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
     'driver_node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
@@ -88,15 +88,53 @@ medium_task_cluster = {
     },
 }
 
+medium_task_cluster = {
+    'spark_version': '7.3.x-scala2.12',
+    'node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
+    'driver_node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
+    'num_workers': Variable.get("DBX_MEDIUM_CLUSTER_NUM_NODES"),
+    'auto_termination_minutes': 0,
+    'dbfs_cluster_log_conf': 'dbfs://home/cluster_log',
+    'spark_conf': {
+        'spark.sql.sources.partitionOverwriteMode': 'dynamic',
+        'spark.driver.extraJavaOptions': '-Dconfig.resource='+Variable.get("SDK_CONFIG_FILE"),
+        'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
+    },
+    'spark_env_vars': {
+        'java_opts': '-Dconfig.resource='+Variable.get("SDK_CONFIG_FILE")
+    },
+    "aws_attributes": {
+        "availability": "SPOT_WITH_FALLBACK",
+        'ebs_volume_count': 2,
+        'ebs_volume_size': 100,
+        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
+        'first_on_demand': '2',
+        'spot_bid_price_percent': '70',
+        'zone_id': 'us-east-1c',
+        "instance_profile_arn": Variable.get("DBX_AMEX_IAM_ROLE"),
+    },
+    'custom_tags': {
+        'Partner': 'B130',
+        'Project': 'American Express - OPEN',
+        'DagId': "{{ti.dag_id}}",
+        'TaskId': "{{ti.task_id}}"
+    },
+}
+
 large_task_cluster = {
-    'spark_version': '5.3.x-scala2.11',
+    'spark_version': '7.3.x-scala2.12',
     'node_type_id': Variable.get("DBX_LARGE_CLUSTER"),
     'driver_node_type_id': Variable.get("DBX_LARGE_CLUSTER"),
     'num_workers': Variable.get("DBX_LARGE_CLUSTER_NUM_NODES"),
     'auto_termination_minutes': 0,
     'dbfs_cluster_log_conf': 'dbfs://home/cluster_log',
     'spark_conf': {
-        'spark.sql.sources.partitionOverwriteMode': 'dynamic'
+        'spark.sql.sources.partitionOverwriteMode': 'dynamic',
+        'spark.driver.extraJavaOptions': '-Dconfig.resource='+Variable.get("SDK_CONFIG_FILE"),
+        'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
+    },
+    'spark_env_vars': {
+        'java_opts': '-Dconfig.resource='+Variable.get("SDK_CONFIG_FILE")
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",
@@ -128,15 +166,6 @@ base_params_reporting = {
     "toDate": "now",
 }
 
-base_params_latency = {
-    "lookBackDays": "1",
-    "stagingPath": Variable.get("DBX_AMEX_BUSINESS_Staging_Path"),
-    "reportingPath": Variable.get("DBX_AMEX_BUSINESS_Reporting_Path"),
-    "metaLatencyPath": Variable.get("DBX_AMEX_BUSINESS_Meta_Latency_Path"),
-    "dataLakePath": Variable.get("DBX_DataLake_Path"),
-    "tenantId": Variable.get("DBX_AMEX_BUSINESS_Tenant_Id"),
-}
-
 # Libraries
 staging_libraries = [
     {
@@ -147,25 +176,62 @@ staging_libraries = [
     },
 ]
 
+reporting_libraries = [
+    {
+        "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
+    },
+    {
+        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
+    }
+]
+
 # Reporting table tasks
-conversion_reporting_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/reporting-table-notebooks/Conversion'
+conversion_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("AMEX_BUSINESS_REPORTING_SHORT_LOOKBACK_DAYS")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.amex_business.reporting.Conversion",
+        "ACCOUNT=" + Variable.get("DBX_AMEX_BUSINESS_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_AMEX_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
 }
 
-session_reporting_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/reporting-table-notebooks/Session'
+session_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("AMEX_BUSINESS_REPORTING_SHORT_LOOKBACK_DAYS")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.amex_business.reporting.Session",
+        "ACCOUNT=" + Variable.get("DBX_AMEX_BUSINESS_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_AMEX_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
 }
 
-product_reporting_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/reporting-table-notebooks/Product'
-}
-
-page_view_reporting_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/reporting-table-notebooks/PageView'
+page_view_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("AMEX_BUSINESS_REPORTING_SHORT_LOOKBACK_DAYS")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.amex_business.reporting.PageView",
+        "ACCOUNT=" + Variable.get("DBX_AMEX_BUSINESS_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_AMEX_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
 }
 
 paid_search_reporting_notebook_task = {
@@ -173,42 +239,7 @@ paid_search_reporting_notebook_task = {
     'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/reporting-table-notebooks/PaidSearchSummary',
 }
 
-# latency tasks
-latency_record_new_session_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/helper-scripts/latency-notebooks/Record New Session Ids',
-}
-
-latency_calculation_new_session_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/helper-scripts/latency-notebooks/Timestamp New Session Ids',
-}
-
-latency_record_new_page_views_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/helper-scripts/latency-notebooks/Record New Page View Ids',
-}
-
-latency_calculation_new_page_views_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/helper-scripts/latency-notebooks/Timestamp New Page View Ids',
-}
-
-latency_record_new_clicks_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/helper-scripts/latency-notebooks/Record New Clicks Ids',
-}
-
-latency_calculation_new_clicks_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/helper-scripts/latency-notebooks/Timestamp New Conversion Ids',
-}
-
 # update base params reporting
-conversion_reporting_notebook_task['base_parameters'].update(base_params_reporting)
-session_reporting_notebook_task['base_parameters'].update(base_params_reporting)
-product_reporting_notebook_task['base_parameters'].update(base_params_reporting)
-page_view_reporting_notebook_task['base_parameters'].update(base_params_reporting)
 paid_search_reporting_notebook_task['base_parameters'].update(base_params_reporting)
 
 # DAG Creation Step
@@ -230,8 +261,8 @@ with DAG('data-lake-dw-cdm-sdk-amex-business-reporting-hourly',
     conversion_reporting = FinServDatabricksSubmitRunOperator(
         task_id='conversion-reporting',
         new_cluster=medium_task_cluster,
-        notebook_task=conversion_reporting_notebook_task,
-        libraries=staging_libraries,
+        spark_jar_task=conversion_reporting_jar_task,
+        libraries=reporting_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=60
@@ -240,8 +271,8 @@ with DAG('data-lake-dw-cdm-sdk-amex-business-reporting-hourly',
     session_reporting = FinServDatabricksSubmitRunOperator(
         task_id='session-reporting',
         new_cluster=large_task_cluster,
-        notebook_task=session_reporting_notebook_task,
-        libraries=staging_libraries,
+        spark_jar_task=session_reporting_jar_task,
+        libraries=reporting_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=60
@@ -250,18 +281,8 @@ with DAG('data-lake-dw-cdm-sdk-amex-business-reporting-hourly',
     page_view_reporting = FinServDatabricksSubmitRunOperator(
         task_id='page-view-reporting',
         new_cluster=medium_task_cluster,
-        notebook_task=page_view_reporting_notebook_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    product_reporting = FinServDatabricksSubmitRunOperator(
-        task_id='product-reporting',
-        new_cluster=small_task_cluster,
-        notebook_task=product_reporting_notebook_task,
-        libraries=staging_libraries,
+        spark_jar_task=page_view_reporting_jar_task,
+        libraries=reporting_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
@@ -269,7 +290,7 @@ with DAG('data-lake-dw-cdm-sdk-amex-business-reporting-hourly',
 
     paid_search_reporting = FinServDatabricksSubmitRunOperator(
         task_id='paid-search-reporting',
-        new_cluster=medium_task_cluster,
+        new_cluster=old_medium_task_cluster,
         notebook_task=paid_search_reporting_notebook_task,
         libraries=staging_libraries,
         timeout_seconds=3600,
@@ -279,7 +300,7 @@ with DAG('data-lake-dw-cdm-sdk-amex-business-reporting-hourly',
 
 
 # Dependencies
-amex_business_staging_tables >> [product_reporting, conversion_reporting, page_view_reporting, session_reporting]
+amex_business_staging_tables >> [conversion_reporting, page_view_reporting, session_reporting]
 
 # Defining additional reporting dependencies
 session_reporting >> paid_search_reporting

@@ -34,7 +34,7 @@ LOG_PATH = {
 # Base parameters update
 
 base_params_reporting = {
-    "lookBackDays": Variable.get("AMEX_CONSUMER_REPORTING_SHORT_LOOKBACK_DAYS"),
+    "lookBackDays": Variable.get("AMEX_CONSUMER_REPORTING_LONG_LOOKBACK_DAYS"),
     "environment": "reporting",
     "stagingPath": Variable.get("DBX_CARDS_Staging_Path"),
     "reportingPath": Variable.get("DBX_AMEX_CONSUMER_Reporting_Path"),
@@ -194,7 +194,7 @@ conversion_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("AMEX_CONSUMER_REPORTING_SHORT_LOOKBACK_DAYS")))))).strftime(
+            datetime.now() - (timedelta(days=int(int(Variable.get("AMEX_CONSUMER_REPORTING_LONG_LOOKBACK_DAYS")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_AMEX_CONSUMER_Tenant_Id"),
@@ -210,7 +210,7 @@ session_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("AMEX_CONSUMER_REPORTING_SHORT_LOOKBACK_DAYS")))))).strftime(
+            datetime.now() - (timedelta(days=int(int(Variable.get("AMEX_CONSUMER_REPORTING_LONG_LOOKBACK_DAYS")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_AMEX_CONSUMER_Tenant_Id"),
@@ -226,7 +226,7 @@ page_view_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("AMEX_CONSUMER_REPORTING_SHORT_LOOKBACK_DAYS")))))).strftime(
+            datetime.now() - (timedelta(days=int(int(Variable.get("AMEX_CONSUMER_REPORTING_LONG_LOOKBACK_DAYS")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_AMEX_CONSUMER_Tenant_Id"),

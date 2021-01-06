@@ -34,7 +34,7 @@ LOG_PATH = {
 
 # Cluster Setup Step
 extra_small_task_custom_cluster = {
-    'spark_version': '5.3.x-scala2.11',
+    'spark_version': '7.3.x-scala2.12',
     'node_type_id': 'm5a.2xlarge',
     'driver_node_type_id': 'm5a.2xlarge',
     'num_workers': 1,
@@ -67,7 +67,7 @@ extra_small_task_custom_cluster = {
 }
 
 small_task_custom_cluster = {
-    'spark_version': '5.3.x-scala2.11',
+    'spark_version': '7.3.x-scala2.12',
     'node_type_id': 'm5a.2xlarge',
     'driver_node_type_id': 'm5a.2xlarge',
     'num_workers': 6,
@@ -106,7 +106,7 @@ staging_libraries = [
         "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
     },
     {
-        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
+        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
     },
 ]
 
@@ -442,35 +442,35 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-backfill',
          max_active_runs=1,
          default_args=default_args) as dag:
 
-    session_staging = FinServDatabricksSubmitRunOperator(
-        task_id='session-staging',
-        new_cluster=small_task_custom_cluster,
-        spark_jar_task=session_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=14400,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    # traffic_sources_staging = FinServDatabricksSubmitRunOperator(
-    #     task_id='traffic-sources-staging',
-    #     new_cluster=extra_small_task_custom_cluster,
-    #     spark_jar_task=traffic_sources_staging_jar_task,
+    # session_staging = FinServDatabricksSubmitRunOperator(
+    #     task_id='session-staging',
+    #     new_cluster=small_task_custom_cluster,
+    #     spark_jar_task=session_staging_jar_task,
     #     libraries=staging_libraries,
     #     timeout_seconds=14400,
     #     databricks_conn_id=airflow_svc_token,
     #     polling_period_seconds=120
     # )
 
-    page_view_staging = FinServDatabricksSubmitRunOperator(
-        task_id='page-view-staging',
-        new_cluster=small_task_custom_cluster,
-        spark_jar_task=page_view_staging_jar_task,
+    traffic_sources_staging = FinServDatabricksSubmitRunOperator(
+        task_id='traffic-sources-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=traffic_sources_staging_jar_task,
         libraries=staging_libraries,
         timeout_seconds=14400,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
+
+    # page_view_staging = FinServDatabricksSubmitRunOperator(
+    #     task_id='page-view-staging',
+    #     new_cluster=small_task_custom_cluster,
+    #     spark_jar_task=page_view_staging_jar_task,
+    #     libraries=staging_libraries,
+    #     timeout_seconds=14400,
+    #     databricks_conn_id=airflow_svc_token,
+    #     polling_period_seconds=120
+    # )
 
     # cookie_identified_staging = FinServDatabricksSubmitRunOperator(
     #     task_id='cookie-identified-staging',
@@ -512,25 +512,25 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-backfill',
     #     polling_period_seconds=120
     # )
 
-    decsion_staging = FinServDatabricksSubmitRunOperator(
-        task_id='decision-staging',
-        new_cluster=small_task_custom_cluster,
-        spark_jar_task=decision_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=14400,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    page_metrics_staging = FinServDatabricksSubmitRunOperator(
-        task_id='page-metrics-staging',
-        new_cluster=small_task_custom_cluster,
-        spark_jar_task=page_metrics_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=14400,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
+    # decsion_staging = FinServDatabricksSubmitRunOperator(
+    #     task_id='decision-staging',
+    #     new_cluster=small_task_custom_cluster,
+    #     spark_jar_task=decision_staging_jar_task,
+    #     libraries=staging_libraries,
+    #     timeout_seconds=14400,
+    #     databricks_conn_id=airflow_svc_token,
+    #     polling_period_seconds=120
+    # )
+    #
+    # page_metrics_staging = FinServDatabricksSubmitRunOperator(
+    #     task_id='page-metrics-staging',
+    #     new_cluster=small_task_custom_cluster,
+    #     spark_jar_task=page_metrics_staging_jar_task,
+    #     libraries=staging_libraries,
+    #     timeout_seconds=14400,
+    #     databricks_conn_id=airflow_svc_token,
+    #     polling_period_seconds=120
+    # )
 
     # form_submitted_staging = FinServDatabricksSubmitRunOperator(
     #     task_id='form-submitted-staging',
@@ -552,15 +552,15 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-backfill',
     #     polling_period_seconds=120
     # )
 
-    product_viewed_staging = FinServDatabricksSubmitRunOperator(
-        task_id='product-viewed-staging',
-        new_cluster=small_task_custom_cluster,
-        spark_jar_task=product_viewed_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=14400,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
+    # product_viewed_staging = FinServDatabricksSubmitRunOperator(
+    #     task_id='product-viewed-staging',
+    #     new_cluster=small_task_custom_cluster,
+    #     spark_jar_task=product_viewed_staging_jar_task,
+    #     libraries=staging_libraries,
+    #     timeout_seconds=14400,
+    #     databricks_conn_id=airflow_svc_token,
+    #     polling_period_seconds=120
+    # )
 
     # element_clicked_staging = FinServDatabricksSubmitRunOperator(
     #     task_id='element-clicked-staging',
@@ -572,15 +572,15 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-backfill',
     #     polling_period_seconds=120
     # )
 
-    element_viewed_staging = FinServDatabricksSubmitRunOperator(
-        task_id='element-viewed-staging',
-        new_cluster=small_task_custom_cluster,
-        spark_jar_task=element_viewed_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=14400,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
+    # element_viewed_staging = FinServDatabricksSubmitRunOperator(
+    #     task_id='element-viewed-staging',
+    #     new_cluster=small_task_custom_cluster,
+    #     spark_jar_task=element_viewed_staging_jar_task,
+    #     libraries=staging_libraries,
+    #     timeout_seconds=14400,
+    #     databricks_conn_id=airflow_svc_token,
+    #     polling_period_seconds=120
+    # )
 
     # amp_page_viewed_staging = FinServDatabricksSubmitRunOperator(
     #     task_id='amp-page-viewed-staging',
@@ -592,15 +592,15 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-backfill',
     #     polling_period_seconds=120
     # )
     #
-    paidsearch_staging = FinServDatabricksSubmitRunOperator(
-        task_id='paidsearch-staging',
-        new_cluster=small_task_custom_cluster,
-        spark_jar_task=paidsearch_staging_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=14400,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
+    # paidsearch_staging = FinServDatabricksSubmitRunOperator(
+    #     task_id='paidsearch-staging',
+    #     new_cluster=small_task_custom_cluster,
+    #     spark_jar_task=paidsearch_staging_jar_task,
+    #     libraries=staging_libraries,
+    #     timeout_seconds=21600,
+    #     databricks_conn_id=airflow_svc_token,
+    #     polling_period_seconds=120
+    # )
     #
     # hoppageviewed_staging = FinServDatabricksSubmitRunOperator(
     #     task_id='hoppageviewed-staging',
@@ -690,7 +690,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-backfill',
 
 # Staging Dependencies
 # session_staging >> traffic_sources_staging
-session_staging >> paidsearch_staging
+# session_staging >> paidsearch_staging
 
 # # CCDC Staging Dependencies
 # [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging,

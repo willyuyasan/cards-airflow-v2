@@ -42,7 +42,7 @@ extra_small_task_custom_cluster = {
     'cluster_log_conf': LOG_PATH,
     'spark_conf': {
         'spark.sql.sources.partitionOverwriteMode': 'dynamic',
-        'spark.driver.extraJavaOptions': '-Dconfig.resource='+Variable.get("SDK_CONFIG_FILE"),
+        'spark.driver.extraJavaOptions': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE"),
         'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
@@ -75,7 +75,7 @@ small_task_custom_cluster = {
     'cluster_log_conf': LOG_PATH,
     'spark_conf': {
         'spark.sql.sources.partitionOverwriteMode': 'dynamic',
-        'spark.driver.extraJavaOptions': '-Dconfig.resource='+Variable.get("SDK_CONFIG_FILE"),
+        'spark.driver.extraJavaOptions': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE"),
         'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
@@ -108,7 +108,7 @@ medium_task_custom_cluster = {
     'cluster_log_conf': LOG_PATH,
     'spark_conf': {
         'spark.sql.sources.partitionOverwriteMode': 'dynamic',
-        'spark.driver.extraJavaOptions': '-Dconfig.resource='+Variable.get("SDK_CONFIG_FILE"),
+        'spark.driver.extraJavaOptions': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE"),
         'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {

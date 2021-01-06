@@ -89,14 +89,19 @@ medium_task_cluster = {
 }
 
 large_5w_task_cluster = {
-    'spark_version': '5.3.x-scala2.11',
+    'spark_version': '7.3.x-scala2.12',
     'node_type_id': Variable.get("DBX_LARGE_CLUSTER"),
     'driver_node_type_id': Variable.get("DBX_LARGE_CLUSTER"),
     'num_workers': 5,
     'auto_termination_minutes': 0,
     'cluster_log_conf': LOG_PATH,
     'spark_conf': {
-        'spark.sql.sources.partitionOverwriteMode': 'dynamic'
+        'spark.sql.sources.partitionOverwriteMode': 'dynamic',
+        'spark.driver.extraJavaOptions': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE"),
+        'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
+    },
+    'spark_env_vars': {
+        'java_opts': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE")
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",
@@ -117,7 +122,7 @@ large_5w_task_cluster = {
 }
 
 large_11w_task_cluster = {
-    'spark_version': '5.3.x-scala2.11',
+    'spark_version': '7.3.x-scala2.12',
     'node_type_id': 'i3.4xlarge',
     'driver_node_type_id': 'i3.4xlarge',
     'num_workers': 11,
@@ -125,7 +130,11 @@ large_11w_task_cluster = {
     'cluster_log_conf': LOG_PATH,
     'spark_conf': {
         'spark.sql.sources.partitionOverwriteMode': 'dynamic',
-        'spark.rpc.askTimeout': '800s'
+        'spark.driver.extraJavaOptions': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE"),
+        'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
+    },
+    'spark_env_vars': {
+        'java_opts': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE")
     },
     'aws_attributes': {
         'ebs_volume_count': 9,
@@ -169,27 +178,6 @@ base_params_reporting = {
     "toDate": "now",
 }
 
-base_params_reporting_attribution = {
-    "lookBackDays": Variable.get("TPG_SHORT_LOOKBACK_DAYS"),
-    "environment": "reporting",
-    "stagingPath": Variable.get("DBX_CARDS_Staging_Path"),
-    "reportingPath": Variable.get("DBX_TPG_Reporting_Path"),
-    "dimensionPath": Variable.get("DBX_TPG_Dimension_Path"),
-    "loggingPath": Variable.get("DBX_TPG_Logging_Path"),
-    "dataLakePath": Variable.get("DBX_DataLake_Path"),
-    "tenantName": "tpg",
-    "toDate": "now",
-}
-
-base_params_latency = {
-    "lookBackDays": "1",
-    "stagingPath": Variable.get("DBX_CARDS_Staging_Path"),
-    "reportingPath": Variable.get("DBX_TPG_Reporting_Path"),
-    "metaLatencyPath": Variable.get("DBX_TPG_Meta_Latency_Path"),
-    "dataLakePath": Variable.get("DBX_DataLake_Path"),
-    "tenantId": Variable.get("DBX_TPG_Tenant_Id"),
-}
-
 base_params = {
     "lookBackDays": Variable.get("DBX_TPG_ADZERK_LOOKBACK_DAYS")
 }
@@ -204,6 +192,15 @@ staging_libraries = [
     },
 ]
 
+reporting_libraries = [
+    {
+        "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
+    },
+    {
+        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
+    }
+]
+
 adzerk_clicks_notebook_path = '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/tpg-adzerk/clicks'
 
 # Dimension tables task
@@ -213,34 +210,100 @@ dimension_tables_notebook_task = {
 }
 
 # Reporting table tasks
-conversion_reporting_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/reporting-table-notebooks/Conversion'
+session_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("TPG_LONG_LOOKBACK_DAYS")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.reporting.Session",
+        "ACCOUNT=" + Variable.get("DBX_TPG_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_TPG_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
 }
 
-session_reporting_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/reporting-table-notebooks/Session'
+conversion_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("TPG_LONG_LOOKBACK_DAYS")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.reporting.Conversion",
+        "ACCOUNT=" + Variable.get("DBX_TPG_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_TPG_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
 }
 
-product_reporting_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/reporting-table-notebooks/Product'
+product_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("TPG_LONG_LOOKBACK_DAYS")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.reporting.Product",
+        "ACCOUNT=" + Variable.get("DBX_TPG_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_TPG_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
 }
 
-page_view_reporting_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/reporting-table-notebooks/PageView'
+page_view_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("TPG_LONG_LOOKBACK_DAYS")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.reporting.PageView",
+        "ACCOUNT=" + Variable.get("DBX_TPG_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_TPG_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
 }
 
-attribution_reporting_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/reporting-table-notebooks/Attribution',
+attribution_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=730))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.reporting.Attribution",
+        "ACCOUNT=" + Variable.get("DBX_TPG_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_TPG_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
 }
 
-anonymous_reporting_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/reporting-table-notebooks/Anonymous',
+anonymous_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=730))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.reporting.Anonymous",
+        "ACCOUNT=" + Variable.get("DBX_TPG_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_TPG_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
 }
 
 amp_reporting_notebook_task = {
@@ -263,12 +326,6 @@ dimension_tables_notebook_task['base_parameters'].update(base_params_staging)
 
 # updating base params reporting
 amp_reporting_notebook_task['base_parameters'].update(base_params_reporting)
-page_view_reporting_notebook_task['base_parameters'].update(base_params_reporting)
-product_reporting_notebook_task['base_parameters'].update(base_params_reporting)
-session_reporting_notebook_task['base_parameters'].update(base_params_reporting)
-anonymous_reporting_notebook_task['base_parameters'].update(base_params_reporting)
-attribution_reporting_notebook_task['base_parameters'].update(base_params_reporting_attribution)
-conversion_reporting_notebook_task['base_parameters'].update(base_params_reporting)
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
@@ -300,8 +357,8 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
     conversion_reporting = FinServDatabricksSubmitRunOperator(
         task_id='conversion-reporting',
         new_cluster=large_5w_task_cluster,
-        notebook_task=conversion_reporting_notebook_task,
-        libraries=staging_libraries,
+        spark_jar_task=conversion_reporting_jar_task,
+        libraries=reporting_libraries,
         timeout_seconds=7200,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
@@ -310,8 +367,8 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
     session_reporting = FinServDatabricksSubmitRunOperator(
         task_id='session-reporting',
         new_cluster=large_5w_task_cluster,
-        notebook_task=session_reporting_notebook_task,
-        libraries=staging_libraries,
+        spark_jar_task=session_reporting_jar_task,
+        libraries=reporting_libraries,
         timeout_seconds=7200,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
@@ -320,8 +377,8 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
     page_view_reporting = FinServDatabricksSubmitRunOperator(
         task_id='page-view-reporting',
         new_cluster=large_5w_task_cluster,
-        notebook_task=page_view_reporting_notebook_task,
-        libraries=staging_libraries,
+        spark_jar_task=page_view_reporting_jar_task,
+        libraries=reporting_libraries,
         timeout_seconds=7200,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
@@ -330,8 +387,8 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
     product_reporting = FinServDatabricksSubmitRunOperator(
         task_id='product-reporting',
         new_cluster=large_5w_task_cluster,
-        notebook_task=product_reporting_notebook_task,
-        libraries=staging_libraries,
+        spark_jar_task=product_reporting_jar_task,
+        libraries=reporting_libraries,
         timeout_seconds=7200,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
@@ -350,8 +407,8 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
     anonymous_reporting = FinServDatabricksSubmitRunOperator(
         task_id='anonymous-reporting',
         new_cluster=large_5w_task_cluster,
-        notebook_task=anonymous_reporting_notebook_task,
-        libraries=staging_libraries,
+        spark_jar_task=anonymous_reporting_jar_task,
+        libraries=reporting_libraries,
         timeout_seconds=8400,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=240
@@ -360,8 +417,8 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
     attribution_reporting = FinServDatabricksSubmitRunOperator(
         task_id='attribution-reporting',
         new_cluster=large_11w_task_cluster,
-        notebook_task=attribution_reporting_notebook_task,
-        libraries=staging_libraries,
+        spark_jar_task=attribution_reporting_jar_task,
+        libraries=reporting_libraries,
         timeout_seconds=14000,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=240

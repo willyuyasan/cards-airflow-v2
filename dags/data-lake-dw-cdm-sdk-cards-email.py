@@ -30,7 +30,7 @@ LOG_PATH = {
 
 # Cluster Setup Step
 small_task_custom_cluster = {
-    'spark_version': '5.3.x-scala2.11',
+    'spark_version': '7.3.x-scala2.12',
     'node_type_id': Variable.get("DBX_SMALL_CLUSTER"),
     'driver_node_type_id': Variable.get("DBX_SMALL_CLUSTER"),
     'num_workers': Variable.get("DBX_SMALL_CLUSTER_NUM_NODES"),
@@ -38,11 +38,11 @@ small_task_custom_cluster = {
     'cluster_log_conf': LOG_PATH,
     'spark_conf': {
         'spark.sql.sources.partitionOverwriteMode': 'dynamic',
-        'spark.driver.extraJavaOptions': '-Dconfig.resource=application-cards-' + Variable.get("CARDS_SDK_ENV") + '.conf',
+        'spark.driver.extraJavaOptions': '-Dconfig.resource=application-cards-' + Variable.get("SDK_CONFIG_FILE"),
         'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
-        'java_opts': '-Dconfig.resource=application-cards-' + Variable.get("CARDS_SDK_ENV") + '.conf'
+        'java_opts': '-Dconfig.resource=application-cards-' + Variable.get("SDK_CONFIG_FILE")
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",
@@ -63,13 +63,13 @@ small_task_custom_cluster = {
 }
 
 # Libraries
-staging_libraries = [
+reporting_libraries = [
     {
         "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
     },
     {
-        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
-    },
+        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
+    }
 ]
 
 email_campaign_dim_jar_task = {
@@ -184,6 +184,22 @@ email_workflow_dim_jar_task = {
     ]
 }
 
+email_sub_dim_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CARDS_EMAIL_lookback_days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.email.warehouse.EmailSubDim",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_CARDS_EMAIL_TENANTS"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
 email_event_fct_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
@@ -193,6 +209,22 @@ email_event_fct_jar_task = {
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.email.warehouse.EmailEventFct",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_CARDS_EMAIL_TENANTS"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
+email_click_fct_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CARDS_EMAIL_lookback_days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.email.warehouse.EmailClickFct",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_CARDS_EMAIL_TENANTS"),
@@ -213,7 +245,7 @@ with DAG(DAG_NAME,
         task_id='email-campaign-dim',
         new_cluster=small_task_custom_cluster,
         spark_jar_task=email_campaign_dim_jar_task,
-        libraries=staging_libraries,
+        libraries=reporting_libraries,
         timeout_seconds=1800,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
@@ -223,7 +255,7 @@ with DAG(DAG_NAME,
         task_id='email-link-dim',
         new_cluster=small_task_custom_cluster,
         spark_jar_task=email_link_dim_jar_task,
-        libraries=staging_libraries,
+        libraries=reporting_libraries,
         timeout_seconds=1800,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
@@ -233,7 +265,7 @@ with DAG(DAG_NAME,
         task_id='email-signup-source-dim',
         new_cluster=small_task_custom_cluster,
         spark_jar_task=email_signup_source_dim_jar_task,
-        libraries=staging_libraries,
+        libraries=reporting_libraries,
         timeout_seconds=1800,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
@@ -243,7 +275,7 @@ with DAG(DAG_NAME,
         task_id='email-subject-dim',
         new_cluster=small_task_custom_cluster,
         spark_jar_task=email_subject_dim_jar_task,
-        libraries=staging_libraries,
+        libraries=reporting_libraries,
         timeout_seconds=1800,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
@@ -253,7 +285,7 @@ with DAG(DAG_NAME,
         task_id='email-template-dim',
         new_cluster=small_task_custom_cluster,
         spark_jar_task=email_template_dim_jar_task,
-        libraries=staging_libraries,
+        libraries=reporting_libraries,
         timeout_seconds=1800,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
@@ -263,7 +295,7 @@ with DAG(DAG_NAME,
         task_id='email-unsub-source-dim',
         new_cluster=small_task_custom_cluster,
         spark_jar_task=email_unsub_source_dim_jar_task,
-        libraries=staging_libraries,
+        libraries=reporting_libraries,
         timeout_seconds=1800,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
@@ -273,7 +305,17 @@ with DAG(DAG_NAME,
         task_id='email-workflow-dim',
         new_cluster=small_task_custom_cluster,
         spark_jar_task=email_workflow_dim_jar_task,
-        libraries=staging_libraries,
+        libraries=reporting_libraries,
+        timeout_seconds=1800,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
+    email_sub_dim_task = FinServDatabricksSubmitRunOperator(
+        task_id='email-sub-dim',
+        new_cluster=small_task_custom_cluster,
+        spark_jar_task=email_sub_dim_jar_task,
+        libraries=reporting_libraries,
         timeout_seconds=1800,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
@@ -283,7 +325,17 @@ with DAG(DAG_NAME,
         task_id='email-event-fct',
         new_cluster=small_task_custom_cluster,
         spark_jar_task=email_event_fct_jar_task,
-        libraries=staging_libraries,
+        libraries=reporting_libraries,
+        timeout_seconds=1800,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
+    email_click_fct_task = FinServDatabricksSubmitRunOperator(
+        task_id='email-click-fct',
+        new_cluster=small_task_custom_cluster,
+        spark_jar_task=email_click_fct_jar_task,
+        libraries=reporting_libraries,
         timeout_seconds=1800,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120

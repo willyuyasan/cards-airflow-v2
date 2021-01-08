@@ -62,6 +62,39 @@ small_task_custom_cluster = {
     },
 }
 
+medium_task_custom_cluster = {
+    'spark_version': '7.3.x-scala2.12',
+    'node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
+    'driver_node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
+    'num_workers': Variable.get("DBX_MEDIUM_CLUSTER_NUM_NODES"),
+    'auto_termination_minutes': 0,
+    'cluster_log_conf': LOG_PATH,
+    'spark_conf': {
+        'spark.sql.sources.partitionOverwriteMode': 'dynamic',
+        'spark.driver.extraJavaOptions': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE"),
+        'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
+    },
+    'spark_env_vars': {
+        'java_opts': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE")
+    },
+    "aws_attributes": {
+        "availability": "SPOT_WITH_FALLBACK",
+        'ebs_volume_count': 2,
+        'ebs_volume_size': 200,
+        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
+        'first_on_demand': '0',
+        'spot_bid_price_percent': '60',
+        'zone_id': 'us-east-1c',
+        "instance_profile_arn": Variable.get("DBX_CARDS_IAM_ROLE"),
+    },
+    'custom_tags': {
+        'Partner': 'B530',
+        'Project': 'CreditCards.com',
+        'DagId': "{{ti.dag_id}}",
+        'TaskId': "{{ti.task_id}}"
+    },
+}
+
 # Libraries
 reporting_libraries = [
     {
@@ -323,7 +356,7 @@ with DAG(DAG_NAME,
 
     email_event_fct_task = FinServDatabricksSubmitRunOperator(
         task_id='email-event-fct',
-        new_cluster=small_task_custom_cluster,
+        new_cluster=medium_task_custom_cluster,
         spark_jar_task=email_event_fct_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=1800,
@@ -333,7 +366,7 @@ with DAG(DAG_NAME,
 
     email_click_fct_task = FinServDatabricksSubmitRunOperator(
         task_id='email-click-fct',
-        new_cluster=small_task_custom_cluster,
+        new_cluster=medium_task_custom_cluster,
         spark_jar_task=email_click_fct_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=1800,

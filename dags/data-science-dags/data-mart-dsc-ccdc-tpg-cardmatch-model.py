@@ -15,7 +15,7 @@ default_args = {
     'email_on_failure': True,
     'email_on_retry': False,
     'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
-    'retries': 2,
+    'retries': 1,
     'retry_delay': timedelta(minutes=5),
     # 'op_kwargs': cfg_dict,
     'provide_context': True

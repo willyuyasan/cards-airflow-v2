@@ -123,74 +123,131 @@ etl_notebook_task = {
 # Model Training Notebook Tasks
 avant_model_training_notebook_task = {
     'base_parameters': {
-        "issuer": "Avant"
+        "issuer": "Avant",
+        "card_ids": "6353"
     },
     'notebook_path': '/Projects/CardMatch/Airflow-capable/CardMatch_python_train',
 }
 
-boa_model_training_notebook_task = {
-    'base_parameters': {
-        "issuer": "Bank of America"
-    },
-    'notebook_path': '/Projects/CardMatch/Airflow-capable/CardMatch_python_train',
-}
+# boa_model_training_notebook_task = {
+#     'base_parameters': {
+#         "issuer": "Bank of America",
+#         "card_ids": "220612356, 22079418, 22069416"
+#     },
+#     'notebook_path': '/Projects/CardMatch/Airflow-capable/CardMatch_python_train',
+# }
 
 capital_bank_model_training_notebook_task = {
     'base_parameters': {
-        "issuer": "Capital Bank"
+        "issuer": "Capital Bank",
+        "card_ids": "234110088"
     },
     'notebook_path': '/Projects/CardMatch/Airflow-capable/CardMatch_python_train',
 }
 
 chase_model_training_notebook_task = {
     'base_parameters': {
-        "issuer": "Chase"
+        "issuer": "Chase",
+        "card_ids": "22126065, 221211283"
     },
     'notebook_path': '/Projects/CardMatch/Airflow-capable/CardMatch_python_train',
 }
 
-citi_model_training_notebook_task = {
+citi_model_training_notebook_task_a = {
     'base_parameters': {
-        "issuer": "Citi"
+        "issuer": "Citi",
+        "card_ids": "6295, 6379, 22146011, 221410611, 221410949"
     },
     'notebook_path': '/Projects/CardMatch/Airflow-capable/CardMatch_python_train',
 }
 
-credit_one_model_training_notebook_task = {
+citi_model_training_notebook_task_b = {
     'base_parameters': {
-        "issuer": "Credit One"
+        "issuer": "Citi",
+        "card_ids": "221411361, 221411362, 22145695, 22146209, 221410118"
+    },
+    'notebook_path': '/Projects/CardMatch/Airflow-capable/CardMatch_python_train',
+}
+
+credit_one_model_training_notebook_task_a = {
+    'base_parameters': {
+        "issuer": "Credit One",
+        "card_ids": "6852, 6853, 6854, 6855, 229611108"
+    },
+    'notebook_path': '/Projects/CardMatch/Airflow-capable/CardMatch_python_train',
+}
+
+credit_one_model_training_notebook_task_b = {
+    'base_parameters': {
+        "issuer": "Credit One",
+        "card_ids": "229611306"
     },
     'notebook_path': '/Projects/CardMatch/Airflow-capable/CardMatch_python_train',
 }
 
 credit_strong_model_training_notebook_task = {
     'base_parameters': {
-        "issuer": "Credit Strong"
+        "issuer": "Credit Strong",
+        "card_ids": "7482"
     },
     'notebook_path': '/Projects/CardMatch/Airflow-capable/CardMatch_python_train',
 }
 
 discover_model_training_notebook_task = {
     'base_parameters': {
-        "issuer": "Discover"
+        "issuer": "Discover",
+        "card_ids": "7561, 7562, 7563, 7564, 7565"
     },
     'notebook_path': '/Projects/CardMatch/Airflow-capable/CardMatch_python_train',
 }
 
 self_model_training_notebook_task = {
     'base_parameters': {
-        "issuer": "Self"
+        "issuer": "Self",
+        "card_ids": "7030"
     },
     'notebook_path': '/Projects/CardMatch/Airflow-capable/CardMatch_python_train',
 }
 
-icommissions_model_training_notebook_task = {
+icommissions_model_training_notebook_task_a = {
     'base_parameters': {
-        "issuer": "iCommissions"
+        "issuer": "iCommissions",
+        "card_ids": "6786, 6991, 240910629, 240912393, 243212365"
     },
     'notebook_path': '/Projects/CardMatch/Airflow-capable/CardMatch_python_train',
 }
 
+icommissions_model_training_notebook_task_b = {
+    'base_parameters': {
+        "issuer": "iCommissions",
+        "card_ids": "7523, 7424, 22404927, 22995857, 7615"
+    },
+    'notebook_path': '/Projects/CardMatch/Airflow-capable/CardMatch_python_train',
+}
+
+icommissions_model_training_notebook_task_c = {
+    'base_parameters': {
+        "issuer": "iCommissions",
+        "card_ids": "7199"
+    },
+    'notebook_path': '/Projects/CardMatch/Airflow-capable/CardMatch_python_train',
+}
+
+petal_model_training_notebook_task = {
+    'base_parameters': {
+        "issuer": "Petal",
+        "card_ids": "6588, 7550"
+    },
+    'notebook_path': '/Projects/CardMatch/Airflow-capable/CardMatch_python_train',
+}
+
+wells_fargo_model_training_notebook_task = {
+    'base_parameters': {
+        "issuer": "Wells Fargo",
+        "card_ids": "239210445, 239210444, 239211359"
+    },
+    'notebook_path': '/Projects/CardMatch/Airflow-capable/CardMatch_python_train',
+}
 
 # Model Deployment Notebook Task
 model_deployment_notebook_task = {
@@ -230,15 +287,15 @@ with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-daily',
         polling_period_seconds=120
     )
 
-    boa_model_training_step = FinServDatabricksSubmitRunOperator(
-        task_id='BoA-model-training-step',
-        new_cluster=small_task_cluster,
-        notebook_task=boa_model_training_notebook_task,
-        libraries=model_step_libraries,
-        timeout_seconds=1800,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
+    # boa_model_training_step = FinServDatabricksSubmitRunOperator(
+    #     task_id='BoA-model-training-step',
+    #     new_cluster=small_task_cluster,
+    #     notebook_task=boa_model_training_notebook_task,
+    #     libraries=model_step_libraries,
+    #     timeout_seconds=1800,
+    #     databricks_conn_id=airflow_svc_token,
+    #     polling_period_seconds=120
+    # )
 
     capital_bank_model_training_step = FinServDatabricksSubmitRunOperator(
         task_id='capital-bank-model-training-step',
@@ -260,20 +317,40 @@ with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-daily',
         polling_period_seconds=120
     )
 
-    citi_model_training_step = FinServDatabricksSubmitRunOperator(
-        task_id='citi-model-training-step',
+    citi_model_training_step_a = FinServDatabricksSubmitRunOperator(
+        task_id='citi-model-training-step-a',
         new_cluster=small_task_cluster,
-        notebook_task=citi_model_training_notebook_task,
+        notebook_task=citi_model_training_notebook_task_a,
         libraries=model_step_libraries,
         timeout_seconds=1800,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
 
-    credit_one_model_training_step = FinServDatabricksSubmitRunOperator(
-        task_id='credit-one-model-training-step',
+    citi_model_training_step_b = FinServDatabricksSubmitRunOperator(
+        task_id='citi-model-training-step-b',
         new_cluster=small_task_cluster,
-        notebook_task=credit_one_model_training_notebook_task,
+        notebook_task=citi_model_training_notebook_task_b,
+        libraries=model_step_libraries,
+        timeout_seconds=1800,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
+    credit_one_model_training_step_a = FinServDatabricksSubmitRunOperator(
+        task_id='credit-one-model-training-step-a',
+        new_cluster=small_task_cluster,
+        notebook_task=credit_one_model_training_notebook_task_a,
+        libraries=model_step_libraries,
+        timeout_seconds=1800,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
+    credit_one_model_training_step_b = FinServDatabricksSubmitRunOperator(
+        task_id='credit-one-model-training-step-b',
+        new_cluster=small_task_cluster,
+        notebook_task=credit_one_model_training_notebook_task_b,
         libraries=model_step_libraries,
         timeout_seconds=1800,
         databricks_conn_id=airflow_svc_token,
@@ -310,10 +387,50 @@ with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-daily',
         polling_period_seconds=120
     )
 
-    icommissions_model_training_step = FinServDatabricksSubmitRunOperator(
-        task_id='iCommissions-model-training-step',
+    icommissions_model_training_step_a = FinServDatabricksSubmitRunOperator(
+        task_id='iCommissions-model-training-step-a',
         new_cluster=small_task_cluster,
-        notebook_task=icommissions_model_training_notebook_task,
+        notebook_task=icommissions_model_training_notebook_task_a,
+        libraries=model_step_libraries,
+        timeout_seconds=1800,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
+    icommissions_model_training_step_b = FinServDatabricksSubmitRunOperator(
+        task_id='iCommissions-model-training-step-b',
+        new_cluster=small_task_cluster,
+        notebook_task=icommissions_model_training_notebook_task_b,
+        libraries=model_step_libraries,
+        timeout_seconds=1800,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
+    icommissions_model_training_step_c = FinServDatabricksSubmitRunOperator(
+        task_id='iCommissions-model-training-step-c',
+        new_cluster=small_task_cluster,
+        notebook_task=icommissions_model_training_notebook_task_c,
+        libraries=model_step_libraries,
+        timeout_seconds=1800,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
+    petal_model_training_step = FinServDatabricksSubmitRunOperator(
+        task_id='Petal-model-training-step',
+        new_cluster=small_task_cluster,
+        notebook_task=petal_model_training_notebook_task,
+        libraries=model_step_libraries,
+        timeout_seconds=1800,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
+    wells_fargo_model_training_step = FinServDatabricksSubmitRunOperator(
+        task_id='Wells-Fargo-model-training-step',
+        new_cluster=small_task_cluster,
+        notebook_task=wells_fargo_model_training_notebook_task,
         libraries=model_step_libraries,
         timeout_seconds=1800,
         databricks_conn_id=airflow_svc_token,
@@ -331,11 +448,18 @@ with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-daily',
     )
 
 # Dependency setup
-etl_notebook_step >> [avant_model_training_step, boa_model_training_step, capital_bank_model_training_step,
-                      chase_model_training_step, citi_model_training_step, credit_one_model_training_step,
-                      credit_strong_model_training_step, discover_model_training_step, self_model_training_step,
-                      icommissions_model_training_step]
-[avant_model_training_step, boa_model_training_step, capital_bank_model_training_step,
- chase_model_training_step, citi_model_training_step, credit_one_model_training_step,
- credit_strong_model_training_step, discover_model_training_step, self_model_training_step,
- icommissions_model_training_step] >> model_deployment_step
+etl_notebook_step >> [avant_model_training_step, capital_bank_model_training_step,
+                      chase_model_training_step, citi_model_training_step_a, citi_model_training_step_b,
+                      credit_one_model_training_step_a, credit_one_model_training_step_b, credit_strong_model_training_step,
+                      discover_model_training_step, self_model_training_step,
+                      icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
+                      petal_model_training_step, wells_fargo_model_training_step
+                      ]
+
+[avant_model_training_step, capital_bank_model_training_step,
+ chase_model_training_step, citi_model_training_step_a, citi_model_training_step_b,
+ credit_one_model_training_step_a, credit_one_model_training_step_b, credit_strong_model_training_step,
+ discover_model_training_step, self_model_training_step,
+ icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
+ petal_model_training_step, wells_fargo_model_training_step
+ ] >> model_deployment_step

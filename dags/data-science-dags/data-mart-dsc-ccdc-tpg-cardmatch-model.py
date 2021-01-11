@@ -24,7 +24,7 @@ default_args = {
 # DBX tokens and logs
 airflow_svc_token = "databricks_airflow_svc_token"
 ACCOUNT = 'cards'
-DAG_NAME = 'data-mart-dsc-ccdc-tpg-cardmatch-model-daily'
+DAG_NAME = 'data-mart-dsc-ccdc-tpg-cardmatch-model-monthly'
 
 LOG_PATH = {
     'dbfs': {
@@ -259,7 +259,7 @@ model_deployment_notebook_task = {
 }
 
 # DAG Creation Step
-with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-daily',
+with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-monthly',
          schedule_interval=None,
          dagrun_timeout=timedelta(hours=2),
          catchup=False,

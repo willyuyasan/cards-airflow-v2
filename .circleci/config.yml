@@ -37,9 +37,6 @@ jobs:
           dependency-file: test-requirements.txt
       - python/save-cache:
           dependency-file: test-requirements.txt
-      - run:
-          name: run linter
-          command: pycodestyle .
       - python/test
   build:
     executor: docker_build

@@ -259,7 +259,7 @@ model_deployment_notebook_task = {
 }
 
 # DAG Creation Step
-with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-daily',
+with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-monthly',
          schedule_interval=None,
          dagrun_timeout=timedelta(hours=2),
          catchup=False,

@@ -31,12 +31,15 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - checkout
-      - python/load-cache:
-          dependency-file: test-requirements.txt
+      #- python/load-cache:
+      #    dependency-file: test-requirements.txt
       - python/install-deps:
           dependency-file: test-requirements.txt
       - python/save-cache:
           dependency-file: test-requirements.txt
+      - run:
+          name: run linter
+          command: pycodestyle .
       - python/test
   build:
     executor: docker_build

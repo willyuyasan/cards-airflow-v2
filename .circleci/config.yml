@@ -31,8 +31,8 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - checkout
-      - python/load-cache:
-          dependency-file: test-requirements.txt
+      #- python/load-cache:
+      #    dependency-file: test-requirements.txt
       - python/install-deps:
           dependency-file: test-requirements.txt
       - python/save-cache:

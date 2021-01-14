@@ -282,7 +282,7 @@ with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-monthly',
         new_cluster=small_task_cluster,
         notebook_task=avant_model_training_notebook_task,
         libraries=model_step_libraries,
-        timeout_seconds=1800,
+        timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
@@ -302,7 +302,7 @@ with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-monthly',
         new_cluster=small_task_cluster,
         notebook_task=capital_bank_model_training_notebook_task,
         libraries=model_step_libraries,
-        timeout_seconds=1800,
+        timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
@@ -312,7 +312,7 @@ with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-monthly',
         new_cluster=small_task_cluster,
         notebook_task=chase_model_training_notebook_task,
         libraries=model_step_libraries,
-        timeout_seconds=1800,
+        timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
@@ -322,7 +322,7 @@ with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-monthly',
         new_cluster=small_task_cluster,
         notebook_task=citi_model_training_notebook_task_a,
         libraries=model_step_libraries,
-        timeout_seconds=1800,
+        timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
@@ -332,7 +332,7 @@ with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-monthly',
         new_cluster=small_task_cluster,
         notebook_task=citi_model_training_notebook_task_b,
         libraries=model_step_libraries,
-        timeout_seconds=1800,
+        timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
@@ -342,7 +342,7 @@ with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-monthly',
         new_cluster=small_task_cluster,
         notebook_task=credit_one_model_training_notebook_task_a,
         libraries=model_step_libraries,
-        timeout_seconds=1800,
+        timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
@@ -352,7 +352,7 @@ with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-monthly',
         new_cluster=small_task_cluster,
         notebook_task=credit_one_model_training_notebook_task_b,
         libraries=model_step_libraries,
-        timeout_seconds=1800,
+        timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
@@ -362,7 +362,7 @@ with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-monthly',
         new_cluster=small_task_cluster,
         notebook_task=credit_strong_model_training_notebook_task,
         libraries=model_step_libraries,
-        timeout_seconds=1800,
+        timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
@@ -372,7 +372,7 @@ with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-monthly',
         new_cluster=small_task_cluster,
         notebook_task=discover_model_training_notebook_task,
         libraries=model_step_libraries,
-        timeout_seconds=1800,
+        timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
@@ -382,7 +382,7 @@ with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-monthly',
         new_cluster=small_task_cluster,
         notebook_task=self_model_training_notebook_task,
         libraries=model_step_libraries,
-        timeout_seconds=1800,
+        timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
@@ -392,7 +392,7 @@ with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-monthly',
         new_cluster=small_task_cluster,
         notebook_task=icommissions_model_training_notebook_task_a,
         libraries=model_step_libraries,
-        timeout_seconds=1800,
+        timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
@@ -402,7 +402,7 @@ with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-monthly',
         new_cluster=small_task_cluster,
         notebook_task=icommissions_model_training_notebook_task_b,
         libraries=model_step_libraries,
-        timeout_seconds=1800,
+        timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
@@ -412,7 +412,7 @@ with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-monthly',
         new_cluster=small_task_cluster,
         notebook_task=icommissions_model_training_notebook_task_c,
         libraries=model_step_libraries,
-        timeout_seconds=1800,
+        timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
@@ -422,7 +422,7 @@ with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-monthly',
         new_cluster=small_task_cluster,
         notebook_task=petal_model_training_notebook_task,
         libraries=model_step_libraries,
-        timeout_seconds=1800,
+        timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
@@ -432,7 +432,7 @@ with DAG('data-mart-dsc-ccdc-tpg-cardmatch-model-monthly',
         new_cluster=small_task_cluster,
         notebook_task=wells_fargo_model_training_notebook_task,
         libraries=model_step_libraries,
-        timeout_seconds=1800,
+        timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )

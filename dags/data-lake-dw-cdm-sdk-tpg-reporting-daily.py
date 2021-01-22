@@ -335,9 +335,6 @@ adzerk_clicks_notebook_task = {
 # dimension base params
 dimension_tables_notebook_task['base_parameters'].update(base_params_staging)
 
-# updating base params reporting
-#amp_reporting_notebook_task['base_parameters'].update(base_params_reporting)
-
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
          schedule_interval='0 8 * * *',

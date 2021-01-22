@@ -844,6 +844,10 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
         task_id='external-amex-consumer-staging'
     )
 
+    lp_staging_tables = DummyOperator(
+        task_id='external-lp-staging'
+    )
+
 # Staging Dependencies
 session_staging >> traffic_sources_staging
 session_staging >> paidsearch_staging
@@ -870,3 +874,6 @@ amex_ot_details_staging >> amex_ot_summary_staging
     element_viewed_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging,
     paidsearch_staging, cookies_staging, pqo_offer_received_staging, pzn_offers_received_staging,
     pqo_offer_requested_staging, amex_ot_summary_staging] >> amex_consumer_staging_tables
+
+# Lonely Planet Dependencies
+[session_staging, page_view_staging, page_metrics_staging] >> lp_staging_tables

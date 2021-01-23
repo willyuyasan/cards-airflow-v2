@@ -420,7 +420,7 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
         polling_period_seconds=120
     )
 
-    pageview_outcomes_update_reporting = FinServDatabricksSubmitRunOperator(
+    page_view_outcomes_update_reporting = FinServDatabricksSubmitRunOperator(
         task_id='pageview-outcomes-update-reporting',
         new_cluster=medium_task_cluster,
         spark_jar_task=pageview_outcomes_update_reporting_jar_task,

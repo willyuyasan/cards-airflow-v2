@@ -204,7 +204,7 @@ with DAG('data-lake-dw-cdm-sdk-lp-reporting-hourly',
     page_view_reporting = FinServDatabricksSubmitRunOperator(
         task_id='page-view-reporting',
         new_cluster=small_task_cluster,
-        spark_jar_task=page_view_reporting,
+        spark_jar_task=page_view_reporting_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,

@@ -23,7 +23,7 @@ default_args = {
 # token variable
 airflow_svc_token = "databricks_airflow_svc_token"
 ACCOUNT = 'cards'
-DAG_NAME = 'data-lake-dw-cdm-sdk-lonely-planet-reporting-hourly'
+DAG_NAME = 'data-lake-dw-cdm-sdk-lp-reporting-hourly'
 
 LOG_PATH = {
     'dbfs': {
@@ -175,7 +175,7 @@ page_view_reporting_jar_task = {
 
 
 # DAG Creation Step
-with DAG('data-lake-dw-cdm-sdk-lonely-planet-reporting-hourly',
+with DAG('data-lake-dw-cdm-sdk-lp-reporting-hourly',
          schedule_interval='0 0-5,11-23 * * *',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,

@@ -27,7 +27,7 @@ DAG_NAME = 'data-lake-dw-cdm-sdk-tpg-reporting-daily'
 
 LOG_PATH = {
     'dbfs': {
-        'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s/%s' % (ACCOUNT, Variable.get("log-environment"), DAG_NAME, datetime.date(datetime.now()))
+        'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s/%s' % (ACCOUNT, Variable.get("environment"), DAG_NAME, datetime.date(datetime.now()))
     }
 }
 
@@ -197,7 +197,7 @@ reporting_libraries = [
         "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
     },
     {
-        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
+        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/" + Variable.get("environment") + "/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
     }
 ]
 
@@ -423,6 +423,7 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=240
     )
+
 
 # Dependencies
 tpg_staging_tables >> [dimension_tables, product_reporting, page_view_reporting, session_reporting]

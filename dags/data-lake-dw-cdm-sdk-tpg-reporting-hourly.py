@@ -27,7 +27,7 @@ DAG_NAME = 'data-lake-dw-cdm-sdk-tpg-reporting-hourly'
 
 LOG_PATH = {
     'dbfs': {
-        'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s/%s' % (ACCOUNT, Variable.get("log-environment"), DAG_NAME, datetime.date(datetime.now()))
+        'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s/%s' % (ACCOUNT, Variable.get("environment"), DAG_NAME, datetime.date(datetime.now()))
     }
 }
 
@@ -192,7 +192,7 @@ reporting_libraries = [
         "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
     },
     {
-        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
+        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/" + Variable.get("environment") + "/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
     }
 ]
 
@@ -271,7 +271,6 @@ amp_reporting_notebook_task = {
     'base_parameters': {},
     'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/reporting-table-notebooks/Amp',
 }
-
 
 base_params_reporting = {
     "lookBackDays": Variable.get("TPG_SHORT_LOOKBACK_DAYS"),
@@ -369,11 +368,7 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-hourly',
         polling_period_seconds=240
     )
 
-
 # Dependencies
 tpg_staging_tables >> [dimension_tables, product_reporting, session_reporting, page_view_reporting]
-
 dimension_tables >> conversion_reporting
-
-
 conversion_reporting >> amp_reporting

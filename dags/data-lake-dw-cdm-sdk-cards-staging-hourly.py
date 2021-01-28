@@ -28,7 +28,7 @@ DAG_NAME = 'data-lake-dw-cdm-sdk-cards-staging-hourly'
 
 LOG_PATH = {
     'dbfs': {
-        'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s/%s' % (ACCOUNT, Variable.get("log-environment"), DAG_NAME, datetime.date(datetime.now()))
+        'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s/%s' % (ACCOUNT, Variable.get("environment"), DAG_NAME, datetime.date(datetime.now()))
     }
 }
 
@@ -139,7 +139,7 @@ staging_libraries = [
         "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
     },
     {
-        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
+        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/" + Variable.get("environment") + "/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
     },
 ]
 
@@ -843,6 +843,10 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
         task_id='external-amex-consumer-staging'
     )
 
+    lp_staging_tables = DummyOperator(
+        task_id='external-lp-staging'
+    )
+
 # Staging Dependencies
 session_staging >> traffic_sources_staging
 session_staging >> paidsearch_staging
@@ -870,3 +874,6 @@ amex_ot_details_staging >> amex_ot_summary_staging
     element_viewed_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging,
     paidsearch_staging, cookies_staging, pqo_offer_received_staging, pzn_offers_received_staging,
     pqo_offer_requested_staging, amex_ot_summary_staging] >> amex_consumer_staging_tables
+
+# Lonely Planet Dependencies
+[session_staging, page_view_staging, page_metrics_staging] >> lp_staging_tables

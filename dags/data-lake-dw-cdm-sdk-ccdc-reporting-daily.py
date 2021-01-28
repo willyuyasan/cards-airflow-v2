@@ -270,58 +270,54 @@ anonymous_reporting_jar_task = {
     ]
 }
 
-
-session_outcomes_update_reporting_jar_task = {
-    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
-    'parameters': [
-        "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("CCDC_HOURLY_LOOKBACK_DAYS")))))).strftime(
-            "%Y-%m-%d"),
-        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.common.reporting.OutcomesUpdate",
-        "ACCOUNT=" + Variable.get("DBX_CCDC_Account"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CCDC_Bucket"),
-        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
-        "CUSTOM_PARAMETERS__TABLE_NAME=Session"
-    ]
+session_outcomes_update_reporting_notebook_task = {
+    'base_parameters': {
+        "toDate": "now",
+        "lookBackDays": Variable.get("CCDC_DAILY_LOOKBACK_DAYS"),
+        "environment": "staging",
+        "stagingPath": Variable.get("DBX_CARDS_Staging_Path"),
+        "reportingPath": Variable.get("DBX_CCDC_Reporting_Path"),
+        "dimensionPath": Variable.get("DBX_Dimensions_Path"),
+        "loggingPath": Variable.get("DBX_CCDC_Logging_Path"),
+        "dataLakePath": Variable.get("DBX_DataLake_Path"),
+        "tenantName": "ccdc",
+        "tableName": "Session",
+    },
+    'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/reporting-table-notebooks/OutcomesUpdate',
 }
 
-pageview_outcomes_update_reporting_jar_task = {
-    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
-    'parameters': [
-        "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("CCDC_HOURLY_LOOKBACK_DAYS")))))).strftime(
-            "%Y-%m-%d"),
-        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.common.reporting.OutcomesUpdate",
-        "ACCOUNT=" + Variable.get("DBX_CCDC_Account"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CCDC_Bucket"),
-        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
-        "CUSTOM_PARAMETERS__TABLE_NAME=PageView"
-    ]
+
+page_view_outcomes_update_reporting_notebook_task = {
+    'base_parameters': {
+        "toDate": "now",
+        "lookBackDays": Variable.get("CCDC_DAILY_LOOKBACK_DAYS"),
+        "environment": "staging",
+        "stagingPath": Variable.get("DBX_CARDS_Staging_Path"),
+        "reportingPath": Variable.get("DBX_CCDC_Reporting_Path"),
+        "dimensionPath": Variable.get("DBX_Dimensions_Path"),
+        "loggingPath": Variable.get("DBX_CCDC_Logging_Path"),
+        "dataLakePath": Variable.get("DBX_DataLake_Path"),
+        "tenantName": "ccdc",
+        "tableName": "PageView",
+    },
+    'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/reporting-table-notebooks/OutcomesUpdate',
 }
 
-conversion_outcomes_update_reporting_jar_task = {
-    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
-    'parameters': [
-        "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("CCDC_HOURLY_LOOKBACK_DAYS")))))).strftime(
-            "%Y-%m-%d"),
-        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.common.reporting.OutcomesUpdate",
-        "ACCOUNT=" + Variable.get("DBX_CCDC_Account"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CCDC_Bucket"),
-        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
-        "CUSTOM_PARAMETERS__TABLE_NAME=Conversion"
-    ]
+conversion_outcomes_update_reporting_notebook_task = {
+    'base_parameters': {
+        "toDate": "now",
+        "lookBackDays": Variable.get("CCDC_DAILY_LOOKBACK_DAYS"),
+        "environment": "staging",
+        "stagingPath": Variable.get("DBX_CARDS_Staging_Path"),
+        "reportingPath": Variable.get("DBX_CCDC_Reporting_Path"),
+        "dimensionPath": Variable.get("DBX_Dimensions_Path"),
+        "loggingPath": Variable.get("DBX_CCDC_Logging_Path"),
+        "dataLakePath": Variable.get("DBX_DataLake_Path"),
+        "tenantName": "ccdc",
+        "tableName": "Conversion",
+    },
+    'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/reporting-table-notebooks/OutcomesUpdate',
 }
-
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
@@ -402,9 +398,9 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
 
     session_outcomes_update_reporting = FinServDatabricksSubmitRunOperator(
         task_id='session-outcomes-update-reporting',
-        new_cluster=medium_task_cluster,
-        spark_jar_task=session_outcomes_update_reporting_jar_task,
-        libraries=reporting_libraries,
+        new_cluster=old_medium_task_cluster,
+        notebook_task=session_outcomes_update_reporting_notebook_task,
+        libraries=staging_libraries,
         timeout_seconds=7200,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
@@ -412,19 +408,19 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
 
     conversion_outcomes_update_reporting = FinServDatabricksSubmitRunOperator(
         task_id='conversion-outcomes-update-reporting',
-        new_cluster=medium_task_cluster,
-        spark_jar_task=conversion_outcomes_update_reporting_jar_task,
-        libraries=reporting_libraries,
+        new_cluster=old_medium_task_cluster,
+        notebook_task=conversion_outcomes_update_reporting_notebook_task,
+        libraries=staging_libraries,
         timeout_seconds=7200,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
 
     page_view_outcomes_update_reporting = FinServDatabricksSubmitRunOperator(
-        task_id='pageview-outcomes-update-reporting',
-        new_cluster=medium_task_cluster,
-        spark_jar_task=pageview_outcomes_update_reporting_jar_task,
-        libraries=reporting_libraries,
+        task_id='page-view-outcomes-update-reporting',
+        new_cluster=old_medium_task_cluster,
+        notebook_task=page_view_outcomes_update_reporting_notebook_task,
+        libraries=staging_libraries,
         timeout_seconds=7200,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120

@@ -368,12 +368,7 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-hourly',
         polling_period_seconds=240
     )
 
-
-
 # Dependencies
 tpg_staging_tables >> [dimension_tables, product_reporting, session_reporting, page_view_reporting]
-
 dimension_tables >> conversion_reporting
-
-
 conversion_reporting >> amp_reporting

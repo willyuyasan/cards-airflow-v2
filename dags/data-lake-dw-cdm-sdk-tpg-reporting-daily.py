@@ -306,20 +306,9 @@ anonymous_reporting_jar_task = {
     ]
 }
 
-amp_reporting_jar_task = {
-    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
-    'parameters': [
-        "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("TPG_SHORT_LOOKBACK_DAYS")))))).strftime(
-            "%Y-%m-%d"),
-        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.reporting.AmpPageView",
-        "ACCOUNT=" + Variable.get("DBX_TPG_Account"),
-        "WRITE_BUCKET=" + Variable.get("DBX_TPG_Bucket"),
-        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-    ]
+amp_reporting_notebook_task = {
+    'base_parameters': {},
+    'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/reporting-table-notebooks/Amp',
 }
 
 
@@ -334,6 +323,9 @@ adzerk_clicks_notebook_task = {
 
 # dimension base params
 dimension_tables_notebook_task['base_parameters'].update(base_params_staging)
+
+# updating base params reporting
+amp_reporting_notebook_task['base_parameters'].update(base_params_reporting)
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
@@ -405,8 +397,8 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
     amp_reporting = FinServDatabricksSubmitRunOperator(
         task_id='amp-reporting',
         new_cluster=medium_task_cluster,
-        spark_jar_task=amp_reporting_jar_task,
-        libraries=reporting_libraries,
+        notebook_task=amp_reporting_notebook_task,
+        libraries=staging_libraries,
         timeout_seconds=8400,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=240

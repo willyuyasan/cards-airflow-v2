@@ -233,14 +233,22 @@ page_view_reporting_jar_task = {
         "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
-
 paid_search_reporting_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/reporting-table-notebooks/PaidSearchSummary',
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("AMEX_BUSINESS_REPORTING_SHORT_LOOKBACK_DAYS")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.common.reporting.PaidSearchSummary",
+        "PAID_SEARCH_COMPANY_ID=" + Variable.get("AMEX_PAIDSEARCH_COMPANY_ID"),
+        "ACCOUNT=" + Variable.get("DBX_AMEX_BUSINESS_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_AMEX_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
 }
-
-# update base params reporting
-paid_search_reporting_notebook_task['base_parameters'].update(base_params_reporting)
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-amex-business-reporting-hourly',

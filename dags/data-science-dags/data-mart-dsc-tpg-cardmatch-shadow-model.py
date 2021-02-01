@@ -249,6 +249,14 @@ wells_fargo_model_training_notebook_task = {
     'notebook_path': '/Production/CardMatchDS/TPG/TPG-CardMatch_python_train-shadow',
 }
 
+deserve_model_training_notebook_task = {
+    'base_parameters': {
+        "issuer": "Deserve",
+        "card_ids": "249112293"
+    },
+    'notebook_path': '/Production/CardMatchDS/TPG/TPG-CardMatch_python_train-shadow'
+}
+
 # Model Deployment Notebook Task
 model_deployment_notebook_task = {
     'base_parameters': {
@@ -437,6 +445,16 @@ with DAG('data-mart-dsc-tpg-cardmatch-shadow-model-monthly',
         polling_period_seconds=120
     )
 
+    deserve_model_training_step = FinServDatabricksSubmitRunOperator(
+        task_id='Deserve-model-training-step',
+        new_cluster=small_task_cluster,
+        notebook_task=deserve_model_training_notebook_task,
+        libraries=model_step_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
     model_deployment_step = FinServDatabricksSubmitRunOperator(
         task_id='model-combine-deployment-step',
         new_cluster=small_task_cluster,
@@ -453,7 +471,7 @@ etl_notebook_step >> [avant_model_training_step, capital_bank_model_training_ste
                       credit_one_model_training_step_a, credit_one_model_training_step_b, credit_strong_model_training_step,
                       discover_model_training_step, self_model_training_step,
                       icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
-                      petal_model_training_step, wells_fargo_model_training_step
+                      petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step
                       ]
 
 [avant_model_training_step, capital_bank_model_training_step,
@@ -461,5 +479,5 @@ etl_notebook_step >> [avant_model_training_step, capital_bank_model_training_ste
  credit_one_model_training_step_a, credit_one_model_training_step_b, credit_strong_model_training_step,
  discover_model_training_step, self_model_training_step,
  icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
- petal_model_training_step, wells_fargo_model_training_step
+ petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step
  ] >> model_deployment_step

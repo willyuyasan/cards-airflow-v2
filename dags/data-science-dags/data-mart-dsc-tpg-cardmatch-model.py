@@ -24,7 +24,7 @@ default_args = {
 # DBX tokens and logs
 airflow_svc_token = "databricks_airflow_svc_token"
 ACCOUNT = 'cards'
-DAG_NAME = 'data-mart-dsc-brcc-cardmatch-shadow-model-monthly'
+DAG_NAME = 'data-mart-dsc-tpg-cardmatch-model-monthly'
 
 LOG_PATH = {
     'dbfs': {
@@ -117,7 +117,7 @@ etl_notebook_task = {
         "toDate": "now",
         "stagingPath": Variable.get("DBX_CARDS_Staging_Path")
     },
-    'notebook_path': '/Production/CardMatchDS/BRCC/BRCC-CM-data',
+    'notebook_path': '/Production/CardMatchDS/TPG/TPG-CM-data',
 }
 
 # Model Training Notebook Tasks
@@ -126,7 +126,7 @@ avant_model_training_notebook_task = {
         "issuer": "Avant",
         "card_ids": "6353"
     },
-    'notebook_path': '/Production/CardMatchDS/BRCC/BRCC-CardMatch_python_train-shadow',
+    'notebook_path': '/Production/CardMatchDS/TPG/TPG-CardMatch_python_train',
 }
 
 # boa_model_training_notebook_task = {
@@ -134,7 +134,7 @@ avant_model_training_notebook_task = {
 #         "issuer": "Bank of America",
 #         "card_ids": "220612356, 22079418, 22069416"
 #     },
-#     'notebook_path': '/Production/CardMatchDS/Airflow-capable/CardMatch_python_train-shadow',
+#     'notebook_path': '/Production/CardMatchDS/Airflow-capable/CardMatch_python_train',
 # }
 
 capital_bank_model_training_notebook_task = {
@@ -142,7 +142,7 @@ capital_bank_model_training_notebook_task = {
         "issuer": "Capital Bank",
         "card_ids": "234110088"
     },
-    'notebook_path': '/Production/CardMatchDS/BRCC/BRCC-CardMatch_python_train-shadow',
+    'notebook_path': '/Production/CardMatchDS/TPG/TPG-CardMatch_python_train',
 }
 
 chase_model_training_notebook_task = {
@@ -150,7 +150,7 @@ chase_model_training_notebook_task = {
         "issuer": "Chase",
         "card_ids": "22126065, 221211283"
     },
-    'notebook_path': '/Production/CardMatchDS/BRCC/BRCC-CardMatch_python_train-shadow',
+    'notebook_path': '/Production/CardMatchDS/TPG/TPG-CardMatch_python_train',
 }
 
 citi_model_training_notebook_task_a = {
@@ -158,7 +158,7 @@ citi_model_training_notebook_task_a = {
         "issuer": "Citi",
         "card_ids": "6295, 6379, 22146011, 221410611, 221410949"
     },
-    'notebook_path': '/Production/CardMatchDS/BRCC/BRCC-CardMatch_python_train-shadow',
+    'notebook_path': '/Production/CardMatchDS/TPG/TPG-CardMatch_python_train',
 }
 
 citi_model_training_notebook_task_b = {
@@ -166,7 +166,7 @@ citi_model_training_notebook_task_b = {
         "issuer": "Citi",
         "card_ids": "221411361, 221411362, 22145695, 22146209, 221410118"
     },
-    'notebook_path': '/Production/CardMatchDS/BRCC/BRCC-CardMatch_python_train-shadow',
+    'notebook_path': '/Production/CardMatchDS/TPG/TPG-CardMatch_python_train',
 }
 
 credit_one_model_training_notebook_task_a = {
@@ -174,7 +174,7 @@ credit_one_model_training_notebook_task_a = {
         "issuer": "Credit One",
         "card_ids": "6852, 6853, 6854, 6855, 229611108"
     },
-    'notebook_path': '/Production/CardMatchDS/BRCC/BRCC-CardMatch_python_train-shadow',
+    'notebook_path': '/Production/CardMatchDS/TPG/TPG-CardMatch_python_train',
 }
 
 credit_one_model_training_notebook_task_b = {
@@ -182,7 +182,7 @@ credit_one_model_training_notebook_task_b = {
         "issuer": "Credit One",
         "card_ids": "229611306"
     },
-    'notebook_path': '/Production/CardMatchDS/BRCC/BRCC-CardMatch_python_train-shadow',
+    'notebook_path': '/Production/CardMatchDS/TPG/TPG-CardMatch_python_train',
 }
 
 credit_strong_model_training_notebook_task = {
@@ -190,7 +190,7 @@ credit_strong_model_training_notebook_task = {
         "issuer": "Credit Strong",
         "card_ids": "7482"
     },
-    'notebook_path': '/Production/CardMatchDS/BRCC/BRCC-CardMatch_python_train-shadow',
+    'notebook_path': '/Production/CardMatchDS/TPG/TPG-CardMatch_python_train',
 }
 
 discover_model_training_notebook_task = {
@@ -198,7 +198,7 @@ discover_model_training_notebook_task = {
         "issuer": "Discover",
         "card_ids": "7561, 7562, 7563, 7564, 7565"
     },
-    'notebook_path': '/Production/CardMatchDS/BRCC/BRCC-CardMatch_python_train-shadow',
+    'notebook_path': '/Production/CardMatchDS/TPG/TPG-CardMatch_python_train',
 }
 
 self_model_training_notebook_task = {
@@ -206,7 +206,7 @@ self_model_training_notebook_task = {
         "issuer": "Self",
         "card_ids": "7030"
     },
-    'notebook_path': '/Production/CardMatchDS/BRCC/BRCC-CardMatch_python_train-shadow',
+    'notebook_path': '/Production/CardMatchDS/TPG/TPG-CardMatch_python_train',
 }
 
 icommissions_model_training_notebook_task_a = {
@@ -214,7 +214,7 @@ icommissions_model_training_notebook_task_a = {
         "issuer": "iCommissions",
         "card_ids": "6786, 6991, 240910629, 240912393, 243212365"
     },
-    'notebook_path': '/Production/CardMatchDS/BRCC/BRCC-CardMatch_python_train-shadow',
+    'notebook_path': '/Production/CardMatchDS/TPG/TPG-CardMatch_python_train',
 }
 
 icommissions_model_training_notebook_task_b = {
@@ -222,7 +222,7 @@ icommissions_model_training_notebook_task_b = {
         "issuer": "iCommissions",
         "card_ids": "7523, 7424, 22404927, 22995857, 7615"
     },
-    'notebook_path': '/Production/CardMatchDS/BRCC/BRCC-CardMatch_python_train-shadow',
+    'notebook_path': '/Production/CardMatchDS/TPG/TPG-CardMatch_python_train',
 }
 
 icommissions_model_training_notebook_task_c = {
@@ -230,7 +230,7 @@ icommissions_model_training_notebook_task_c = {
         "issuer": "iCommissions",
         "card_ids": "7199"
     },
-    'notebook_path': '/Production/CardMatchDS/BRCC/BRCC-CardMatch_python_train-shadow',
+    'notebook_path': '/Production/CardMatchDS/TPG/TPG-CardMatch_python_train',
 }
 
 petal_model_training_notebook_task = {
@@ -238,7 +238,7 @@ petal_model_training_notebook_task = {
         "issuer": "Petal",
         "card_ids": "6588, 7550"
     },
-    'notebook_path': '/Production/CardMatchDS/BRCC/BRCC-CardMatch_python_train-shadow',
+    'notebook_path': '/Production/CardMatchDS/TPG/TPG-CardMatch_python_train',
 }
 
 wells_fargo_model_training_notebook_task = {
@@ -246,7 +246,7 @@ wells_fargo_model_training_notebook_task = {
         "issuer": "Wells Fargo",
         "card_ids": "7683, 7684, 7685"
     },
-    'notebook_path': '/Production/CardMatchDS/BRCC/BRCC-CardMatch_python_train-shadow',
+    'notebook_path': '/Production/CardMatchDS/TPG/TPG-CardMatch_python_train',
 }
 
 deserve_model_training_notebook_task = {
@@ -254,20 +254,20 @@ deserve_model_training_notebook_task = {
         "issuer": "Deserve",
         "card_ids": "249112293"
     },
-    'notebook_path': '/Production/CardMatchDS/BRCC/BRCC-CardMatch_python_train-shadow',
+    'notebook_path': '/Projects/CardMatch/TPG/TPG-CardMatch_python_train'
 }
 
 # Model Deployment Notebook Task
 model_deployment_notebook_task = {
     'base_parameters': {
         "environment": "staging",
-        "notebook": '/Production/CardMatchDS/BRCC/BRCC-CardMatch_python_combine-shadow'
+        "notebook": '/Production/CardMatchDS/TPG/TPG-CardMatch_python_combine'
     },
-    'notebook_path': '/Production/CardMatchDS/BRCC/BRCC-CardMatch_python_combine-shadow',
+    'notebook_path': '/Production/CardMatchDS/TPG/TPG-CardMatch_python_combine',
 }
 
 # DAG Creation Step
-with DAG('data-mart-dsc-brcc-cardmatch-shadow-model-monthly',
+with DAG('data-mart-dsc-tpg-cardmatch-model-monthly',
          schedule_interval=None,
          dagrun_timeout=timedelta(hours=2),
          catchup=False,

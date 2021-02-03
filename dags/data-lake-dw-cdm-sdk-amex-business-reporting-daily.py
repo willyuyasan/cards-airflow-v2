@@ -299,7 +299,7 @@ with DAG('data-lake-dw-cdm-sdk-amex-business-reporting-daily',
 
     paid_search_reporting = FinServDatabricksSubmitRunOperator(
         task_id='paid-search-reporting',
-        new_cluster=old_medium_task_cluster,
+        new_cluster=medium_task_cluster,
         spark_jar_task=paid_search_reporting_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=3600,

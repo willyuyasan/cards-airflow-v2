@@ -247,7 +247,7 @@ paid_search_reporting_jar_task = {
         "PAID_SEARCH_COMPANY_ID=" + Variable.get("AMEX_PAIDSEARCH_COMPANY_ID"),
         "ACCOUNT=" + Variable.get("DBX_AMEX_BUSINESS_Account"),
         "WRITE_BUCKET=" + Variable.get("DBX_AMEX_Bucket"),
-        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+        "READ_BUCKET=" + Variable.get("DBX_AMEX_Bucket")
     ]
 }
 

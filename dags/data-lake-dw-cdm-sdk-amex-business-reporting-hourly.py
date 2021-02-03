@@ -300,7 +300,7 @@ with DAG('data-lake-dw-cdm-sdk-amex-business-reporting-hourly',
         task_id='paid-search-reporting',
         new_cluster=old_medium_task_cluster,
         spark_jar_task=paid_search_reporting_jar_task,
-        libraries=staging_libraries,
+        libraries=reporting_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120

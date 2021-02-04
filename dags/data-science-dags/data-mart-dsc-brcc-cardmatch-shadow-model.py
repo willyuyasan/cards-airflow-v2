@@ -54,8 +54,8 @@ small_task_cluster = {
         "instance_profile_arn": Variable.get("DBX_CCDC_IAM_ROLE"),
     },
     'custom_tags': {
-        'Partner': 'B530',
-        'Project': 'CreditCards.com',
+        'Partner': 'B534',
+        'Project': 'Bankrate Credit Cards',
         'DagId': "{{ti.dag_id}}",
         'TaskId': "{{ti.task_id}}"
     },

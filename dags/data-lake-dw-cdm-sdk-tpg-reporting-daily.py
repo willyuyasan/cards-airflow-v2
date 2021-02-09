@@ -206,10 +206,6 @@ base_params_reporting = {
     "toDate": "now",
 }
 
-base_params = {
-    "lookBackDays": Variable.get("DBX_TPG_ADZERK_LOOKBACK_DAYS")
-}
-
 # Libraries
 staging_libraries = [
     {
@@ -228,8 +224,6 @@ reporting_libraries = [
         "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/" + Variable.get("environment") + "/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
     }
 ]
-
-adzerk_clicks_notebook_path = '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/tpg-adzerk/clicks'
 
 # Dimension tables task
 dimension_tables_notebook_task = {
@@ -348,15 +342,6 @@ amp_reporting_jar_task = {
         "WRITE_BUCKET=" + Variable.get("DBX_TPG_Bucket"),
         "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
-}
-
-# Adzerk Notebook Task Parameter Setup:
-adzerk_clicks_notebook_task = {
-    'base_parameters': {
-        "toDate": "now",
-        "eventName": "clicks",
-    },
-    'notebook_path': adzerk_clicks_notebook_path,
 }
 
 # dimension base params

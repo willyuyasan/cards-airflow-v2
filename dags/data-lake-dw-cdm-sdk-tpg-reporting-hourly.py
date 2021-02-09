@@ -173,10 +173,6 @@ base_params_staging = {
     "toDate": "now"
 }
 
-base_params = {
-    "lookBackDays": Variable.get("DBX_TPG_ADZERK_LOOKBACK_DAYS")
-}
-
 # Libraries
 staging_libraries = [
     {

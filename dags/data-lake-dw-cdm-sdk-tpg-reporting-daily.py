@@ -88,6 +88,34 @@ medium_task_cluster = {
     },
 }
 
+new_medium_task_cluster = {
+    'spark_version': '7.3.x-scala2.12',
+    'node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
+    'driver_node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
+    'num_workers': 4,
+    'auto_termination_minutes': 0,
+    'cluster_log_conf': LOG_PATH,
+    'spark_conf': {
+        'spark.sql.sources.partitionOverwriteMode': 'dynamic'
+    },
+    "aws_attributes": {
+        "availability": "SPOT_WITH_FALLBACK",
+        "ebs_volume_count": 2,
+        "ebs_volume_size": 100,
+        "ebs_volume_type": "GENERAL_PURPOSE_SSD",
+        "first_on_demand": "2",
+        "spot_bid_price_percent": "70",
+        "zone_id": "us-east-1c",
+        "instance_profile_arn": Variable.get("DBX_TPG_IAM_ROLE"),
+    },
+    'custom_tags': {
+        'Partner': 'B532',
+        'Project': 'The Points Guy',
+        'DagId': "{{ti.dag_id}}",
+        'TaskId': "{{ti.task_id}}"
+    },
+}
+
 large_5w_task_cluster = {
     'spark_version': '7.3.x-scala2.12',
     'node_type_id': Variable.get("DBX_LARGE_CLUSTER"),
@@ -178,10 +206,6 @@ base_params_reporting = {
     "toDate": "now",
 }
 
-base_params = {
-    "lookBackDays": Variable.get("DBX_TPG_ADZERK_LOOKBACK_DAYS")
-}
-
 # Libraries
 staging_libraries = [
     {
@@ -200,8 +224,6 @@ reporting_libraries = [
         "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/" + Variable.get("environment") + "/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
     }
 ]
-
-adzerk_clicks_notebook_path = '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/tpg-adzerk/clicks'
 
 # Dimension tables task
 dimension_tables_notebook_task = {
@@ -306,26 +328,24 @@ anonymous_reporting_jar_task = {
     ]
 }
 
-amp_reporting_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/reporting-table-notebooks/Amp',
-}
-
-
-# Adzerk Notebook Task Parameter Setup:
-adzerk_clicks_notebook_task = {
-    'base_parameters': {
-        "toDate": "now",
-        "eventName": "clicks",
-    },
-    'notebook_path': adzerk_clicks_notebook_path,
+amp_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=730))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.reporting.AmpPageView",
+        "ACCOUNT=" + Variable.get("DBX_TPG_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_TPG_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
 }
 
 # dimension base params
 dimension_tables_notebook_task['base_parameters'].update(base_params_staging)
-
-# updating base params reporting
-amp_reporting_notebook_task['base_parameters'].update(base_params_reporting)
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
@@ -396,9 +416,9 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
 
     amp_reporting = FinServDatabricksSubmitRunOperator(
         task_id='amp-reporting',
-        new_cluster=medium_task_cluster,
-        notebook_task=amp_reporting_notebook_task,
-        libraries=staging_libraries,
+        new_cluster=new_medium_task_cluster,
+        notebook_task=amp_reporting_jar_task,
+        libraries=reporting_libraries,
         timeout_seconds=8400,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=240

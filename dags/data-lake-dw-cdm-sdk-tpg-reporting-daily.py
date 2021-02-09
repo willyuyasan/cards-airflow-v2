@@ -417,7 +417,7 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
     amp_reporting = FinServDatabricksSubmitRunOperator(
         task_id='amp-reporting',
         new_cluster=new_medium_task_cluster,
-        notebook_task=amp_reporting_jar_task,
+        spark_jar_task=amp_reporting_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=8400,
         databricks_conn_id=airflow_svc_token,

@@ -295,9 +295,6 @@ base_params_reporting = {
 # dimension base params
 dimension_tables_notebook_task['base_parameters'].update(base_params_staging)
 
-# updating base params reporting
-amp_reporting_notebook_task['base_parameters'].update(base_params_reporting)
-
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-tpg-reporting-hourly',
          schedule_interval='0 0-5,11-23 * * *',
@@ -368,7 +365,7 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-hourly',
     amp_reporting = FinServDatabricksSubmitRunOperator(
         task_id='amp-reporting',
         new_cluster=medium_task_cluster,
-        notebook_task=amp_reporting_jar_task,
+        spark_jar_task=amp_reporting_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=8400,
         databricks_conn_id=airflow_svc_token,

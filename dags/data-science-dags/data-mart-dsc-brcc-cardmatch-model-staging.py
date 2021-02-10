@@ -54,8 +54,8 @@ small_task_cluster = {
         "instance_profile_arn": Variable.get("DBX_CCDC_IAM_ROLE"),
     },
     'custom_tags': {
-        'Partner': 'B530',
-        'Project': 'CreditCards.com',
+        'Partner': 'B534',
+        'Project': 'Bankrate Credit Cards',
         'DagId': "{{ti.dag_id}}",
         'TaskId': "{{ti.task_id}}"
     },
@@ -249,6 +249,14 @@ wells_fargo_model_training_notebook_task = {
     'notebook_path': '/Projects/CardMatch/BRCC/BRCC-CardMatch_python_train',
 }
 
+deserve_model_training_notebook_task = {
+    'base_parameters': {
+        "issuer": "Deserve",
+        "card_ids": "249112293"
+    },
+    'notebook_path': '/Projects/CardMatch/BRCC/BRCC-CardMatch_python_train',
+}
+
 # Model Deployment Notebook Task
 model_deployment_notebook_task = {
     'base_parameters': {
@@ -437,6 +445,16 @@ with DAG('data-mart-dsc-brcc-cardmatch-model-staging',
         polling_period_seconds=120
     )
 
+    deserve_model_training_step = FinServDatabricksSubmitRunOperator(
+        task_id='Deserve-model-training-step',
+        new_cluster=small_task_cluster,
+        notebook_task=deserve_model_training_notebook_task,
+        libraries=model_step_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
     model_deployment_step = FinServDatabricksSubmitRunOperator(
         task_id='model-combine-deployment-step',
         new_cluster=small_task_cluster,
@@ -453,7 +471,7 @@ etl_notebook_step >> [avant_model_training_step, capital_bank_model_training_ste
                       credit_one_model_training_step_a, credit_one_model_training_step_b, credit_strong_model_training_step,
                       discover_model_training_step, self_model_training_step,
                       icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
-                      petal_model_training_step, wells_fargo_model_training_step
+                      petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step
                       ]
 
 [avant_model_training_step, capital_bank_model_training_step,
@@ -461,5 +479,5 @@ etl_notebook_step >> [avant_model_training_step, capital_bank_model_training_ste
  credit_one_model_training_step_a, credit_one_model_training_step_b, credit_strong_model_training_step,
  discover_model_training_step, self_model_training_step,
  icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
- petal_model_training_step, wells_fargo_model_training_step
+ petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step
  ] >> model_deployment_step

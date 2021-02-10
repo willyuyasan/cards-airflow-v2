@@ -237,4 +237,5 @@ with DAG('data-lake-dw-cdm-sdk-lp-reporting-daily',
     )
 
 # Dependencies
-lp_staging_tables >> [session_reporting, page_view_reporting, anonymous_reporting]
+lp_staging_tables >> [session_reporting, page_view_reporting]
+session_reporting >> anonymous_reporting

@@ -37,7 +37,7 @@ extra_small_task_custom_cluster = {
     'spark_version': '7.3.x-scala2.12',
     'node_type_id': 'm5a.xlarge',
     'driver_node_type_id': 'm5a.xlarge',
-    'num_workers': 1,
+    'num_workers': 4,
     'auto_termination_minutes': 0,
     'cluster_log_conf': LOG_PATH,
     'spark_conf': {
@@ -720,10 +720,10 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
 
     paidsearch_staging = FinServDatabricksSubmitRunOperator(
         task_id='paidsearch-staging',
-        new_cluster=small_task_custom_cluster,
+        new_cluster=medium_task_custom_cluster,
         spark_jar_task=paidsearch_staging_jar_task,
         libraries=staging_libraries,
-        timeout_seconds=3600,
+        timeout_seconds=7200,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )

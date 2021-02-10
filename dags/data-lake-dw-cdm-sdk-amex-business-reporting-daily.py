@@ -234,14 +234,22 @@ page_view_reporting_jar_task = {
     ]
 }
 
-paid_search_reporting_notebook_task = {
-    'base_parameters': {},
-    'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/reporting-table-notebooks/PaidSearchSummary',
+paid_search_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("AMEX_BUSINESS_REPORTING_LONG_LOOKBACK_DAYS")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.common.reporting.PaidSearchSummary",
+        "PAID_SEARCH_COMPANY_ID=" + Variable.get("AMEX_PAIDSEARCH_COMPANY_ID"),
+        "ACCOUNT=" + Variable.get("DBX_AMEX_BUSINESS_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_AMEX_Bucket"),
+        "READ_BUCKET=" + "rv-core-pipeline"
+    ]
 }
-
-# update base params reporting
-paid_search_reporting_notebook_task['base_parameters'].update(base_params_reporting)
-
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-amex-business-reporting-daily',
@@ -291,9 +299,9 @@ with DAG('data-lake-dw-cdm-sdk-amex-business-reporting-daily',
 
     paid_search_reporting = FinServDatabricksSubmitRunOperator(
         task_id='paid-search-reporting',
-        new_cluster=old_medium_task_cluster,
-        notebook_task=paid_search_reporting_notebook_task,
-        libraries=staging_libraries,
+        new_cluster=medium_task_cluster,
+        spark_jar_task=paid_search_reporting_jar_task,
+        libraries=reporting_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120

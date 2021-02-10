@@ -124,7 +124,7 @@ conversion_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE") - (timedelta(days=int(int(Variable.get("CCDC_HOURLY_LOOKBACK_DAYS")))))).strftime(
+            Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE") - (timedelta(days=int(int(Variable.get("CCDC_HOURLY_LOOKBACK_DAYS")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE"),
         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
@@ -140,7 +140,7 @@ session_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE") - (timedelta(days=int(int(Variable.get("CCDC_HOURLY_LOOKBACK_DAYS")))))).strftime(
+            Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE") - (timedelta(days=int(int(Variable.get("CCDC_HOURLY_LOOKBACK_DAYS")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE"),
         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
@@ -255,7 +255,7 @@ session_reporting_jar_task = {
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-backfill',
-         schedule_interval= None,
+         schedule_interval=None,
          dagrun_timeout=timedelta(hours=4),
          catchup=False,
          max_active_runs=1,
@@ -337,4 +337,3 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-backfill',
 # conversion_reporting >> conversion_outcomes_update_reporting
 # session_reporting >> session_outcomes_update_reporting
 # page_view_reporting >> page_view_outcomes_update_reporting
-

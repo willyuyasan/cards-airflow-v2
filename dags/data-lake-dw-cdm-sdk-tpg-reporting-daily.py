@@ -338,7 +338,7 @@ amp_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (timedelta(days=730))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("TPG_LONG_LOOKBACK_DAYS")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),

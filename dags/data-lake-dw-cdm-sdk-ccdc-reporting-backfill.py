@@ -124,7 +124,7 @@ conversion_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE") - (timedelta(days=int(int(Variable.get("CCDC_HOURLY_LOOKBACK_DAYS")))))).strftime(
+            datetime.strptime(Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE"),"%Y-%m-%d") - (timedelta(days=int(int(Variable.get("CCDC_HOURLY_LOOKBACK_DAYS")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE"),
         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
@@ -140,7 +140,7 @@ session_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE") - (timedelta(days=int(int(Variable.get("CCDC_HOURLY_LOOKBACK_DAYS")))))).strftime(
+                datetime.strptime(Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE"),"%Y-%m-%d") - (timedelta(days=int(int(Variable.get("CCDC_HOURLY_LOOKBACK_DAYS")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE"),
         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
@@ -156,7 +156,7 @@ session_reporting_jar_task = {
 #     'parameters': [
 #         "RUN_FREQUENCY=" + "hourly",
 #         "START_DATE=" + (
-#                 Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE") - (timedelta(days=int(int(Variable.get("CCDC_DAILY_LOOKBACK_DAYS")))))).strftime(
+#                 datetime.strptime(Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE"),"%Y-%m-%d") - (timedelta(days=int(int(Variable.get("CCDC_DAILY_LOOKBACK_DAYS")))))).strftime(
 #             "%Y-%m-%d"),
 #         "END_DATE=" + Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE"),
 #         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
@@ -172,7 +172,7 @@ session_reporting_jar_task = {
 #     'parameters': [
 #         "RUN_FREQUENCY=" + "hourly",
 #         "START_DATE=" + (
-#                 Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE") - (timedelta(days=int(int(Variable.get("CCDC_HOURLY_LOOKBACK_DAYS")))))).strftime(
+#                 datetime.strptime(Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE"),"%Y-%m-%d") - (timedelta(days=int(int(Variable.get("CCDC_HOURLY_LOOKBACK_DAYS")))))).strftime(
 #             "%Y-%m-%d"),
 #         "END_DATE=" + Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE"),
 #         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
@@ -189,7 +189,7 @@ session_reporting_jar_task = {
 #     'parameters': [
 #         "RUN_FREQUENCY=" + "hourly",
 #         "START_DATE=" + (
-#                 Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE") - (timedelta(days=int(int(Variable.get("CCDC_HOURLY_LOOKBACK_DAYS")))))).strftime(
+#                 datetime.strptime(Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE"),"%Y-%m-%d") - (timedelta(days=int(int(Variable.get("CCDC_HOURLY_LOOKBACK_DAYS")))))).strftime(
 #             "%Y-%m-%d"),
 #         "END_DATE=" + Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE"),
 #         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
@@ -206,7 +206,7 @@ session_reporting_jar_task = {
 #     'parameters': [
 #         "RUN_FREQUENCY=" + "hourly",
 #         "START_DATE=" + (
-#                 Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE") - (timedelta(days=int(int(Variable.get("CCDC_HOURLY_LOOKBACK_DAYS")))))).strftime(
+#                 datetime.strptime(Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE"),"%Y-%m-%d") - (timedelta(days=int(int(Variable.get("CCDC_HOURLY_LOOKBACK_DAYS")))))).strftime(
 #             "%Y-%m-%d"),
 #         "END_DATE=" + Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE"),
 #         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
@@ -223,7 +223,7 @@ session_reporting_jar_task = {
 #     'parameters': [
 #         "RUN_FREQUENCY=" + "hourly",
 #         "START_DATE=" + (
-#                 Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE") - (timedelta(days=int(int(Variable.get("CCDC_HOURLY_LOOKBACK_DAYS")))))).strftime(
+#                 datetime.strptime(Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE"),"%Y-%m-%d") - (timedelta(days=int(int(Variable.get("CCDC_HOURLY_LOOKBACK_DAYS")))))).strftime(
 #             "%Y-%m-%d"),
 #         "END_DATE=" + Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE"),
 #         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),

@@ -447,7 +447,8 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
     )
 
 # Dependencies
-ccdc_staging_tables >> [conversion_reporting, session_reporting, page_view_reporting, product_reporting]
+ccdc_staging_tables >> [conversion_reporting]
+conversion_reporting >> [session_reporting, page_view_reporting, product_reporting]
 
 # outcomes update reporting dependencies
 conversion_reporting >> conversion_outcomes_update_reporting

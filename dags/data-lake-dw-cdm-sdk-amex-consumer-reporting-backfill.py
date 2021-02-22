@@ -79,7 +79,8 @@ conversion_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.strptime(Variable.get("AMEX_CONSUMER_BACKFILL_LOOKBACK_TODATE"), "%Y-%m-%d") - (timedelta(days=int(int(Variable.get("AMEX_CONSUMER_BACKFILL_LOOKBACK_DAYS")))))).strftime(
+            datetime.strptime(Variable.get("AMEX_CONSUMER_BACKFILL_LOOKBACK_TODATE"), "%Y-%m-%d") \
+            - (timedelta(days=int(int(Variable.get("AMEX_CONSUMER_BACKFILL_LOOKBACK_DAYS")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + Variable.get("AMEX_CONSUMER_BACKFILL_LOOKBACK_TODATE"),
         "TENANTS=" + Variable.get("DBX_AMEX_CONSUMER_Tenant_Id"),

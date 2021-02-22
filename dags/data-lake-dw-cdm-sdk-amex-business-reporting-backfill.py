@@ -107,4 +107,3 @@ with DAG('data-lake-dw-cdm-sdk-amex-business-reporting-backfill',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=240
     )
-

@@ -228,7 +228,23 @@ icommissions_model_training_notebook_task_b = {
 icommissions_model_training_notebook_task_c = {
     'base_parameters': {
         "issuer": "iCommissions",
-        "card_ids": "7199"
+        "card_ids": "7199, 7513, 7616"
+    },
+    'notebook_path': '/Projects/CardMatch/BRCC/BRCC-CardMatch_python_train',
+}
+
+jasper_model_training_notebook_task = {
+    'base_parameters': {
+        "issuer": "Jasper",
+        "card_ids": "6938"
+    },
+    'notebook_path': '/Projects/CardMatch/BRCC/BRCC-CardMatch_python_train',
+}
+
+greenlight_model_training_notebook_task = {
+    'base_parameters': {
+        "issuer": "Greenlight",
+        "card_ids": "7576"
     },
     'notebook_path': '/Projects/CardMatch/BRCC/BRCC-CardMatch_python_train',
 }
@@ -269,7 +285,7 @@ model_deployment_notebook_task = {
 # DAG Creation Step
 with DAG('data-mart-dsc-brcc-cardmatch-model-staging',
          schedule_interval=None,
-         dagrun_timeout=timedelta(hours=2),
+         dagrun_timeout=timedelta(hours=3),
          catchup=False,
          max_active_runs=1,
          default_args=default_args
@@ -425,6 +441,26 @@ with DAG('data-mart-dsc-brcc-cardmatch-model-staging',
         polling_period_seconds=120
     )
 
+    jasper_model_training_step = FinServDatabricksSubmitRunOperator(
+        task_id='jasper-model-training-step',
+        new_cluster=small_task_cluster,
+        notebook_task=jasper_model_training_notebook_task,
+        libraries=model_step_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
+    greenlight_model_training_step = FinServDatabricksSubmitRunOperator(
+        task_id='greenlight-model-training-step',
+        new_cluster=small_task_cluster,
+        notebook_task=greenlight_model_training_notebook_task,
+        libraries=model_step_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
     petal_model_training_step = FinServDatabricksSubmitRunOperator(
         task_id='Petal-model-training-step',
         new_cluster=small_task_cluster,
@@ -470,7 +506,7 @@ etl_notebook_step >> [avant_model_training_step, capital_bank_model_training_ste
                       chase_model_training_step, citi_model_training_step_a, citi_model_training_step_b,
                       credit_one_model_training_step_a, credit_one_model_training_step_b, credit_strong_model_training_step,
                       discover_model_training_step, self_model_training_step,
-                      icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
+                      icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c, jasper_model_training_step, greenlight_model_training_step,
                       petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step
                       ]
 
@@ -478,6 +514,6 @@ etl_notebook_step >> [avant_model_training_step, capital_bank_model_training_ste
  chase_model_training_step, citi_model_training_step_a, citi_model_training_step_b,
  credit_one_model_training_step_a, credit_one_model_training_step_b, credit_strong_model_training_step,
  discover_model_training_step, self_model_training_step,
- icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
+ icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c, jasper_model_training_step, greenlight_model_training_step,
  petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step
  ] >> model_deployment_step

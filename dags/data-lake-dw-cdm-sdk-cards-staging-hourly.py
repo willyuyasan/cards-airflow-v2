@@ -873,7 +873,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
     ot_metadata_raw_staging = FinServDatabricksSubmitRunOperator(
         task_id='ot-meta-data-raw-staging',
         new_cluster=small_task_custom_cluster,
-        spark_jar_task=ot_metadata_raw_staging,
+        spark_jar_task=ot_metadata_raw_staging_jar_task,
         libraries=staging_libraries,
         timeout_seconds=2400,
         databricks_conn_id=airflow_svc_token,

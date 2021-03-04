@@ -538,7 +538,27 @@ with DAG('data-mart-dsc-comb-cardmatch-model-monthly',
     )
 
 # Dependency setup
-[ccdc_etl_notebook_step, brcc_etl_notebook_step, tpg_etl_notebook_step] >> [
+ccdc_etl_notebook_step >> [
+    avant_model_training_step, capital_bank_model_training_step,
+    chase_model_training_step, citi_model_training_step_a, citi_model_training_step_b,
+    credit_one_model_training_step_a, credit_one_model_training_step_b, credit_strong_model_training_step,
+    discover_model_training_step, self_model_training_step,
+    icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
+    jasper_model_training_step, greenlight_model_training_step,
+    petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step
+]
+
+brcc_etl_notebook_step >> [
+    avant_model_training_step, capital_bank_model_training_step,
+    chase_model_training_step, citi_model_training_step_a, citi_model_training_step_b,
+    credit_one_model_training_step_a, credit_one_model_training_step_b, credit_strong_model_training_step,
+    discover_model_training_step, self_model_training_step,
+    icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
+    jasper_model_training_step, greenlight_model_training_step,
+    petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step
+]
+
+tpg_etl_notebook_step >> [
     avant_model_training_step, capital_bank_model_training_step,
     chase_model_training_step, citi_model_training_step_a, citi_model_training_step_b,
     credit_one_model_training_step_a, credit_one_model_training_step_b, credit_strong_model_training_step,

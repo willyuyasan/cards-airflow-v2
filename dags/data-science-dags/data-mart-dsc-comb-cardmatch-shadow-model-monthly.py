@@ -117,7 +117,7 @@ ccdc_etl_notebook_task = {
         "toDate": "now",
         "stagingPath": Variable.get("DBX_CARDS_Staging_Path")
     },
-    'notebook_path': '/Production/CardMatch/Combined/CardMatch_new_data_pull',
+    'notebook_path': '/Production/CardMatchDS/Combined/CardMatch_new_data_pull',
 }
 
 brcc_etl_notebook_task = {
@@ -125,7 +125,7 @@ brcc_etl_notebook_task = {
         "toDate": "now",
         "stagingPath": Variable.get("DBX_CARDS_Staging_Path")
     },
-    'notebook_path': '/Production/CardMatch/Combined/BRCC-CM-data',
+    'notebook_path': '/Production/CardMatchDS/Combined/BRCC-CM-data',
 }
 
 tpg_etl_notebook_task = {
@@ -133,7 +133,7 @@ tpg_etl_notebook_task = {
         "toDate": "now",
         "stagingPath": Variable.get("DBX_CARDS_Staging_Path")
     },
-    'notebook_path': '/Production/CardMatch/Combined/TPG-CM-data',
+    'notebook_path': '/Production/CardMatchDS/Combined/TPG-CM-data',
 }
 
 # Model Training Notebook Tasks

@@ -562,7 +562,7 @@ ot_summary_staging_jar_task = {
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
-         schedule_interval='30 0-5,10-23 * * *',
+         schedule_interval='30 0-5,12-23 * * *',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
          max_active_runs=1,

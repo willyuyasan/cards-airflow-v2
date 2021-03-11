@@ -540,7 +540,8 @@ ot_details_staging_jar_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_CONSUMER_SDK_Tenants"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
+        "CUSTOM_PARAMETERS__read_Data_Base=" + Variable.get("DBX_READ_DATABASE")
     ]
 }
 
@@ -562,7 +563,7 @@ ot_summary_staging_jar_task = {
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
-         schedule_interval='30 7 * * *',
+         schedule_interval='30 9 * * *',
          dagrun_timeout=timedelta(hours=3),
          catchup=False,
          max_active_runs=1,

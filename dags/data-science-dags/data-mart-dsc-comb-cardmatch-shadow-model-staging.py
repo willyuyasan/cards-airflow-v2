@@ -24,7 +24,7 @@ default_args = {
 # DBX tokens and logs
 airflow_svc_token = "databricks_airflow_svc_token"
 ACCOUNT = 'cards'
-DAG_NAME = 'data-mart-dsc-ccdc-cardmatch-model-monthly'
+DAG_NAME = 'data-mart-dsc-comb-cardmatch-shadow-model-staging'
 
 LOG_PATH = {
     'dbfs': {
@@ -112,12 +112,28 @@ model_step_libraries = [
 ]
 
 # ETL Notebook Task
-etl_notebook_task = {
+ccdc_etl_notebook_task = {
     'base_parameters': {
         "toDate": "now",
         "stagingPath": Variable.get("DBX_CARDS_Staging_Path")
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_new_data_pull',
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_new_data_pull',
+}
+
+brcc_etl_notebook_task = {
+    'base_parameters': {
+        "toDate": "now",
+        "stagingPath": Variable.get("DBX_CARDS_Staging_Path")
+    },
+    'notebook_path': '/Projects/CardMatch/Combined/BRCC-CM-data',
+}
+
+tpg_etl_notebook_task = {
+    'base_parameters': {
+        "toDate": "now",
+        "stagingPath": Variable.get("DBX_CARDS_Staging_Path")
+    },
+    'notebook_path': '/Projects/CardMatch/Combined/TPG-CM-data',
 }
 
 # Model Training Notebook Tasks
@@ -126,7 +142,7 @@ avant_model_training_notebook_task = {
         "issuer": "Avant",
         "card_ids": "6353"
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train',
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }
 
 # boa_model_training_notebook_task = {
@@ -134,7 +150,7 @@ avant_model_training_notebook_task = {
 #         "issuer": "Bank of America",
 #         "card_ids": "220612356, 22079418, 22069416"
 #     },
-#     'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train',
+#     'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 # }
 
 capital_bank_model_training_notebook_task = {
@@ -142,7 +158,7 @@ capital_bank_model_training_notebook_task = {
         "issuer": "Capital Bank",
         "card_ids": "234110088"
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train',
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }
 
 chase_model_training_notebook_task = {
@@ -150,7 +166,7 @@ chase_model_training_notebook_task = {
         "issuer": "Chase",
         "card_ids": "22126065, 221211283"
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train',
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }
 
 citi_model_training_notebook_task_a = {
@@ -158,7 +174,7 @@ citi_model_training_notebook_task_a = {
         "issuer": "Citi",
         "card_ids": "6295, 6379, 22146011, 221410611, 221410949"
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train',
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }
 
 citi_model_training_notebook_task_b = {
@@ -166,7 +182,7 @@ citi_model_training_notebook_task_b = {
         "issuer": "Citi",
         "card_ids": "221411361, 221411362, 22145695, 22146209, 221410118"
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train',
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }
 
 credit_one_model_training_notebook_task_a = {
@@ -174,7 +190,7 @@ credit_one_model_training_notebook_task_a = {
         "issuer": "Credit One",
         "card_ids": "6852, 6853, 6854, 6855, 229611108"
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train',
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }
 
 credit_one_model_training_notebook_task_b = {
@@ -182,7 +198,7 @@ credit_one_model_training_notebook_task_b = {
         "issuer": "Credit One",
         "card_ids": "229611306"
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train',
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }
 
 credit_strong_model_training_notebook_task = {
@@ -190,7 +206,7 @@ credit_strong_model_training_notebook_task = {
         "issuer": "Credit Strong",
         "card_ids": "7482"
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train',
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }
 
 discover_model_training_notebook_task = {
@@ -198,7 +214,7 @@ discover_model_training_notebook_task = {
         "issuer": "Discover",
         "card_ids": "7561, 7562, 7563, 7564, 7565"
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train',
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }
 
 self_model_training_notebook_task = {
@@ -206,7 +222,7 @@ self_model_training_notebook_task = {
         "issuer": "Self",
         "card_ids": "7030"
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train',
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }
 
 icommissions_model_training_notebook_task_a = {
@@ -214,7 +230,7 @@ icommissions_model_training_notebook_task_a = {
         "issuer": "iCommissions",
         "card_ids": "6786, 6991, 240910629, 240912393, 243212365"
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train',
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }
 
 icommissions_model_training_notebook_task_b = {
@@ -222,7 +238,7 @@ icommissions_model_training_notebook_task_b = {
         "issuer": "iCommissions",
         "card_ids": "7523, 7424, 22404927, 22995857, 7615"
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train',
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }
 
 icommissions_model_training_notebook_task_c = {
@@ -230,7 +246,7 @@ icommissions_model_training_notebook_task_c = {
         "issuer": "iCommissions",
         "card_ids": "7199, 7513, 7616"
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train',
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }
 
 jasper_model_training_notebook_task = {
@@ -238,7 +254,7 @@ jasper_model_training_notebook_task = {
         "issuer": "Jasper",
         "card_ids": "6938"
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train',
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }
 
 greenlight_model_training_notebook_task = {
@@ -246,7 +262,7 @@ greenlight_model_training_notebook_task = {
         "issuer": "Greenlight",
         "card_ids": "7576"
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train',
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }
 
 petal_model_training_notebook_task = {
@@ -254,7 +270,7 @@ petal_model_training_notebook_task = {
         "issuer": "Petal",
         "card_ids": "6588, 7550"
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train',
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }
 
 wells_fargo_model_training_notebook_task = {
@@ -262,7 +278,7 @@ wells_fargo_model_training_notebook_task = {
         "issuer": "Wells Fargo",
         "card_ids": "7683, 7684, 7685, 7730, 7731"
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train',
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }
 
 deserve_model_training_notebook_task = {
@@ -270,31 +286,51 @@ deserve_model_training_notebook_task = {
         "issuer": "Deserve",
         "card_ids": "249112293"
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train'
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow'
 }
 
 # Model Deployment Notebook Task
 model_deployment_notebook_task = {
     'base_parameters': {
         "environment": "staging",
-        "notebook": '/Production/CardMatchDS/CCDC/CardMatch_python_combine'
+        "notebook": '/Projects/CardMatch/Combined/CardMatch_python_combine-shadow'
     },
-    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_combine',
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_combine-shadow',
 }
 
 # DAG Creation Step
-with DAG('data-mart-dsc-ccdc-cardmatch-model-monthly',
+with DAG('data-mart-dsc-comb-cardmatch-shadow-model-staging',
          schedule_interval=None,
-         dagrun_timeout=timedelta(hours=2),
+         dagrun_timeout=timedelta(hours=3),
          catchup=False,
          max_active_runs=1,
          default_args=default_args
          ) as dag:
 
-    etl_notebook_step = FinServDatabricksSubmitRunOperator(
-        task_id='etl-step',
+    ccdc_etl_notebook_step = FinServDatabricksSubmitRunOperator(
+        task_id='ccdc-etl-step',
         new_cluster=small_task_cluster,
-        notebook_task=etl_notebook_task,
+        notebook_task=ccdc_etl_notebook_task,
+        libraries=etl_step_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
+    brcc_etl_notebook_step = FinServDatabricksSubmitRunOperator(
+        task_id='brcc-etl-step',
+        new_cluster=small_task_cluster,
+        notebook_task=brcc_etl_notebook_task,
+        libraries=etl_step_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
+    tpg_etl_notebook_step = FinServDatabricksSubmitRunOperator(
+        task_id='tpg-etl-step',
+        new_cluster=small_task_cluster,
+        notebook_task=tpg_etl_notebook_task,
         libraries=etl_step_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
@@ -502,14 +538,35 @@ with DAG('data-mart-dsc-ccdc-cardmatch-model-monthly',
     )
 
 # Dependency setup
-etl_notebook_step >> [avant_model_training_step, capital_bank_model_training_step,
-                      chase_model_training_step, citi_model_training_step_a, citi_model_training_step_b,
-                      credit_one_model_training_step_a, credit_one_model_training_step_b, credit_strong_model_training_step,
-                      discover_model_training_step, self_model_training_step,
-                      icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
-                      jasper_model_training_step, greenlight_model_training_step,
-                      petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step
-                      ]
+ccdc_etl_notebook_step >> [
+    avant_model_training_step, capital_bank_model_training_step,
+    chase_model_training_step, citi_model_training_step_a, citi_model_training_step_b,
+    credit_one_model_training_step_a, credit_one_model_training_step_b, credit_strong_model_training_step,
+    discover_model_training_step, self_model_training_step,
+    icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
+    jasper_model_training_step, greenlight_model_training_step,
+    petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step
+]
+
+brcc_etl_notebook_step >> [
+    avant_model_training_step, capital_bank_model_training_step,
+    chase_model_training_step, citi_model_training_step_a, citi_model_training_step_b,
+    credit_one_model_training_step_a, credit_one_model_training_step_b, credit_strong_model_training_step,
+    discover_model_training_step, self_model_training_step,
+    icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
+    jasper_model_training_step, greenlight_model_training_step,
+    petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step
+]
+
+tpg_etl_notebook_step >> [
+    avant_model_training_step, capital_bank_model_training_step,
+    chase_model_training_step, citi_model_training_step_a, citi_model_training_step_b,
+    credit_one_model_training_step_a, credit_one_model_training_step_b, credit_strong_model_training_step,
+    discover_model_training_step, self_model_training_step,
+    icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
+    jasper_model_training_step, greenlight_model_training_step,
+    petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step
+]
 
 [avant_model_training_step, capital_bank_model_training_step,
  chase_model_training_step, citi_model_training_step_a, citi_model_training_step_b,

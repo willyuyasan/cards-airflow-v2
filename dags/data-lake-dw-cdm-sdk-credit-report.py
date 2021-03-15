@@ -30,7 +30,7 @@ LOG_PATH = {
 
 # Cluster Setup Step
 small_task_custom_cluster = {
-    'spark_version': '5.3.x-scala2.11',
+    'spark_version': '7.3.x-scala2.12',
     'node_type_id': Variable.get("DBX_SMALL_CLUSTER"),
     'driver_node_type_id': Variable.get("DBX_SMALL_CLUSTER"),
     'num_workers': Variable.get("DBX_SMALL_CLUSTER_NUM_NODES"),
@@ -42,7 +42,7 @@ small_task_custom_cluster = {
         'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
-        'java_opts': '-Dconfig.resource=application-cards-' + Variable.get("CARDS_SDK_ENV") + '.conf'
+        'java_opts': '-Dconfig.resource=application-creditreport-' + Variable.get("CARDS_SDK_ENV") + '.conf'
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",
@@ -68,7 +68,7 @@ staging_libraries = [
         "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
     },
     {
-        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
+        "jar": "dbfs:/Libraries/JVM/cdm-creditreport/prod/scala-2.12/cdm-creditreport-assembly-0.0.1-SNAPSHOT.jar",
     },
 ]
 
@@ -80,7 +80,7 @@ credit_report_jar_task = {
             datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CREDIT_REPORT_lookback_days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.common.reporting.CreditReport",
+        "TABLES=" + "com.redventures.cdm.creditreport.reporting.CreditReport",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_CREDIT_REPORT_TENANTS"),

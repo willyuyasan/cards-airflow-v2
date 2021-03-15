@@ -38,7 +38,7 @@ small_task_custom_cluster = {
     'cluster_log_conf': LOG_PATH,
     'spark_conf': {
         'spark.sql.sources.partitionOverwriteMode': 'dynamic',
-        'spark.driver.extraJavaOptions': '-Dconfig.resource=application-cards-' + Variable.get("CARDS_SDK_ENV") + '.conf',
+        'spark.driver.extraJavaOptions': '-Dconfig.resource=application-creditreport-' + Variable.get("CARDS_SDK_ENV") + '.conf',
         'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {

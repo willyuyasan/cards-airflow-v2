@@ -73,7 +73,7 @@ staging_libraries = [
 ]
 
 credit_report_jar_task = {
-    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'main_class_name': "com.redventures.cdm.creditreport.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (

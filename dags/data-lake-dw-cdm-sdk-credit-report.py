@@ -42,7 +42,7 @@ small_task_custom_cluster = {
         'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
-        'java_opts': '-Dconfig.resource=application-cards-' + Variable.get("CARDS_SDK_ENV") + '.conf'
+        'java_opts': '-Dconfig.resource=application-creditreport-' + Variable.get("CARDS_SDK_ENV") + '.conf'
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",

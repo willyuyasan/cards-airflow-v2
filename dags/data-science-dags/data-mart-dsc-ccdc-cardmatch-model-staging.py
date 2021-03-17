@@ -273,6 +273,22 @@ deserve_model_training_notebook_task = {
     'notebook_path': '/Projects/CardMatch/CCDC/CardMatch_python_train',
 }
 
+synchrony_model_training_notebook_task = {
+    'base_parameters': {
+        "issuer": "Synchrony Bank",
+        "card_ids": "7536"
+    },
+    'notebook_path': '/Projects/CardMatch/CCDC/CardMatch_python_train',
+}
+
+sofi_model_training_notebook_task = {
+    'base_parameters': {
+        "issuer": "SoFi",
+        "card_ids": "7700"
+    },
+    'notebook_path': '/Projects/CardMatch/CCDC/CardMatch_python_train',
+}
+
 # Model Deployment Notebook Task
 model_deployment_notebook_task = {
     'base_parameters': {
@@ -491,6 +507,26 @@ with DAG('data-mart-dsc-ccdc-cardmatch-model-staging',
         polling_period_seconds=120
     )
 
+    synchrony_model_training_step = FinServDatabricksSubmitRunOperator(
+        task_id='Synchrony-model-training-step',
+        new_cluster=small_task_cluster,
+        notebook_task=synchrony_model_training_notebook_task,
+        libraries=model_step_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
+    sofi_model_training_step = FinServDatabricksSubmitRunOperator(
+        task_id='SoFi-model-training-step',
+        new_cluster=small_task_cluster,
+        notebook_task=sofi_model_training_notebook_task,
+        libraries=model_step_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
     model_deployment_step = FinServDatabricksSubmitRunOperator(
         task_id='model-combine-deployment-step',
         new_cluster=small_task_cluster,
@@ -508,7 +544,8 @@ etl_notebook_step >> [avant_model_training_step, capital_bank_model_training_ste
                       discover_model_training_step, self_model_training_step,
                       icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
                       jasper_model_training_step, greenlight_model_training_step,
-                      petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step
+                      petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step, synchrony_model_training_step,
+                      sofi_model_training_step
                       ]
 
 [avant_model_training_step, capital_bank_model_training_step,
@@ -517,5 +554,6 @@ etl_notebook_step >> [avant_model_training_step, capital_bank_model_training_ste
  discover_model_training_step, self_model_training_step,
  icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
  jasper_model_training_step, greenlight_model_training_step,
- petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step
+ petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step, synchrony_model_training_step,
+ sofi_model_training_step
  ] >> model_deployment_step

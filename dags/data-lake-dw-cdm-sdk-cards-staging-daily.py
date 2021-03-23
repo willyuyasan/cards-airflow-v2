@@ -561,6 +561,38 @@ ot_summary_staging_jar_task = {
     ]
 }
 
+ot_raw_staging_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_AMEX_OT_Raw_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.OutcomeTracked",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_CONSUMER_SDK_Tenants"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
+ot_metadata_raw_staging_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_AMEX_OT_Raw_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.OutcomeTrackedMetaData",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_CONSUMER_SDK_Tenants"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
          schedule_interval='30 7 * * *',
@@ -829,6 +861,26 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=240
     )
 
+    ot_raw_staging = FinServDatabricksSubmitRunOperator(
+        task_id='ot-raw-staging',
+        new_cluster=small_task_custom_cluster,
+        spark_jar_task=ot_raw_staging_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=2400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+
+    ot_metadata_raw_staging = FinServDatabricksSubmitRunOperator(
+        task_id='ot-meta-data-raw-staging',
+        new_cluster=small_task_custom_cluster,
+        spark_jar_task=ot_metadata_raw_staging_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=2400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+
     ccdc_staging_tables = DummyOperator(
         task_id='external-ccdc-staging'
     )
@@ -865,6 +917,7 @@ paidsearch_staging >> traffic_sources_staging
     paidsearch_staging, hoppageviewed_staging, tpg_ccdc_ot_summary_staging, content_meta_data_tracked_staging] >> tpg_staging_tables
 
 # Amex Business Dependencies
+[ot_raw_staging, ot_metadata_raw_staging] >> amex_ot_details_staging
 amex_ot_details_staging >> amex_ot_summary_staging
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging,
     device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging,

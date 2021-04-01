@@ -252,7 +252,7 @@ paid_search_reporting_jar_task = {
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-amex-business-reporting-hourly',
-         schedule_interval='0 0-5,13-23 * * *',
+         schedule_interval='0 0-4,13-23 * * *',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
          max_active_runs=1,

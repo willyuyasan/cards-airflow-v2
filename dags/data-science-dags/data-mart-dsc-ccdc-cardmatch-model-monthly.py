@@ -297,6 +297,14 @@ premier_model_training_notebook_task = {
     'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train'
 }
 
+mission_lane_model_training_notebook_task = {
+    'base_parameters': {
+        "issuer": "Mission Lane",
+        "card_ids": "6968"
+    },
+    'notebook_path': '/Production/CardMatchDS/CCDC/CardMatch_python_train'
+}
+
 # Model Deployment Notebook Task
 model_deployment_notebook_task = {
     'base_parameters': {
@@ -545,6 +553,16 @@ with DAG('data-mart-dsc-ccdc-cardmatch-model-monthly',
         polling_period_seconds=120
     )
 
+    mission_lane_model_training_step = FinServDatabricksSubmitRunOperator(
+        task_id='Mission-lane-model-training-step',
+        new_cluster=small_task_cluster,
+        notebook_task=mission_lane_model_training_notebook_task,
+        libraries=model_step_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
     model_deployment_step = FinServDatabricksSubmitRunOperator(
         task_id='model-combine-deployment-step',
         new_cluster=small_task_cluster,
@@ -563,7 +581,7 @@ etl_notebook_step >> [avant_model_training_step, capital_bank_model_training_ste
                       icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
                       jasper_model_training_step, greenlight_model_training_step,
                       petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step, synchrony_model_training_step,
-                      sofi_model_training_step, premier_model_training_step
+                      sofi_model_training_step, premier_model_training_step, mission_lane_model_training_step
                       ]
 
 [avant_model_training_step, capital_bank_model_training_step,
@@ -573,5 +591,5 @@ etl_notebook_step >> [avant_model_training_step, capital_bank_model_training_ste
  icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
  jasper_model_training_step, greenlight_model_training_step,
  petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step, synchrony_model_training_step,
- sofi_model_training_step, premier_model_training_step
+ sofi_model_training_step, premier_model_training_step, mission_lane_model_training_step
  ] >> model_deployment_step

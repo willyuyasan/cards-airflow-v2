@@ -244,7 +244,7 @@ icommissions_model_training_notebook_task_b = {
 icommissions_model_training_notebook_task_c = {
     'base_parameters': {
         "issuer": "iCommissions",
-        "card_ids": "7199, 7513, 7616"
+        "card_ids": "7199, 7513, 7616, 7748"
     },
     'notebook_path': '/Production/CardMatchDS/Combined/CardMatch_python_train-shadow',
 }

@@ -308,7 +308,7 @@ sofi_model_training_notebook_task = {
 premier_model_training_notebook_task = {
     'base_parameters': {
         "issuer": "PREMIER",
-        "card_ids": "22216069, 22215087, 222111197"
+        "card_ids": "22213840, 222112174, 22214990"
     },
     'notebook_path': '/Production/CardMatchDS/Combined/CardMatch_python_train-shadow',
 }

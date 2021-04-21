@@ -7,14 +7,15 @@ from rvairflow import slack_hook as sh
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2021, 0o1, 0o5),
+    'start_date': datetime(2020, 10, 10),
     'email': ['rshukla@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
     'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
-    'provide_context': True
+    'provide_context': True,
+    'cluster_permissions': Variable.get("DE_DBX_CLUSTER_PERMISSIONS")
 }
 
 # token variable

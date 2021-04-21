@@ -100,7 +100,6 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
         if cluster_permissions is not None:
             self.cluster_permissions = cluster_permissions
 
-
     @staticmethod
     def sidecar_thread_main(obj):
         obj.wait_for_cluster_id()
@@ -260,11 +259,13 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
                 self._cluster_id = response['cluster_instance']['cluster_id']
         return self._cluster_id
 
+
 class _TokenAuth(AuthBase):
     """
     Helper class for requests Auth field. AuthBase requires you to implement the __call__
     magic function.
     """
+
     def __init__(self, token):
         self.token = token
 
@@ -272,7 +273,7 @@ class _TokenAuth(AuthBase):
         r.headers['Authorization'] = 'Bearer ' + self.token
         return r
 
+
 class FinServDatabricksPlugin(AirflowPlugin):
     name = 'finserv_databricks'
     operators = [FinServDatabricksSubmitRunOperator]
-

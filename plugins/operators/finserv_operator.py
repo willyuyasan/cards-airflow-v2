@@ -7,7 +7,14 @@ from hooks.finserv_hook import FinServDatabricksHook
 from airflow.plugins_manager import AirflowPlugin
 from airflow.exceptions import AirflowException
 from airflow.contrib.operators.databricks_operator import DatabricksSubmitRunOperator
+from airflow.utils.decorators import apply_defaults
 import zlib
+
+import json
+import requests
+from requests.auth import AuthBase
+from threading import Thread
+import time
 
 """
 """
@@ -19,6 +26,7 @@ import zlib
 class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
     """Execute a Spark job on Databricks."""
 
+    @apply_defaults
     def __init__(self,
                  *,
                  json=None,
@@ -31,12 +39,13 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
                  libraries=None,
                  run_name=None,
                  timeout_seconds=None,
+                 cluster_permissions=None,
                  databricks_conn_id='databricks_default',
                  polling_period_seconds=30,
                  databricks_retry_limit=3,
                  databricks_retry_delay=1,
                  do_xcom_push=False,
-                 **kwargs,):
+                 **kwargs):
         """__init__
         Generate parameters for running a job through the Databricks run-submit
         api.
@@ -59,6 +68,7 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
                 might be a floating point number) (default: {1})
             :param do_xcom_push: {bool} -- Whether we should push run_id and run_page_url to xcom. (default: {False})
         """
+
         super(FinServDatabricksSubmitRunOperator, self).__init__(**kwargs)
         self.json = json or {}
         self.databricks_conn_id = databricks_conn_id
@@ -87,6 +97,65 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
             self.json['run_name'] = run_name or kwargs['task_id']
         self._cluster_id = None
         self.job_name = run_name or kwargs['task_id']
+        if cluster_permissions is not None:
+            self.cluster_permissions = cluster_permissions
+
+
+    @staticmethod
+    def sidecar_thread_main(obj):
+        obj.wait_for_cluster_id()
+        obj.update_cluster_permissions()
+
+    def start_sidecar(self):
+        self.__stop_sidecar = False
+        self.__sidecar = Thread(target=self.sidecar_thread_main, args=(self,))
+        self.__sidecar.start()
+
+    def stop_sidecar(self):
+        self.__stop_sidecar = True
+        self.__sidecar.join()
+
+    def wait_for_cluster_id(self):
+        while self.cluster_id is None and not self.__stop_sidecar:
+            time.sleep(30)
+
+    def deserialized_of(self, s):
+        return json.loads(s) if isinstance(s, str) else s
+
+    def update_cluster_permissions(self):
+        if not self.__stop_sidecar:
+            if not self.cluster_permissions:
+                self.log.warning("Cluster permissions not set: no configuration found.")
+            else:
+                endpoint = f"api/2.0/permissions/clusters/{self.cluster_id}"
+                hook = self.get_hook()
+                host = hook.databricks_conn.host
+
+                if 'token' in hook.databricks_conn.extra_dejson:
+                    self.log.info('Using token auth.')
+                    auth = _TokenAuth(hook.databricks_conn.extra_dejson['token'])
+                else:
+                    self.log.info('Using basic auth.')
+                    auth = (hook.databricks_conn.login, hook.databricks_conn.password)
+
+                url = f"https://{host}/{endpoint}"
+                response = requests.patch(
+                    url,
+                    json=self.deserialized_of(self.cluster_permissions),
+                    auth=auth,
+                    timeout=hook.timeout_seconds,
+                )
+                if response.ok:
+                    self.log.info(
+                        "Cluster permissions successfully set: %s",
+                        json.dumps(response.json(), indent=2),
+                    )
+                else:
+                    self.log.warning(
+                        "Failed to set cluster permissions: %s, %s, %s",
+                        str(response),
+                        response.text,
+                    )
 
     def get_hook(self):
         return FinServDatabricksHook(
@@ -96,20 +165,21 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
 
     def execute(self, context):
         self.log.debug("Running {} with parameters:\n{}".format(self.job_name, pformat(self.json)))
-
         # Attempt to execute the Databricks job
         try:
+            self.start_sidecar()
             super(FinServDatabricksSubmitRunOperator, self).execute(context)
-
-            # Try and gather details about logging options in this cluster
-            self._log_paths(context)
-            self._print_logs()
+            self.stop_sidecar()
         except AirflowException as ex:
             # TODO: Write some more detail on why the task failed
             # Still try and pull the logs if the run fails
             self._log_paths(context)
             self._print_logs()
             raise ex
+        finally:
+            # Try and gather details about logging options in this cluster
+            self._log_paths(context)
+            self._print_logs()
 
     def _print_logs(self):
         """
@@ -176,6 +246,7 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
                 self.spark_logs = '{}/{}/driver'.format(self.log_dest, self._cluster_id)
                 self.exec_logs = '{}/{}/executor'.format(self.log_dest, self._cluster_id)
 
+    @property
     def cluster_id(self):
         """
         Return the cluster_id this run is executing from. Requires an API call back to runs/get to pull the
@@ -187,8 +258,21 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
             response = self.get_hook()._do_api_call(('GET', 'api/2.0/jobs/runs/get'), json)
             if 'cluster_instance' in response:
                 self._cluster_id = response['cluster_instance']['cluster_id']
+        return self._cluster_id
 
+class _TokenAuth(AuthBase):
+    """
+    Helper class for requests Auth field. AuthBase requires you to implement the __call__
+    magic function.
+    """
+    def __init__(self, token):
+        self.token = token
+
+    def __call__(self, r):
+        r.headers['Authorization'] = 'Bearer ' + self.token
+        return r
 
 class FinServDatabricksPlugin(AirflowPlugin):
     name = 'finserv_databricks'
     operators = [FinServDatabricksSubmitRunOperator]
+

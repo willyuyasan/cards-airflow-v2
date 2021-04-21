@@ -18,7 +18,8 @@ default_args = {
     'retries': 2,
     'retry_delay': timedelta(minutes=5),
     # 'op_kwargs': cfg_dict,
-    'provide_context': True
+    'provide_context': True,
+    'cluster_permissions': Variable.get("DE_DBX_CLUSTER_PERMISSIONS")
 }
 
 # token variable

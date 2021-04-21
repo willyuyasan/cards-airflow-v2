@@ -7,14 +7,15 @@ from rvairflow import slack_hook as sh
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2021, 0o1, 0o5),
+    'start_date': datetime(2020, 10, 10),
     'email': ['rshukla@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
     'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
-    'provide_context': True
+    'provide_context': True,
+    'cluster_permissions': Variable.get("DE_DBX_CLUSTER_PERMISSIONS")
 }
 
 # token variable
@@ -352,7 +353,8 @@ with DAG(DAG_NAME,
         libraries=reporting_libraries,
         timeout_seconds=1800,
         databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        polling_period_seconds=120,
+        cluster_permisssions=Variable.get("TEST_DBX_CLUSTER_PERMISSIONS")
     )
 
     email_event_fct_task = FinServDatabricksSubmitRunOperator(

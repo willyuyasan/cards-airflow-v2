@@ -353,8 +353,7 @@ with DAG(DAG_NAME,
         libraries=reporting_libraries,
         timeout_seconds=1800,
         databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120,
-        cluster_permisssions=Variable.get("TEST_DBX_CLUSTER_PERMISSIONS")
+        polling_period_seconds=120
     )
 
     email_event_fct_task = FinServDatabricksSubmitRunOperator(

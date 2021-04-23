@@ -162,7 +162,7 @@ two_day_window_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "daily",
-        "START_DATE="+ datetime.now().strftime("%Y-%m-%d"),
+        "START_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_EF_Tenant_Id"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.expert_flyer.reporting.AdHocTwoDayWindow",
@@ -176,7 +176,7 @@ two_day_window_only_success_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "daily",
-        "START_DATE="+ datetime.now().strftime("%Y-%m-%d"),
+        "START_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_EF_Tenant_Id"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.expert_flyer.reporting.AdHocTwoDayWindowOnlySuccess",
@@ -190,7 +190,7 @@ seven_day_window_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "daily",
-        "START_DATE="+ datetime.now().strftime("%Y-%m-%d"),
+        "START_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_EF_Tenant_Id"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.expert_flyer.reporting.AdHocSevenDayWindow",
@@ -204,7 +204,7 @@ seven_day_window_only_success_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "daily",
-        "START_DATE="+ datetime.now().strftime("%Y-%m-%d"),
+        "START_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_EF_Tenant_Id"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.expert_flyer.reporting.AdHocSevenDayWindowOnlySuccess",
@@ -409,7 +409,7 @@ with DAG('data-lake-dw-cdm-sdk-ef-adhoc-daily',
         timeout_seconds=1200,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
-    )    
+    )
 
     alert_report_alert_created = FinServDatabricksSubmitRunOperator(
         task_id='alert-report-alert-created',

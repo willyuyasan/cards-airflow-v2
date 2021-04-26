@@ -104,7 +104,7 @@ with DAG(DAG_NAME,
         new_cluster=small_task_custom_cluster,
         spark_jar_task=credit_report_jar_task,
         libraries=staging_libraries,
-        timeout_seconds=1800,
+        timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )

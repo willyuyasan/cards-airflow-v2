@@ -355,7 +355,7 @@ dimension_tables_notebook_task['base_parameters'].update(base_params_staging)
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
-         schedule_interval='0 10 * * *',
+         schedule_interval='0 9 * * *',
          dagrun_timeout=timedelta(hours=4),
          catchup=False,
          max_active_runs=1,

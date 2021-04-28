@@ -308,7 +308,7 @@ mission_lane_model_training_notebook_task = {
 upgrade_model_training_notebook_task = {
     'base_parameters': {
         "issuer": "Upgrade",
-        "card_ids": "7779"
+        "card_ids": "7779, 6861"
     },
     'notebook_path': '/Projects/CardMatch/CCDC/CardMatch_python_train',
 }

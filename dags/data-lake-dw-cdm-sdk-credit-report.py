@@ -32,9 +32,9 @@ LOG_PATH = {
 # Cluster Setup Step
 small_task_custom_cluster = {
     'spark_version': '7.3.x-scala2.12',
-    'node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
-    'driver_node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
-    'num_workers': Variable.get("DBX_MEDIUM_CLUSTER_NUM_NODES"),
+    'node_type_id': Variable.get("DBX_LARGE_CLUSTER"),
+    'driver_node_type_id': Variable.get("DBX_LARGE_CLUSTER"),
+    'num_workers': Variable.get("DBX_LARGE_CLUSTER_NUM_NODES"),
     'auto_termination_minutes': 0,
     'cluster_log_conf': LOG_PATH,
     'spark_conf': {
@@ -48,7 +48,7 @@ small_task_custom_cluster = {
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",
         'ebs_volume_count': 1,
-        'ebs_volume_size': 100,
+        'ebs_volume_size': 400,
         'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
         'first_on_demand': '0',
         'spot_bid_price_percent': '60',

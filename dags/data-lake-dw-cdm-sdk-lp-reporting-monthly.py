@@ -150,7 +150,7 @@ revenue_reporting_jar_task = {
         "RUN_FREQUENCY=" + "daily",
         "START_DATE=" + (
             date.today().replace(day=1) - timedelta(days=last_day_of_prev_month.day)).strftime("%Y-%m-%d"),
-        "END_DATE=" +  (last_day_of_prev_month).strftime("%Y-%m-%d"),
+        "END_DATE=" + (last_day_of_prev_month).strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_LP_Tenant_Id"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.lp.reporting.Revenue",
         "ACCOUNT=" + Variable.get("DBX_LP_Account"),

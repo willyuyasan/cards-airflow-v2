@@ -1,6 +1,6 @@
 from airflow import DAG
 from airflow.models import Variable
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from airflow.operators import ExternalTaskSensor
 from airflow.contrib.operators.databricks_operator import DatabricksSubmitRunOperator
 from operators.finserv_operator import FinServDatabricksSubmitRunOperator
@@ -24,7 +24,7 @@ default_args = {
 # token variable
 airflow_svc_token = "databricks_airflow_svc_token"
 ACCOUNT = 'cards'
-DAG_NAME = 'data-lake-dw-cdm-sdk-lp-reporting-daily'
+DAG_NAME = 'data-lake-dw-cdm-sdk-lp-reporting-monthly'
 
 LOG_PATH = {
     'dbfs': {
@@ -142,95 +142,37 @@ reporting_libraries = [
 ]
 
 # Reporting table tasks
-session_reporting_jar_task = {
-    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
-    'parameters': [
-        "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("LP_DAILY_LOOKBACK_DAYS")))))).strftime(
-            "%Y-%m-%d"),
-        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TENANTS=" + Variable.get("DBX_LP_Tenant_Id"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.lp.reporting.LPSession",
-        "ACCOUNT=" + Variable.get("DBX_LP_Account"),
-        "WRITE_BUCKET=" + Variable.get("DBX_LP_Bucket"),
-        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-    ]
-}
+last_day_of_prev_month = date.today().replace(day=1) - timedelta(days=1)
 
-page_view_reporting_jar_task = {
+revenue_reporting_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
-        "RUN_FREQUENCY=" + "hourly",
+        "RUN_FREQUENCY=" + "daily",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("LP_DAILY_LOOKBACK_DAYS")))))).strftime(
-            "%Y-%m-%d"),
-        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+            date.today().replace(day=1) - timedelta(days=last_day_of_prev_month.day)).strftime("%Y-%m-%d"),
+        "END_DATE=" + (last_day_of_prev_month).strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_LP_Tenant_Id"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.lp.reporting.LPPageView",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.lp.reporting.Revenue",
         "ACCOUNT=" + Variable.get("DBX_LP_Account"),
         "WRITE_BUCKET=" + Variable.get("DBX_LP_Bucket"),
-        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-    ]
-}
-
-anonymous_reporting_jar_task = {
-    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
-    'parameters': [
-        "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (
-            datetime.now() - (timedelta(days=730))).strftime(
-            "%Y-%m-%d"),
-        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TENANTS=" + Variable.get("DBX_LP_Tenant_Id"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.lp.reporting.LPAnonymous",
-        "ACCOUNT=" + Variable.get("DBX_LP_Account"),
-        "WRITE_BUCKET=" + Variable.get("DBX_LP_Bucket"),
-        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
+        "CUSTOM_PARAMETERS__extended_Netsuite_End_Date=" + (date.today().replace(day=1) + timedelta(days=14)).strftime("%Y-%m-%d")
     ]
 }
 
 # DAG Creation Step
-with DAG('data-lake-dw-cdm-sdk-lp-reporting-daily',
-         schedule_interval='0 9 * * *',
-         dagrun_timeout=timedelta(hours=3),
+with DAG('data-lake-dw-cdm-sdk-lp-reporting-monthly',
+         schedule_interval='0 0 15 * *',
+         dagrun_timeout=timedelta(hours=1),
          catchup=False,
          max_active_runs=1,
          default_args=default_args
          ) as dag:
 
-    lp_staging_tables = ExternalTaskSensor(
-        task_id='external-lp-reporting',
-        external_dag_id='data-lake-dw-cdm-sdk-cards-staging-daily',
-        external_task_id='external-lp-staging',
-        execution_timeout=timedelta(minutes=10),
-        execution_delta=timedelta(minutes=30)
-    )
-
-    session_reporting = FinServDatabricksSubmitRunOperator(
-        task_id='session-reporting',
-        new_cluster=large_task_cluster,
-        spark_jar_task=session_reporting_jar_task,
-        libraries=reporting_libraries,
-        timeout_seconds=7200,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    page_view_reporting = FinServDatabricksSubmitRunOperator(
-        task_id='page-view-reporting',
-        new_cluster=large_task_cluster,
-        spark_jar_task=page_view_reporting_jar_task,
-        libraries=reporting_libraries,
-        timeout_seconds=7200,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
-    anonymous_reporting = FinServDatabricksSubmitRunOperator(
-        task_id='anonymous-reporting',
-        new_cluster=large_task_cluster,
-        spark_jar_task=anonymous_reporting_jar_task,
+    revenue_reporting = FinServDatabricksSubmitRunOperator(
+        task_id='revenue-reporting',
+        new_cluster=medium_task_cluster,
+        spark_jar_task=revenue_reporting_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=8400,
         databricks_conn_id=airflow_svc_token,
@@ -238,5 +180,3 @@ with DAG('data-lake-dw-cdm-sdk-lp-reporting-daily',
     )
 
 # Dependencies
-lp_staging_tables >> [session_reporting, page_view_reporting]
-session_reporting >> anonymous_reporting

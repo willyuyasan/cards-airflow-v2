@@ -19,8 +19,8 @@ BASE_URI = conn.host
 # https://hq.appsflyer.com/export/id924710586/installs_report/v5
 api_key = Variable.get("APPSFLYER_API_TOKEN_V1")
 
-def upload_file(file_name, bucket, object_name=None):
 
+def upload_file(file_name, bucket, object_name=None):
 
     # If S3 object_name was not specified, use file_name
     if object_name is None:
@@ -45,7 +45,7 @@ def make_request(**kwargs):
         'to': '2021-04-30'
     }
 
-    response =requests.get(BASE_URI, params=params)
+    response = requests.get(BASE_URI, params=params)
     tsv_response = response.text.replace(',', '\t')
 
     tsv_response_list = tsv_response.split('\n')[1:]
@@ -67,6 +67,7 @@ def make_request(**kwargs):
         s3.upload_fileobj(f, bucketName, "None")
 
     os.remove(out_file)
+
 
 default_args = {'owner': 'airflow',
                 'depends_on_past': False,

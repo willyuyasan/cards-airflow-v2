@@ -20,13 +20,6 @@ BASE_URI = conn.host
 api_key = Variable.get("APPSFLYER_API_TOKEN_V1")
 
 def upload_file(file_name, bucket, object_name=None):
-    """Upload a file to an S3 bucket
-
-    :param file_name: File to upload
-    :param bucket: Bucket to upload to
-    :param object_name: S3 object name. If not specified then file_name is used
-    :return: True if file was uploaded, else False
-    """
 
     # If S3 object_name was not specified, use file_name
     if object_name is None:
@@ -51,11 +44,6 @@ def make_request(**kwargs):
         'to': '2021-04-30'
     }
 
-    today = '2021-05-06'
-
-    # params['from'] = kwargs['execution_date'].strftime('%Y-%m-%d')
-    # params['to'] = kwargs['execution_date'].strftime('%Y-%m-%d')
-
     response =  requests.get(BASE_URI, params=params)
 
     tsv_response = response.text.replace(',', '\t')
@@ -64,7 +52,6 @@ def make_request(**kwargs):
 
     export_string = '\n'.join(tsv_response_list)
 
-    #out_file = "/home/airflow/tmp/" + "appsflyer.tsv.gz"
     out_file = "/usr/local/airflow/" + "appsflyer.tsv.gz"
 
     print(export_string)
@@ -79,10 +66,6 @@ def make_request(**kwargs):
     with open(out_file, "rb") as f:
         s3.upload_fileobj(f, bucketName, "None")
 
-    # s3_conn = S3Hook(aws_conn_id="my_s3_conn")
-    # s3_key = "model/tpg/test/{0}/extract_appsflyer.tsv".format(today)
-    #
-    # s3_conn.load_file(out_file, key=s3_key, bucket_name=Variable.get("DBX_TPG_Bucket"), replace=True)
 
     os.remove(out_file)
 

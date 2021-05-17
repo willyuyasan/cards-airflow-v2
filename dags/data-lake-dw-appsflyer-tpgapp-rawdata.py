@@ -33,17 +33,14 @@ def upload_file(file_name, bucket, object_name=None):
         object_name = file_name
 
     # Upload the file
-    s3_client = boto3.client('s3'
-                             # aws_access_key_id="AKIAIPUG5LHAGS2MXRUQ",
-                             # aws_secret_access_key="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"
-                             )
+    s3_client = boto3.client('s3')
+
     try:
         response = s3_client.upload_file(file_name, bucket, object_name)
     except ClientError as e:
         logging.error(e)
         return False
     return True
-
 
 
 def make_request(**kwargs):
@@ -78,8 +75,7 @@ def make_request(**kwargs):
     bucketName=Variable.get("DBX_TPG_Bucket")
 
     s3 = boto3.client('s3')
-                      # aws_access_key_id="AKIAIPUG5LHAGS2MXRUQ",
-                      # aws_secret_access_key="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")
+
     with open(out_file, "rb") as f:
         s3.upload_fileobj(f, bucketName, "None")
 

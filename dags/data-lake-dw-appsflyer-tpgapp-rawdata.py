@@ -21,6 +21,7 @@ api_key = Variable.get("APPSFLYER_API_TOKEN_V1")
 
 def upload_file(file_name, bucket, object_name=None):
 
+
     # If S3 object_name was not specified, use file_name
     if object_name is None:
         object_name = file_name
@@ -44,8 +45,7 @@ def make_request(**kwargs):
         'to': '2021-04-30'
     }
 
-    response =  requests.get(BASE_URI, params=params)
-
+    response =requests.get(BASE_URI, params=params)
     tsv_response = response.text.replace(',', '\t')
 
     tsv_response_list = tsv_response.split('\n')[1:]
@@ -59,16 +59,14 @@ def make_request(**kwargs):
     with gz.open(out_file, 'wt') as tsvfile:
         tsvfile.write(export_string)
 
-    bucketName=Variable.get("DBX_TPG_Bucket")
+    bucketName = Variable.get("DBX_TPG_Bucket")
 
     s3 = boto3.client('s3')
 
     with open(out_file, "rb") as f:
         s3.upload_fileobj(f, bucketName, "None")
 
-
     os.remove(out_file)
-
 
 default_args = {'owner': 'airflow',
                 'depends_on_past': False,

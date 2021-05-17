@@ -40,9 +40,9 @@ def upload_file(file_name, bucket, object_name=None):
 def make_request(**kwargs):
 
     params = {
-        'api_token': '4b40bbd5-8641-4843-9afd-5a3c609fb51f',
-        'from': '2021-04-01',
-        'to': '2021-04-30'
+        'api_token': Variable.get("APPSFLYER_API_TOKEN_V1"),
+        'from': (datetime.now() - (timedelta(days=int(int(Variable.get("APPSFLYER_LONG_LOOKBACK_DAYS")))))).strftime("%Y-%m-%d"),
+        'to': datetime.now().strftime("%Y-%m-%d")
     }
 
     response = requests.get(BASE_URI, params=params)

@@ -151,7 +151,7 @@ session_reporting_jar_task = {
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_LP_Tenant_Id"),
-        "TABLES=" + "com.redventures.cdm.flatreporting.reporting.Session",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.lp.reporting.LPSession",
         "ACCOUNT=" + Variable.get("DBX_LP_Account"),
         "WRITE_BUCKET=" + Variable.get("DBX_LP_Bucket"),
         "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
@@ -167,7 +167,7 @@ page_view_reporting_jar_task = {
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_LP_Tenant_Id"),
-        "TABLES=" + "com.redventures.cdm.flatreporting.reporting.PageView",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.lp.reporting.LPPageView",
         "ACCOUNT=" + Variable.get("DBX_LP_Account"),
         "WRITE_BUCKET=" + Variable.get("DBX_LP_Bucket"),
         "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
@@ -177,7 +177,7 @@ page_view_reporting_jar_task = {
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-lp-reporting-hourly',
-         schedule_interval='0 0-4,13-23 * * *',
+         schedule_interval='0 0-6,11-23 * * *',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
          max_active_runs=1,
@@ -194,7 +194,7 @@ with DAG('data-lake-dw-cdm-sdk-lp-reporting-hourly',
 
     session_reporting = FinServDatabricksSubmitRunOperator(
         task_id='session-reporting',
-        new_cluster=small_task_cluster,
+        new_cluster=medium_task_cluster,
         spark_jar_task=session_reporting_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=3600,
@@ -204,7 +204,7 @@ with DAG('data-lake-dw-cdm-sdk-lp-reporting-hourly',
 
     page_view_reporting = FinServDatabricksSubmitRunOperator(
         task_id='page-view-reporting',
-        new_cluster=small_task_cluster,
+        new_cluster=medium_task_cluster,
         spark_jar_task=page_view_reporting_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=3600,

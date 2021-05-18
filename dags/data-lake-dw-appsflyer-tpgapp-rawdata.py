@@ -59,7 +59,7 @@ def make_request(**kwargs):
     with gz.open(out_file, 'wt') as tsvfile:
         tsvfile.write(export_string)
 
-    bucketName = "s3a://rv-core-tpg-datamart-qa/model/tpg/test/"
+    bucketName = Variable.get("DBX_TPG_Bucket")
 
     s3 = boto3.client('s3')
 

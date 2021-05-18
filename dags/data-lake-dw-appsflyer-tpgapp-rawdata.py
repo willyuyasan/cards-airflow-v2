@@ -52,7 +52,7 @@ def make_request(**kwargs):
 
     export_string = '\n'.join(tsv_response_list)
 
-    out_file = "/usr/local/airflow/" + "appsflyer.tsv.gz"
+    out_file = "/usr/local/airflow/tmp/" + "appsflyer.tsv.gz"
 
     print(export_string)
 

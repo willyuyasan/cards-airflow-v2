@@ -47,7 +47,6 @@ def make_request(**kwargs):
     prefix = out_file
     cmd = 'aws s3 cp ' + str(prefix) + ' ' + str(new_prefix)
 
-
     try:
         print(cmd)
         returned_value = subprocess.call(cmd,shell=True)

@@ -52,21 +52,13 @@ def make_request(**kwargs):
 
     export_string = '\n'.join(tsv_response_list)
 
-    out_file = "/usr/local/airflow/tmp/" + "appsflyer.tsv.gz"
-
     print(export_string)
-
-    with gz.open(out_file, 'wt') as tsvfile:
-        tsvfile.write(export_string)
 
     bucketName = Variable.get("DBX_TPG_Bucket")
 
     s3 = boto3.client('s3')
 
-    with open(out_file, "rb") as f:
-        s3.upload_fileobj(f, bucketName, "None")
-
-    os.remove(out_file)
+    s3.upload_fileobj(export_string, bucketName, "None")
 
 
 default_args = {'owner': 'airflow',

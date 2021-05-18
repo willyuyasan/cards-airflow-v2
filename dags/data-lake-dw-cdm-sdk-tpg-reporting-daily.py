@@ -298,7 +298,8 @@ page_view_reporting_jar_task = {
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.reporting.PageView",
         "ACCOUNT=" + Variable.get("DBX_TPG_Account"),
         "WRITE_BUCKET=" + Variable.get("DBX_TPG_Bucket"),
-        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
+        "CUSTOM_PARAMETERS__redshift_Partitioned_Days=" + Variable.get("DBX_TPG_PageView_Redshift_Partitoned_Upload_Days")
     ]
 }
 
@@ -355,7 +356,7 @@ dimension_tables_notebook_task['base_parameters'].update(base_params_staging)
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
-         schedule_interval='0 10 * * *',
+         schedule_interval='0 9 * * *',
          dagrun_timeout=timedelta(hours=4),
          catchup=False,
          max_active_runs=1,

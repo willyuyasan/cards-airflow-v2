@@ -32,23 +32,23 @@ LOG_PATH = {
 # Cluster Setup Step
 small_task_custom_cluster = {
     'spark_version': '7.3.x-scala2.12',
-    'node_type_id': Variable.get("DBX_SMALL_CLUSTER"),
-    'driver_node_type_id': Variable.get("DBX_SMALL_CLUSTER"),
-    'num_workers': Variable.get("DBX_SMALL_CLUSTER_NUM_NODES"),
+    'node_type_id': Variable.get("DBX_LARGE_CLUSTER"),
+    'driver_node_type_id': Variable.get("DBX_LARGE_CLUSTER"),
+    'num_workers': Variable.get("DBX_LARGE_CLUSTER_NUM_NODES"),
     'auto_termination_minutes': 0,
     'cluster_log_conf': LOG_PATH,
     'spark_conf': {
         'spark.sql.sources.partitionOverwriteMode': 'dynamic',
-        'spark.driver.extraJavaOptions': '-Dconfig.resource=application-creditreport-' + Variable.get("CARDS_SDK_ENV") + '.conf',
+        'spark.driver.extraJavaOptions': '-Dconfig.resource='+Variable.get("SDK_CONFIG_FILE"),
         'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
-        'java_opts': '-Dconfig.resource=application-creditreport-' + Variable.get("CARDS_SDK_ENV") + '.conf'
+        'java_opts': '-Dconfig.resource='+Variable.get("SDK_CONFIG_FILE")
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",
         'ebs_volume_count': 1,
-        'ebs_volume_size': 100,
+        'ebs_volume_size': 400,
         'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
         'first_on_demand': '0',
         'spot_bid_price_percent': '60',
@@ -104,7 +104,7 @@ with DAG(DAG_NAME,
         new_cluster=small_task_custom_cluster,
         spark_jar_task=credit_report_jar_task,
         libraries=staging_libraries,
-        timeout_seconds=1800,
+        timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )

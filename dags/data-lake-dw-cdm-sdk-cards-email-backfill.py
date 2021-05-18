@@ -21,7 +21,7 @@ default_args = {
 # token variable
 airflow_svc_token = "databricks_airflow_svc_token"
 ACCOUNT = 'cards'
-DAG_NAME = 'data-lake-dw-cdm-sdk-cards-email'
+DAG_NAME = 'data-lake-dw-cdm-sdk-cards-email-backfill'
 
 LOG_PATH = {
     'dbfs': {

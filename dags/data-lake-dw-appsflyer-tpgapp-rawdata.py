@@ -13,6 +13,9 @@ import logging
 import boto3
 from botocore.exceptions import ClientError
 
+conn = BaseHook.get_connection("appsflyer")
+BASE_URI = conn.host
+
 # https://hq.appsflyer.com/export/id924710586/installs_report/v5
 api_key = Variable.get("APPSFLYER_API_TOKEN_V1")
 
@@ -49,7 +52,7 @@ def make_request(**kwargs):
 
     export_string = '\n'.join(tsv_response_list)
 
-    out_file = "/usr/local/airflow/" + "appsflyer.tsv.gz"
+    out_file = "/usr/local/airflow/tmp/" + "appsflyer.tsv.gz"
 
     print(export_string)
 

@@ -219,7 +219,8 @@ product_reporting_jar_task = {
         "TABLES=" + "com.redventures.cdm.datamart.cards.ccdc.reporting.Product",
         "ACCOUNT=" + Variable.get("DBX_CCDC_Account"),
         "WRITE_BUCKET=" + Variable.get("DBX_CCDC_Bucket"),
-        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
+        "CUSTOM_PARAMETERS__redshift_Partitioned_Days=" + Variable.get("DBX_CCDC_Product_Redshift_Partitoned_Upload_Days")
     ]
 }
 

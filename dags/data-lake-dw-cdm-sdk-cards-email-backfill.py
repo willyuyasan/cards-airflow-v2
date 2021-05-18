@@ -281,8 +281,6 @@ email_click_fct_jar_task = {
 
 # DAG Creation Step
 with DAG(DAG_NAME,
-         # schedule_interval='0 2,6,9,11,13,15,17,19,21,23 * * *',
-         schedule_interval='0 11,21 * * *',
          dagrun_timeout=timedelta(hours=6),
          catchup=False,
          max_active_runs=1,
@@ -291,7 +289,7 @@ with DAG(DAG_NAME,
 
     email_campaign_dim_task = FinServDatabricksSubmitRunOperator(
         task_id='email-campaign-dim',
-        new_cluster=small_task_custom_cluster,
+        new_cluster=medium_task_custom_cluster,
         spark_jar_task=email_campaign_dim_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=10800,
@@ -301,7 +299,7 @@ with DAG(DAG_NAME,
 
     email_link_dim_task = FinServDatabricksSubmitRunOperator(
         task_id='email-link-dim',
-        new_cluster=small_task_custom_cluster,
+        new_cluster=medium_task_custom_cluster,
         spark_jar_task=email_link_dim_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=10800,
@@ -311,7 +309,7 @@ with DAG(DAG_NAME,
 
     email_signup_source_dim_task = FinServDatabricksSubmitRunOperator(
         task_id='email-signup-source-dim',
-        new_cluster=small_task_custom_cluster,
+        new_cluster=medium_task_custom_cluster,
         spark_jar_task=email_signup_source_dim_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=10800,
@@ -331,7 +329,7 @@ with DAG(DAG_NAME,
 
     email_template_dim_task = FinServDatabricksSubmitRunOperator(
         task_id='email-template-dim',
-        new_cluster=small_task_custom_cluster,
+        new_cluster=medium_task_custom_cluster,
         spark_jar_task=email_template_dim_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=10800,
@@ -341,7 +339,7 @@ with DAG(DAG_NAME,
 
     email_unsub_source_dim_task = FinServDatabricksSubmitRunOperator(
         task_id='email-unsub-source-dim',
-        new_cluster=small_task_custom_cluster,
+        new_cluster=medium_task_custom_cluster,
         spark_jar_task=email_unsub_source_dim_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=10800,
@@ -351,7 +349,7 @@ with DAG(DAG_NAME,
 
     email_workflow_dim_task = FinServDatabricksSubmitRunOperator(
         task_id='email-workflow-dim',
-        new_cluster=small_task_custom_cluster,
+        new_cluster=medium_task_custom_cluster,
         spark_jar_task=email_workflow_dim_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=10800,
@@ -361,7 +359,7 @@ with DAG(DAG_NAME,
 
     email_sub_dim_task = FinServDatabricksSubmitRunOperator(
         task_id='email-sub-dim',
-        new_cluster=small_task_custom_cluster,
+        new_cluster=medium_task_custom_cluster,
         spark_jar_task=email_sub_dim_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=10800,

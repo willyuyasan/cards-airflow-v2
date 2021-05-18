@@ -13,6 +13,9 @@ import logging
 import boto3
 from botocore.exceptions import ClientError
 
+conn = BaseHook.get_connection("appsflyer")
+BASE_URI = conn.host
+
 # https://hq.appsflyer.com/export/id924710586/installs_report/v5
 api_key = Variable.get("APPSFLYER_API_TOKEN_V1")
 

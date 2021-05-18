@@ -49,7 +49,7 @@ def make_request(**kwargs):
 
     try:
         print(cmd)
-        returned_value = subprocess.call(cmd,shell=True)
+        returned_value = subprocess.call(cmd, shell=True)
         returned_value = os.system(cmd)
         print('Returned value:', returned_value)
         print("File copied successfully")

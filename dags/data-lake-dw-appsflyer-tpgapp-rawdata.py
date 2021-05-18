@@ -8,6 +8,7 @@ from airflow.hooks.base_hook import BaseHook
 import requests
 import gzip as gz
 import os
+import subprocess
 
 import logging
 import boto3
@@ -59,12 +60,27 @@ def make_request(**kwargs):
     with gz.open(out_file, 'wt') as tsvfile:
         tsvfile.write(export_string)
 
-    bucketName = "s3a://rv-core-tpg-datamart-qa/model/tpg/test/"
+    #bucketName = Variable.get("DBX_TPG_Bucket")
 
-    s3 = boto3.client('s3')
+    #s3 = boto3.client('s3')
 
-    with open(out_file, "rb") as f:
-        s3.upload_fileobj(f, bucketName, "None")
+    # with open(out_file, "rb") as f:
+    #     s3.upload_fileobj(f, bucketName, "None")
+
+    new_prefix = 's3a://rv-core-tpg-datamart-qa/model/tpg/test/'
+    prefix = out_file
+    cmd = 'aws s3 cp ' + str(prefix) + ' ' + str(new_prefix)
+
+    try:
+        print(cmd)
+        returned_value=subprocess.call(cmd,shell=True)
+        returned_value=os.system(cmd)
+        print('Returned value:', returned_value)
+        print("File copied successfully")
+
+    except Exception as e:
+        print(e)
+        raise e
 
 
 default_args = {'owner': 'airflow',

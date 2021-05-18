@@ -281,6 +281,7 @@ email_click_fct_jar_task = {
 
 # DAG Creation Step
 with DAG(DAG_NAME,
+         schedule_interval=None,
          dagrun_timeout=timedelta(hours=6),
          catchup=False,
          max_active_runs=1,

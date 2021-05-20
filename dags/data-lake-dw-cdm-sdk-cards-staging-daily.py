@@ -1195,11 +1195,11 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
     )
 
     tpg_staging_tables = DummyOperator(
-        task_id='external-tpg-staging
+        task_id='external-tpg-staging'
     )
 
     tpg_app_staging_tables = DummyOperator(
-        task_id='external-tpg-app-staging
+        task_id='external-tpg-app-staging'
     )
     amex_business_staging_tables = DummyOperator(
         task_id='external-amex-business-staging'

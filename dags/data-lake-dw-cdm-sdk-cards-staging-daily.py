@@ -472,10 +472,10 @@ mobile_element_clicked_jar_task = {
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.cohesion.staging.MobileElementClicked",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileElementClicked",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
         ]
 }
@@ -485,10 +485,10 @@ mobile_form_backed_jar_task = {
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.cohesion.staging.MobileFormBacked",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileFormBacked",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
         ]
 }
@@ -498,10 +498,10 @@ mobile_form_continued_jar_task = {
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.cohesion.staging.MobileFormContinued",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileFormContinued",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
         ]
 }
@@ -511,10 +511,10 @@ mobile_form_errored_jar_task = {
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.cohesion.staging.MobileFormErrored",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileFormErrored",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
         ]
 }
@@ -524,10 +524,10 @@ mobile_form_exited_jar_task = {
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.cohesion.staging.MobileFormExited",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileFormExited",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
         ]
 }
@@ -537,10 +537,10 @@ mobile_form_exited_jar_task = {
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.cohesion.staging.MobileFormExited",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileFormExited",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
         ]
 }
@@ -550,10 +550,10 @@ mobile_form_outcome_received_jar_task = {
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.cohesion.staging.MobileFormOutcomeReceived",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileFormOutcomeReceived",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
         ]
 }
@@ -563,10 +563,10 @@ mobile_form_started_jar_task = {
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.cohesion.staging.MobileFormStarted",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileFormStarted",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
         ]
 }
@@ -576,10 +576,10 @@ mobile_form_submitted_jar_task = {
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.cohesion.staging.MobileFormSubmitted",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileFormSubmitted",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
         ]
 }
@@ -589,10 +589,10 @@ mobile_product_clicked_jar_task = {
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.cohesion.staging.MobileProductClicked",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileProductClicked",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
         ]
 }
@@ -602,10 +602,10 @@ mobile_product_viewed_jar_task = {
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.cohesion.staging.MobileProductViewed",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileProductViewed",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
         ]
 }
@@ -615,10 +615,10 @@ mobile_screen_engaged_jar_task = {
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.cohesion.staging.MobileScreenEngaged",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileScreenEngaged",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
         ]
 }
@@ -628,10 +628,10 @@ mobile_screen_refreshed_jar_task = {
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.cohesion.staging.MobileScreenRefreshed",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileScreenRefreshed",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
         ]
 }
@@ -641,10 +641,10 @@ mobile_screen_viewed_jar_task = {
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.cohesion.staging.MobileScreenViewed",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileScreenViewed",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
         ]
 }
@@ -1071,14 +1071,136 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=60
     )
 
+    mobile_element_clicked_staging = FinServDatabricksSubmitRunOperator(
+        task_id='mobile-element-clicked-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=mobile_element_clicked_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=2400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+    mobile_form_backed_staging = FinServDatabricksSubmitRunOperator(
+        task_id='mobile-form-backed-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=mobile_form_backed_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=2400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+    mobile_form_continued_staging = FinServDatabricksSubmitRunOperator(
+        task_id='c',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=mobile_form_continued_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=2400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+    mobile_form_errored_staging = FinServDatabricksSubmitRunOperator(
+        task_id='mobile-form-errored-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=mobile_form_errored_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=2400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+    mobile_form_exited_staging = FinServDatabricksSubmitRunOperator(
+        task_id='mobile-form-exited-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=mobile_form_exited_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=2400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+    mobile_form_outcome_received_staging = FinServDatabricksSubmitRunOperator(
+        task_id='mobile-form-outcome-recieved-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=mobile_form_outcome_received_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=2400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+    mobile_form_started_staging = FinServDatabricksSubmitRunOperator(
+        task_id='mobile-form-started-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=mobile_form_started_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=2400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+    mobile_form_submitted_staging = FinServDatabricksSubmitRunOperator(
+        task_id='mobile-form-submitted-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=mobile_form_submitted_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=2400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+    mobile_product_clicked_staging = FinServDatabricksSubmitRunOperator(
+        task_id='mobile-product-clicked-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=mobile_product_clicked_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=2400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+    mobile_product_viewed_staging = FinServDatabricksSubmitRunOperator(
+        task_id='mobile-product-viewed-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=mobile_product_viewed_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=2400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+    mobile_screen_engaged_staging = FinServDatabricksSubmitRunOperator(
+        task_id='mobile-screen-engaged-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=mobile_screen_engaged_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=2400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+    mobile_screen_refreshed_staging = FinServDatabricksSubmitRunOperator(
+        task_id='mobile-screen-refreshed-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=mobile_screen_refreshed_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=2400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+    mobile_screen_viewed_staging = FinServDatabricksSubmitRunOperator(
+        task_id='mobile-screen-viewed-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=mobile_screen_viewed_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=2400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+
+##
     ccdc_staging_tables = DummyOperator(
         task_id='external-ccdc-staging'
     )
 
     tpg_staging_tables = DummyOperator(
-        task_id='external-tpg-staging'
+        task_id='external-tpg-staging
     )
 
+    tpg_app_staging_tables = DummyOperator(
+        task_id='external-tpg-app-staging
+    )
     amex_business_staging_tables = DummyOperator(
         task_id='external-amex-business-staging'
     )
@@ -1105,6 +1227,11 @@ paidsearch_staging >> traffic_sources_staging
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging,
     field_inputted_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging, amp_page_viewed_staging,
     paidsearch_staging, hoppageviewed_staging, tpg_ccdc_ot_summary_staging, content_meta_data_tracked_staging] >> tpg_staging_tables
+
+# TPG App Staging Dependencies
+[mobile-element-clicked-staging, mobile-form-backed-staging, mobile-form-backed-staging, mobile-form-errored-staging, mobile-form-exited-staging, mobile-form-outcome-recieved-staging,
+    mobile-form-started-staging, mobile-form-submitted-staging, mobile-product-clicked-staging, mobile-product-viewed-staging, mobile-screen-engaged-staging, mobile-screen-refreshed-staging,
+    mobile-screen-viewed-staging] >> tpg_app_staging_tables
 
 # Amex Business Dependencies
 [ot_raw_staging, ot_metadata_raw_staging] >> amex_ot_details_staging

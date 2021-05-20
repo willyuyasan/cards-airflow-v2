@@ -463,8 +463,7 @@ content_meta_data_tracked_staging_jar_task = {
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
-#
-#
+
 # TPG APP specific
 mobile_element_clicked_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
@@ -648,9 +647,6 @@ mobile_screen_viewed_jar_task = {
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
         ]
 }
-#
-#
-#
 
 
 # AMEX specific jar:
@@ -1188,8 +1184,6 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=60
     )
-
-##
     ccdc_staging_tables = DummyOperator(
         task_id='external-ccdc-staging'
     )

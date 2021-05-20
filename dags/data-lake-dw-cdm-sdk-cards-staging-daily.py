@@ -1229,9 +1229,9 @@ paidsearch_staging >> traffic_sources_staging
     paidsearch_staging, hoppageviewed_staging, tpg_ccdc_ot_summary_staging, content_meta_data_tracked_staging] >> tpg_staging_tables
 
 # TPG App Staging Dependencies
-[mobile-element-clicked-staging, mobile-form-backed-staging, mobile-form-backed-staging, mobile-form-errored-staging, mobile-form-exited-staging, mobile-form-outcome-recieved-staging,
-    mobile-form-started-staging, mobile-form-submitted-staging, mobile-product-clicked-staging, mobile-product-viewed-staging, mobile-screen-engaged-staging, mobile-screen-refreshed-staging,
-    mobile-screen-viewed-staging] >> tpg_app_staging_tables
+[mobile-element-clicked-staging, mobile-form-backed-staging, mobile-form-backed-staging, mobile-form-errored-staging, mobile-form-exited-staging,
+    mobile-form-outcome-recieved-staging, mobile-form-started-staging, mobile-form-submitted-staging, mobile-product-clicked-staging, mobile-product-viewed-staging,
+    mobile-screen-engaged-staging, mobile-screen-refreshed-staging, mobile-screen-viewed-staging] >> tpg_app_staging_tables
 
 # Amex Business Dependencies
 [ot_raw_staging, ot_metadata_raw_staging] >> amex_ot_details_staging

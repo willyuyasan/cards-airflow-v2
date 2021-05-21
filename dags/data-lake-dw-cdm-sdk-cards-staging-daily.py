@@ -417,18 +417,35 @@ hoppageviewed_staging_jar_task = {
 
 tpg_ccdc_ot_summary_staging_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
-    'parameters': [
-        "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
-            "%Y-%m-%d"),
-        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.TpgCcdcOutcomeTrackedSummary",
-        "ACCOUNT=" + "cards",
-        "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_TPG_CCDC_SDK_Tenants"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-    ]
+        'parameters': [
+            "RUN_FREQUENCY=" + "hourly",
+            "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
+                "%Y-%m-%d"),
+            "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+            "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.TpgCcdcOutcomeTrackedSummary",
+            "ACCOUNT=" + "cards",
+            "READ_BUCKET=" + "rv-core-pipeline",
+            "TENANTS=" + Variable.get("DBX_TPG_CCDC_SDK_Tenants"),
+            "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+        ]
+
+}
+
+form_outcome_recieved_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+            'parameters': [
+                "RUN_FREQUENCY=" + "hourly",
+                "START_DATE=" + (
+                    datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
+                    "%Y-%m-%d"),
+                "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+                "TABLES=" + "com.redventures.cdm.cohesion.staging.FormOutcomeRecieved",
+                "ACCOUNT=" + "cards",
+                "READ_BUCKET=" + "rv-core-pipeline",
+                "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+                "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+            ]
 
 }
 
@@ -517,19 +534,7 @@ mobile_form_errored_jar_task = {
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
         ]
 }
-mobile_form_exited_jar_task = {
-    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
-    'parameters': [
-        "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
-        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileFormExited",
-        "ACCOUNT=" + "cards",
-        "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-        ]
-}
+
 mobile_form_exited_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
@@ -886,6 +891,16 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
+    form_outcome_recieved_staging = FinServDatabricksSubmitRunOperator(
+        task_id='form-outcome-recieved-staging',
+        new_cluster=small_task_custom_cluster,
+        spark_jar_task=form_outcome_recieved_staging_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
 
     product_clicked_staging = FinServDatabricksSubmitRunOperator(
         task_id='product-clicked-staging',
@@ -1225,7 +1240,7 @@ paidsearch_staging >> traffic_sources_staging
 # TPG App Staging Dependencies
 [mobile-element-clicked-staging, mobile-form-backed-staging, mobile-form-backed-staging, mobile-form-errored-staging, mobile-form-exited-staging,
     mobile-form-outcome-recieved-staging, mobile-form-started-staging, mobile-form-submitted-staging, mobile-product-clicked-staging, mobile-product-viewed-staging,
-    mobile-screen-engaged-staging, mobile-screen-refreshed-staging, mobile-screen-viewed-staging] >> tpg_app_staging_tables
+    mobile-screen-engaged-staging, mobile-screen-refreshed-staging, mobile-screen-viewed-staging, form_outcome_recieved_staging] >> tpg_app_staging_tables
 
 # Amex Business Dependencies
 [ot_raw_staging, ot_metadata_raw_staging] >> amex_ot_details_staging

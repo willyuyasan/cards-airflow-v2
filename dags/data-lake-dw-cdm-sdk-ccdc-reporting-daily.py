@@ -383,7 +383,7 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
         new_cluster=medium_task_cluster,
         spark_jar_task=product_reporting_jar_task,
         libraries=reporting_libraries,
-        timeout_seconds=7200,
+        timeout_seconds=9000,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=240
     )

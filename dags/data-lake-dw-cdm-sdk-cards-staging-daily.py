@@ -432,7 +432,7 @@ tpg_ccdc_ot_summary_staging_jar_task = {
 
 }
 
-form_outcome_recieved_jar_task = {
+form_outcome_received_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
@@ -440,7 +440,7 @@ form_outcome_recieved_jar_task = {
             datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.cohesion.staging.FormOutcomeRecieved",
+        "TABLES=" + "com.redventures.cdm.cohesion.staging.FormOutcomeReceived",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
@@ -891,10 +891,10 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
-    form_outcome_recieved_staging = FinServDatabricksSubmitRunOperator(
-        task_id='form-outcome-recieved-staging',
+    form_outcome_received_staging = FinServDatabricksSubmitRunOperator(
+        task_id='form-outcome-received-staging',
         new_cluster=small_task_custom_cluster,
-        spark_jar_task=form_outcome_recieved_jar_task,
+        spark_jar_task=form_outcome_received_jar_task,
         libraries=staging_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
@@ -1127,7 +1127,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=60
     )
     mobile_form_outcome_received_staging = FinServDatabricksSubmitRunOperator(
-        task_id='mobile-form-outcome-recieved-staging',
+        task_id='mobile-form-outcome-received-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=mobile_form_outcome_received_jar_task,
         libraries=staging_libraries,
@@ -1239,7 +1239,7 @@ paidsearch_staging >> traffic_sources_staging
 # TPG App Staging Dependencies
 [mobile_element_clicked_staging, mobile_form_backed_staging, mobile_form_continued_staging, mobile_form_errored_staging, mobile_form_exited_staging,
     mobile_form_outcome_received_staging, mobile_form_started_staging, mobile_form_submitted_staging, mobile_product_clicked_staging, mobile_product_clicked_staging,
-    mobile_screen_engaged_staging, mobile_screen_refreshed_staging, mobile_screen_viewed_staging, form_outcome_recieved_staging] >> tpg_app_staging_tables
+    mobile_screen_engaged_staging, mobile_screen_refreshed_staging, mobile_screen_viewed_staging, form_outcome_received_staging] >> tpg_app_staging_tables
 
 # Amex Business Dependencies
 [ot_raw_staging, ot_metadata_raw_staging] >> amex_ot_details_staging

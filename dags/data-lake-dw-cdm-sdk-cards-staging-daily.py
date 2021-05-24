@@ -440,7 +440,7 @@ form_outcome_recieved_jar_task = {
             datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.cohesion.staging.FormOutcomeRecieved",
+        "TABLES=" + "com.redventures.cdm.cohesion.staging.FormOutcomeReceived",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),

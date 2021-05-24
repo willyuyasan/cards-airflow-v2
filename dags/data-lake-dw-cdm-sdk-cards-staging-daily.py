@@ -417,35 +417,35 @@ hoppageviewed_staging_jar_task = {
 
 tpg_ccdc_ot_summary_staging_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
-        'parameters': [
-            "RUN_FREQUENCY=" + "hourly",
-            "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
-                "%Y-%m-%d"),
-            "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-            "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.TpgCcdcOutcomeTrackedSummary",
-            "ACCOUNT=" + "cards",
-            "READ_BUCKET=" + "rv-core-pipeline",
-            "TENANTS=" + Variable.get("DBX_TPG_CCDC_SDK_Tenants"),
-            "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-        ]
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.TpgCcdcOutcomeTrackedSummary",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_TPG_CCDC_SDK_Tenants"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
 
 }
 
 form_outcome_recieved_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
-            'parameters': [
-                "RUN_FREQUENCY=" + "hourly",
-                "START_DATE=" + (
-                    datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
-                    "%Y-%m-%d"),
-                "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-                "TABLES=" + "com.redventures.cdm.cohesion.staging.FormOutcomeRecieved",
-                "ACCOUNT=" + "cards",
-                "READ_BUCKET=" + "rv-core-pipeline",
-                "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
-                "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-            ]
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.cohesion.staging.FormOutcomeRecieved",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
 
 }
 
@@ -894,13 +894,12 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
     form_outcome_recieved_staging = FinServDatabricksSubmitRunOperator(
         task_id='form-outcome-recieved-staging',
         new_cluster=small_task_custom_cluster,
-        spark_jar_task=form_outcome_recieved_staging_jar_task,
+        spark_jar_task=form_outcome_recieved_jar_task,
         libraries=staging_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
-
 
     product_clicked_staging = FinServDatabricksSubmitRunOperator(
         task_id='product-clicked-staging',

@@ -127,7 +127,7 @@ waitlist_reporting_jar_task = {
                 datetime.now() - (timedelta(days=int(int(Variable.get("TPG_SHORT_LOOKBACK_DAYS")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
+        "TENANTS=" + Variable.get("DBX_TPG_WEB_AND_APP_Tenant_Id"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.reporting.Waitlist",
         "ACCOUNT=" + Variable.get("DBX_TPG_Account"),
         "WRITE_BUCKET=" + Variable.get("DBX_TPG_Bucket"),

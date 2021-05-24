@@ -436,8 +436,7 @@ form_outcome_received_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (
-            timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cohesion.staging.FormOutcomeReceived",
@@ -904,7 +903,6 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
-
 
     form_submitted_staging = FinServDatabricksSubmitRunOperator(
         task_id='form-submitted-staging',

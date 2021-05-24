@@ -1100,7 +1100,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=60
     )
     mobile_form_continued_staging = FinServDatabricksSubmitRunOperator(
-        task_id='c',
+        task_id='mobile-form-continued-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=mobile_form_continued_jar_task,
         libraries=staging_libraries,

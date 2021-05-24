@@ -894,7 +894,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
     form_outcome_recieved_staging = FinServDatabricksSubmitRunOperator(
         task_id='form-outcome-recieved-staging',
         new_cluster=small_task_custom_cluster,
-        spark_jar_task=form_outcome_recieved_jar_task,
+        spark_jar_task=form_outcome_recieved_staging_jar_task,
         libraries=staging_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,

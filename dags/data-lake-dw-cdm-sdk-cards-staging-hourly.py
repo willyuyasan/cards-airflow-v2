@@ -1263,7 +1263,7 @@ paidsearch_staging >> traffic_sources_staging
 [mobile_element_clicked_staging, mobile_form_backed_staging, mobile_form_continued_staging, mobile_form_errored_staging,
  mobile_form_exited_staging,
  mobile_form_outcome_received_staging, mobile_form_started_staging, mobile_form_submitted_staging,
- mobile_product_clicked_staging, mobile_product_clicked_staging,
+ mobile_product_clicked_staging, mobile_product_viewed_staging,
  mobile_screen_engaged_staging, mobile_screen_refreshed_staging, mobile_screen_viewed_staging,
  form_outcome_received_staging] >> tpg_app_staging_tables
 

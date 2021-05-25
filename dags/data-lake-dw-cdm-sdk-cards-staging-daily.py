@@ -423,8 +423,7 @@ tpg_ccdc_ot_summary_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (
-            timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.TpgCcdcOutcomeTrackedSummary",
@@ -441,8 +440,7 @@ form_outcome_received_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (
-            timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cohesion.staging.FormOutcomeReceived",
@@ -754,8 +752,7 @@ ot_details_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (
-            timedelta(days=int(int(Variable.get("DBX_SDK_Daily_AMEX_OT_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_AMEX_OT_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.AMEXOutcomeTrackedDetails",
@@ -772,8 +769,7 @@ ot_summary_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (
-            timedelta(days=int(int(Variable.get("DBX_SDK_Daily_AMEX_OT_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_AMEX_OT_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.AMEXOutcomeTrackedSummary",
@@ -789,8 +785,7 @@ ot_raw_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (
-            timedelta(days=int(int(Variable.get("DBX_SDK_Daily_AMEX_OT_Raw_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_AMEX_OT_Raw_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.OutcomeTracked",
@@ -806,8 +801,7 @@ ot_metadata_raw_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (
-            timedelta(days=int(int(Variable.get("DBX_SDK_Daily_AMEX_OT_Raw_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_AMEX_OT_Raw_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.OutcomeTrackedMetaData",

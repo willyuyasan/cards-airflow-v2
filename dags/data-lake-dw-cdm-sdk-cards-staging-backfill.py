@@ -100,6 +100,39 @@ small_task_custom_cluster = {
     },
 }
 
+medium_task_custom_cluster = {
+    'spark_version': '7.3.x-scala2.12',
+    'node_type_id': 'm5a.2xlarge',
+    'driver_node_type_id': 'm5a.2xlarge',
+    'num_workers': 6,
+    'auto_termination_minutes': 0,
+    'cluster_log_conf': LOG_PATH,
+    'spark_conf': {
+        'spark.sql.sources.partitionOverwriteMode': 'dynamic',
+        'spark.driver.extraJavaOptions': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE"),
+        'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
+    },
+    'spark_env_vars': {
+        'java_opts': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE")
+    },
+    "aws_attributes": {
+        "availability": "SPOT_WITH_FALLBACK",
+        'ebs_volume_count': 3,
+        'ebs_volume_size': 100,
+        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
+        'first_on_demand': '2',
+        'spot_bid_price_percent': '60',
+        'zone_id': 'us-east-1b',
+        "instance_profile_arn": Variable.get("DBX_CARDS_IAM_ROLE"),
+    },
+    'custom_tags': {
+        'Partner': 'B814',
+        'Project': 'Cards Allocation',
+        'Dag_id': "{{ ti.dag_id }}",
+        'Task_id': "{{ ti.task_id }}"
+    },
+}
+
 
 # Libraries
 staging_libraries = [
@@ -435,6 +468,21 @@ ot_details_staging_jar_task = {
     ]
 }
 
+tpg_ccdc_ot_summary_staging_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + Variable.get("DBX_BACKFILL_START_DATE"),
+        "END_DATE=" + Variable.get("DBX_BACKFILL_END_DATE"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.TpgCcdcOutcomeTrackedSummary",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_TPG_CCDC_SDK_Tenants"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+
+}
+
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-cards-staging-backfill',
          schedule_interval=None,
@@ -453,10 +501,20 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-backfill',
     #     polling_period_seconds=120
     # )
 
-    traffic_sources_staging = FinServDatabricksSubmitRunOperator(
-        task_id='traffic-sources-staging',
-        new_cluster=extra_small_task_custom_cluster,
-        spark_jar_task=traffic_sources_staging_jar_task,
+    # traffic_sources_staging = FinServDatabricksSubmitRunOperator(
+    #     task_id='traffic-sources-staging',
+    #     new_cluster=extra_small_task_custom_cluster,
+    #     spark_jar_task=traffic_sources_staging_jar_task,
+    #     libraries=staging_libraries,
+    #     timeout_seconds=14400,
+    #     databricks_conn_id=airflow_svc_token,
+    #     polling_period_seconds=120
+    # )
+
+    tpg_ccdc_ot_summary_staging = FinServDatabricksSubmitRunOperator(
+        task_id='tpg-ccdc-ot-summary-staging',
+        new_cluster=medium_task_custom_cluster,
+        spark_jar_task=tpg_ccdc_ot_summary_staging_jar_task,
         libraries=staging_libraries,
         timeout_seconds=14400,
         databricks_conn_id=airflow_svc_token,

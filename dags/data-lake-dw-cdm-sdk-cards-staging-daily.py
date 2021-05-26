@@ -29,7 +29,8 @@ DAG_NAME = 'data-lake-dw-cdm-sdk-cards-staging-daily'
 
 LOG_PATH = {
     'dbfs': {
-        'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s/%s' % (ACCOUNT, Variable.get("environment"), DAG_NAME, datetime.date(datetime.now()))
+        'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s/%s' % (
+            ACCOUNT, Variable.get("environment"), DAG_NAME, datetime.date(datetime.now()))
     }
 }
 
@@ -47,7 +48,7 @@ extra_small_task_custom_cluster = {
         'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
-        'java_opts': '-Dconfig.resource='+Variable.get("SDK_CONFIG_FILE")
+        'java_opts': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE")
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",
@@ -80,7 +81,7 @@ small_task_custom_cluster = {
         'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
-        'java_opts': '-Dconfig.resource='+Variable.get("SDK_CONFIG_FILE")
+        'java_opts': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE")
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",
@@ -113,7 +114,7 @@ medium_task_custom_cluster = {
         'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
-        'java_opts': '-Dconfig.resource='+Variable.get("SDK_CONFIG_FILE")
+        'java_opts': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE")
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",
@@ -133,14 +134,14 @@ medium_task_custom_cluster = {
     },
 }
 
-
 # Libraries
 staging_libraries = [
     {
         "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
     },
     {
-        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/" + Variable.get("environment") + "/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
+        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/" + Variable.get(
+            "environment") + "/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
     },
 ]
 
@@ -150,7 +151,7 @@ session_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_CARDS_SDK_Tenants"),
@@ -165,7 +166,7 @@ page_view_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cohesion.staging.PageView",
@@ -181,7 +182,7 @@ cookie_identified_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cohesion.staging.CookieIdentified",
@@ -197,7 +198,7 @@ field_inputted_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cohesion.staging.FieldsInputted",
@@ -213,7 +214,7 @@ location_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cohesion.staging.Location",
@@ -229,7 +230,7 @@ device_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cohesion.staging.Device",
@@ -245,7 +246,7 @@ decision_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cohesion.staging.Decision",
@@ -261,7 +262,7 @@ traffic_sources_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.TrafficSources",
@@ -277,7 +278,7 @@ page_metrics_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cohesion.staging.PageMetrics",
@@ -293,7 +294,7 @@ form_submitted_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cohesion.staging.FormSubmitted",
@@ -309,7 +310,7 @@ element_viewed_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cohesion.staging.ElementViewed",
@@ -325,7 +326,7 @@ element_clicked_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cohesion.staging.ElementClicked",
@@ -341,7 +342,7 @@ product_clicked_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cohesion.staging.ProductClicked",
@@ -357,7 +358,7 @@ product_viewed_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cohesion.staging.ProductViewed",
@@ -372,7 +373,9 @@ amp_page_viewed_staging_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cohesion.staging.AmpPageViewed",
         "ACCOUNT=" + "cards",
@@ -387,7 +390,7 @@ paidsearch_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.PaidSearch",
@@ -404,7 +407,7 @@ hoppageviewed_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.HopPageViewed",
@@ -420,7 +423,7 @@ tpg_ccdc_ot_summary_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.TpgCcdcOutcomeTrackedSummary",
@@ -437,7 +440,7 @@ form_outcome_received_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_TPG_CCDC_OT_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cohesion.staging.FormOutcomeReceived",
@@ -454,7 +457,7 @@ cookies_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.Cookies",
@@ -470,7 +473,7 @@ content_meta_data_tracked_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cohesion.staging.ContentMetadataTracked",
@@ -486,173 +489,198 @@ mobile_element_clicked_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileElementClicked",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-        ]
+    ]
 }
 mobile_form_backed_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileFormBacked",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-        ]
+    ]
 }
 mobile_form_continued_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileFormContinued",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-        ]
+    ]
 }
 mobile_form_errored_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileFormErrored",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-        ]
+    ]
 }
 
 mobile_form_exited_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileFormExited",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-        ]
+    ]
 }
 mobile_form_outcome_received_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileFormOutcomeReceived",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-        ]
+    ]
 }
 mobile_form_started_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileFormStarted",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-        ]
+    ]
 }
 mobile_form_submitted_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileFormSubmitted",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-        ]
+    ]
 }
 mobile_product_clicked_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileProductClicked",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-        ]
+    ]
 }
 mobile_product_viewed_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileProductViewed",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-        ]
+    ]
 }
 mobile_screen_engaged_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileScreenEngaged",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-        ]
+    ]
 }
 mobile_screen_refreshed_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileScreenRefreshed",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-        ]
+    ]
 }
 mobile_screen_viewed_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime("%Y-%m-%d"),
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileScreenViewed",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-        ]
+    ]
 }
-
 
 # AMEX specific jar:
 pqo_offer_received_staging_jar_task = {
@@ -660,7 +688,7 @@ pqo_offer_received_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.amex_consumer.staging.PQOOfferReceived",
@@ -676,7 +704,7 @@ pqo_offer_requested_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.amex_consumer.staging.PQOOfferRequested",
@@ -692,7 +720,7 @@ pzn_offers_received_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.PZNOffersReceived",
@@ -708,7 +736,7 @@ phone_system_call_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.amex_business.staging.PhoneSystemCall",
@@ -724,7 +752,7 @@ ot_details_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_AMEX_OT_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_AMEX_OT_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.AMEXOutcomeTrackedDetails",
@@ -741,7 +769,7 @@ ot_summary_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_AMEX_OT_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_AMEX_OT_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.AMEXOutcomeTrackedSummary",
@@ -757,7 +785,7 @@ ot_raw_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_AMEX_OT_Raw_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_AMEX_OT_Raw_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.OutcomeTracked",
@@ -773,7 +801,7 @@ ot_metadata_raw_staging_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_AMEX_OT_Raw_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_AMEX_OT_Raw_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.OutcomeTrackedMetaData",
@@ -791,7 +819,6 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
          catchup=False,
          max_active_runs=1,
          default_args=default_args) as dag:
-
     session_staging = FinServDatabricksSubmitRunOperator(
         task_id='session-staging',
         new_cluster=small_task_custom_cluster,
@@ -1227,32 +1254,38 @@ session_staging >> paidsearch_staging
 paidsearch_staging >> traffic_sources_staging
 
 # CCDC Staging Dependencies
-[page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging,
-    field_inputted_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging,
-    paidsearch_staging, hoppageviewed_staging, tpg_ccdc_ot_summary_staging] >> ccdc_staging_tables
+[page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging,
+ element_viewed_staging, cookie_identified_staging, field_inputted_staging, device_staging, location_staging,
+ decsion_staging, traffic_sources_staging, form_submitted_staging, paidsearch_staging, hoppageviewed_staging,
+ tpg_ccdc_ot_summary_staging] >> ccdc_staging_tables
 
 # TPG Staging Dependencies
-[page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging, cookie_identified_staging,
-    field_inputted_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging, amp_page_viewed_staging,
-    paidsearch_staging, hoppageviewed_staging, tpg_ccdc_ot_summary_staging, content_meta_data_tracked_staging] >> tpg_staging_tables
+[page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging,
+ element_viewed_staging, cookie_identified_staging, field_inputted_staging, device_staging, location_staging,
+ decsion_staging, traffic_sources_staging, form_submitted_staging, amp_page_viewed_staging, paidsearch_staging,
+ hoppageviewed_staging, tpg_ccdc_ot_summary_staging, content_meta_data_tracked_staging] >> tpg_staging_tables
 
 # TPG App Staging Dependencies
-[mobile_element_clicked_staging, mobile_form_backed_staging, mobile_form_continued_staging, mobile_form_errored_staging, mobile_form_exited_staging,
-    mobile_form_outcome_received_staging, mobile_form_started_staging, mobile_form_submitted_staging, mobile_product_clicked_staging, mobile_product_clicked_staging,
-    mobile_screen_engaged_staging, mobile_screen_refreshed_staging, mobile_screen_viewed_staging, form_outcome_received_staging] >> tpg_app_staging_tables
+[mobile_element_clicked_staging, mobile_form_backed_staging, mobile_form_continued_staging, mobile_form_errored_staging,
+ mobile_form_exited_staging, mobile_form_outcome_received_staging, mobile_form_started_staging,
+ mobile_form_submitted_staging, mobile_product_clicked_staging, mobile_product_viewed_staging,
+ mobile_screen_engaged_staging, mobile_screen_refreshed_staging, mobile_screen_viewed_staging,
+ form_outcome_received_staging] >> tpg_app_staging_tables
 
 # Amex Business Dependencies
 [ot_raw_staging, ot_metadata_raw_staging] >> amex_ot_details_staging
 amex_ot_details_staging >> amex_ot_summary_staging
-[page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging, element_viewed_staging,
-    device_staging, location_staging, decsion_staging, traffic_sources_staging, form_submitted_staging,
-    paidsearch_staging, cookies_staging, pzn_offers_received_staging, phone_system_call_staging, amex_ot_summary_staging] >> amex_business_staging_tables
+
+[page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging,
+ element_viewed_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging,
+ form_submitted_staging, paidsearch_staging, cookies_staging, pzn_offers_received_staging, phone_system_call_staging,
+ amex_ot_summary_staging] >> amex_business_staging_tables
 
 # Amex Consumer Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging,
-    element_viewed_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging,
-    paidsearch_staging, cookies_staging, pqo_offer_received_staging, pzn_offers_received_staging,
-    pqo_offer_requested_staging, amex_ot_summary_staging] >> amex_consumer_staging_tables
+ element_viewed_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging, paidsearch_staging,
+ cookies_staging, pqo_offer_received_staging, pzn_offers_received_staging, pqo_offer_requested_staging,
+ amex_ot_summary_staging] >> amex_consumer_staging_tables
 
 # Lonely Planet Dependencies
 [session_staging, page_view_staging, page_metrics_staging] >> lp_staging_tables

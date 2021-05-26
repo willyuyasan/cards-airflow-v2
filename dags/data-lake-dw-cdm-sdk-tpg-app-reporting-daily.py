@@ -136,7 +136,7 @@ waitlist_reporting_jar_task = {
 }
 
 # DAG Creation Step
-with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
+with DAG('data-lake-dw-cdm-sdk-tpg-app-reporting-daily',
          schedule_interval='0 9 * * *',
          dagrun_timeout=timedelta(hours=4),
          catchup=False,

@@ -34,7 +34,7 @@ LOG_PATH = {
 
 # Cluster Setup Step
 small_task_cluster = {
-    'spark_version': '5.3.x-scala2.12',
+    'spark_version': '7.3.x-scala2.12',
     'node_type_id': Variable.get("DBX_SMALL_CLUSTER"),
     'driver_node_type_id': Variable.get("DBX_SMALL_CLUSTER"),
     'num_workers': Variable.get("DBX_SMALL_CLUSTER_NUM_NODES"),

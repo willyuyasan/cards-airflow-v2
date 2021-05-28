@@ -316,7 +316,7 @@ attribution_reporting_jar_task = {
         "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.reporting.Attribution",
         "ACCOUNT=" + Variable.get("DBX_TPG_Account"),
         "WRITE_BUCKET=" + Variable.get("DBX_TPG_Bucket"),
-        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket") #,
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")  #,
         # "CUSTOM_PARAMETERS__redshift_Partitioned_Days=" + Variable.get("DBX_TPG_Attribution_Redshift_Partitoned_Upload_Days")
 
     ]

@@ -210,10 +210,18 @@ credit_strong_model_training_notebook_task = {
     'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }
 
-discover_model_training_notebook_task = {
+discover_model_training_notebook_task_a = {
     'base_parameters': {
         "issuer": "Discover",
         "card_ids": "7561, 7562, 7563, 7564, 7565"
+    },
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
+}
+
+discover_model_training_notebook_task_b = {
+    'base_parameters': {
+        "issuer": "Discover",
+        "card_ids": "7608, 7609, 7610, 7611, 7612"
     },
     'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }
@@ -468,10 +476,20 @@ with DAG('data-mart-dsc-comb-cardmatch-shadow-model-staging',
         polling_period_seconds=120
     )
 
-    discover_model_training_step = FinServDatabricksSubmitRunOperator(
-        task_id='discover-model-training-step',
+    discover_model_training_step_a = FinServDatabricksSubmitRunOperator(
+        task_id='discover-model-training-step-a',
         new_cluster=small_task_cluster,
-        notebook_task=discover_model_training_notebook_task,
+        notebook_task=discover_model_training_notebook_task_a,
+        libraries=model_step_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
+    discover_model_training_step_b = FinServDatabricksSubmitRunOperator(
+        task_id='discover-model-training-step-b',
+        new_cluster=small_task_cluster,
+        notebook_task=discover_model_training_notebook_task_b,
         libraries=model_step_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
@@ -633,7 +651,7 @@ ccdc_etl_notebook_step >> [
     avant_model_training_step, capital_bank_model_training_step,
     chase_model_training_step, citi_model_training_step_a, citi_model_training_step_b,
     credit_one_model_training_step_a, credit_one_model_training_step_b, credit_strong_model_training_step,
-    discover_model_training_step, self_model_training_step,
+    discover_model_training_step_a, discover_model_training_step_b, self_model_training_step,
     icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
     jasper_model_training_step, greenlight_model_training_step,
     petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step, synchrony_model_training_step,
@@ -644,7 +662,7 @@ brcc_etl_notebook_step >> [
     avant_model_training_step, capital_bank_model_training_step,
     chase_model_training_step, citi_model_training_step_a, citi_model_training_step_b,
     credit_one_model_training_step_a, credit_one_model_training_step_b, credit_strong_model_training_step,
-    discover_model_training_step, self_model_training_step,
+    discover_model_training_step_a, discover_model_training_step_b, self_model_training_step,
     icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
     jasper_model_training_step, greenlight_model_training_step,
     petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step, synchrony_model_training_step,
@@ -655,7 +673,7 @@ tpg_etl_notebook_step >> [
     avant_model_training_step, capital_bank_model_training_step,
     chase_model_training_step, citi_model_training_step_a, citi_model_training_step_b,
     credit_one_model_training_step_a, credit_one_model_training_step_b, credit_strong_model_training_step,
-    discover_model_training_step, self_model_training_step,
+    discover_model_training_step_a, discover_model_training_step_b, self_model_training_step,
     icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
     jasper_model_training_step, greenlight_model_training_step,
     petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step, synchrony_model_training_step,
@@ -665,7 +683,7 @@ tpg_etl_notebook_step >> [
 [avant_model_training_step, capital_bank_model_training_step,
  chase_model_training_step, citi_model_training_step_a, citi_model_training_step_b,
  credit_one_model_training_step_a, credit_one_model_training_step_b, credit_strong_model_training_step,
- discover_model_training_step, self_model_training_step,
+ discover_model_training_step_a, discover_model_training_step_b, self_model_training_step,
  icommissions_model_training_step_a, icommissions_model_training_step_b, icommissions_model_training_step_c,
  jasper_model_training_step, greenlight_model_training_step,
  petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step, synchrony_model_training_step,

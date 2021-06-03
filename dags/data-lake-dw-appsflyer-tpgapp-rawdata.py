@@ -36,7 +36,7 @@ def make_request(**kwargs):
     print(export_string)
 
     f = open(out_file, 'w')
-    w = csv.writer(f, delimiter = ',')
+    w = csv.writer(f, delimiter=',')
     w.writerows([x.split(',') for x in export_string])
     f.close()
 

@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from airflow.models import Variable
 from airflow.hooks.S3_hook import S3Hook
 from airflow.hooks.base_hook import BaseHook
+import csv
 
 import requests
 import gzip as gz
@@ -30,20 +31,14 @@ def make_request(**kwargs):
     }
 
     response = requests.get(BASE_URI, params=params)
-    tsv_response = response.text.replace(',', '\t')
-
-    tsv_response_list = tsv_response.split('\n')[1:]
-
-    export_string = '\n'.join(tsv_response_list)
-
-    out_file = "/home/airflow/temp/" + "appsflyer.tsv.gz"
-
+    export_string = response.text
+    out_file = "/home/airflow/temp/appsflyer.csv"
     print(export_string)
 
-    os.system("mkdir /home/airflow/temp/")
-
-    with gz.open(out_file, 'wt') as tsvfile:
-        tsvfile.write(export_string)
+    f = open(out_file, 'w')
+    w = csv.writer(f, delimiter = ',')
+    w.writerows([x.split(',') for x in export_string])
+    f.close()
 
     bucketName = 'cards-de-airflow-logs-qa-us-west-2'
     s3 = boto3.client('s3')

@@ -41,6 +41,9 @@ def make_request(**kwargs):
         response = s3.upload_fileobj(f, bucketName, '%s/%s' % ('temp', 'test2'))
     print(response)
 
+    if os.path.exists(out_file):
+        os.remove(out_file)
+
 
 default_args = {'owner': 'airflow',
                 'depends_on_past': False,

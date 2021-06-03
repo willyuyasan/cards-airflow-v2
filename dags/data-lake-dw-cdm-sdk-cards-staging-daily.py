@@ -1270,7 +1270,7 @@ paidsearch_staging >> traffic_sources_staging
  mobile_form_exited_staging, mobile_form_outcome_received_staging, mobile_form_started_staging,
  mobile_form_submitted_staging, mobile_product_clicked_staging, mobile_product_viewed_staging,
  mobile_screen_engaged_staging, mobile_screen_refreshed_staging, mobile_screen_viewed_staging,
- form_outcome_received_staging] >> tpg_app_staging_tables
+ form_outcome_received_staging, traffic_sources_staging, form_submitted_staging] >> tpg_app_staging_tables
 
 # Amex Business Dependencies
 [ot_raw_staging, ot_metadata_raw_staging] >> amex_ot_details_staging

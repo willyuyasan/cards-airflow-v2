@@ -97,7 +97,7 @@ screenview_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("TPG_SHORT_LOOKBACK_DAYS")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("TPG_APP_SHORT_LOOKBACK_DAYS")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
@@ -113,7 +113,7 @@ form_summary_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("TPG_SHORT_LOOKBACK_DAYS")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("TPG_APP_SHORT_LOOKBACK_DAYS")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
@@ -129,7 +129,7 @@ waitlist_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("TPG_SHORT_LOOKBACK_DAYS")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("TPG_APP_SHORT_LOOKBACK_DAYS")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_TPG_WEB_AND_APP_Tenant_Id"),

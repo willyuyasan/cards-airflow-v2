@@ -29,6 +29,9 @@ def make_request(**kwargs):
     out_file = "/home/airflow/temp/appsflyer.csv"
     print(export_string)
 
+    if os.path.exists(out_file):
+        os.remove(out_file)
+
     f = open(out_file, 'w')
     w = csv.writer(f, delimiter=',')
     w.writerows([x.split(',') for x in export_string])
@@ -40,6 +43,9 @@ def make_request(**kwargs):
     with open(out_file, "rb") as f:
         response = s3.upload_fileobj(f, bucketName, '%s/%s' % ('temp', 'test2'))
     print(response)
+
+    if os.path.exists(out_file):
+        os.remove(out_file)
 
 
 default_args = {'owner': 'airflow',

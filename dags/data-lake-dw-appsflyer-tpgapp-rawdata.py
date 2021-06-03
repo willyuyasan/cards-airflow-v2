@@ -40,6 +40,8 @@ def make_request(**kwargs):
 
     print(export_string)
 
+    os.system("mkdir /home/airflow/temp/")
+
     with gz.open(out_file, 'wt') as tsvfile:
         tsvfile.write(export_string)
 
@@ -53,7 +55,7 @@ def make_request(**kwargs):
 
 default_args = {'owner': 'airflow',
                 'depends_on_past': False,
-                'start_date': datetime(2021, 1, 1, 00, 00, 00),
+                'start_date': datetime(2021, 6, 2, 00, 00, 00),
                 'email': ["kbhargavaram@redventures.com"],
                 'email_on_failure': False,
                 'retries': 1,

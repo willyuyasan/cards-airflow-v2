@@ -29,6 +29,9 @@ def make_request(**kwargs):
     out_file = "/home/airflow/temp/appsflyer.csv"
     print(export_string)
 
+    if os.path.exists(out_file):
+        os.remove(out_file)
+
     f = open(out_file, 'w')
     w = csv.writer(f, delimiter=',')
     w.writerows([x.split(',') for x in export_string])

@@ -5,15 +5,9 @@ from airflow.models import Variable
 from airflow.hooks.S3_hook import S3Hook
 from airflow.hooks.base_hook import BaseHook
 import csv
-
 import requests
-import gzip as gz
 import os
-import subprocess
-
-import logging
 import boto3
-from botocore.exceptions import ClientError
 
 conn = BaseHook.get_connection("appsflyer")
 BASE_URI = conn.host
@@ -35,6 +29,7 @@ def make_request(**kwargs):
     out_file = "/home/airflow/temp/appsflyer.csv"
     print(export_string)
 
+    os.system("mkdir /home/airflow/temp/")
     f = open(out_file, 'w')
     w = csv.writer(f, delimiter=',')
     w.writerows([x.split(',') for x in export_string])

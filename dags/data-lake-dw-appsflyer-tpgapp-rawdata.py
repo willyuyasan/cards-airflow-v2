@@ -36,27 +36,19 @@ def make_request(**kwargs):
 
     export_string = '\n'.join(tsv_response_list)
 
-    out_file = "/home/airflow/" + "appsflyer.tsv.gz"
+    out_file = "/home/airflow/temp/" + "appsflyer.tsv.gz"
 
     print(export_string)
 
     with gz.open(out_file, 'wt') as tsvfile:
         tsvfile.write(export_string)
 
-    new_prefix = 's3a://rv-core-tpg-datamart-qa/model/tpg/test/'
-    prefix = out_file
-    cmd = 'aws s3 cp ' + str(prefix) + ' ' + str(new_prefix)
+    bucketName = 'cards-de-airflow-logs-qa-us-west-2'
+    s3 = boto3.client('s3')
 
-    try:
-        print(cmd)
-        returned_value = subprocess.call(cmd, shell=True)
-        returned_value = os.system(cmd)
-        print('Returned value:', returned_value)
-        print("File copied successfully")
-
-    except Exception as e:
-        print(e)
-        raise e
+    with open(out_file, "rb") as f:
+        response = s3.upload_fileobj(f, bucketName, '%s/%s' % ('/temp/', 'test'))
+    print(response)
 
 
 default_args = {'owner': 'airflow',

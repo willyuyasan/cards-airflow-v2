@@ -40,6 +40,8 @@ def make_request(**kwargs):
 
     print(export_string)
 
+    os.system("mkdir /home/airflow/temp/")
+
     with gz.open(out_file, 'wt') as tsvfile:
         tsvfile.write(export_string)
 

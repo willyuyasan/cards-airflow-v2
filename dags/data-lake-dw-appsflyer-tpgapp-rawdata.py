@@ -21,6 +21,7 @@ api_key = Variable.get("APPSFLYER_API_TOKEN_V1")
 S3_BUCKET = 'cards-de-airflow-logs-qa-us-west-2'
 S3_KEY = 'temp/test3'
 
+
 def make_request(**kwargs):
 
     params = {

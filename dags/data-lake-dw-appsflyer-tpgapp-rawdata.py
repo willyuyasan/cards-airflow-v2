@@ -86,15 +86,15 @@ with DAG('appsflyer-dw-tpg_appsflyer',
 
     run_this = BashOperator(
         task_id='run_after_loop',
-        bash_command='telnet dbops-redshift-cluster-dev.redventures.rv-datascience.privatelinks.redventures.com 5439',
+        bash_command='nc -zv dbops-redshift-cluster-dev.redventures.rv-datascience.privatelinks.redventures.com 5439',
     )
 
     also_run_this = BashOperator(
         task_id='also_run_after_loop',
-        bash_command='telnet dbops-redshift-cluster.cd92olv6lp21.us-east-1.redshift.amazonaws.com 5439',
+        bash_command='nc -zv dbops-redshift-cluster.cd92olv6lp21.us-east-1.redshift.amazonaws.com 5439',
     )
 
     also_run_this_2 = BashOperator(
         task_id='also_run_after_loop_2',
-        bash_command='telnet dbops-redshift-cluster-dev.cd92olv6lp21.us-east-1.redshift.amazonaws.com 5439',
+        bash_command='nc -zv dbops-redshift-cluster-dev.cd92olv6lp21.us-east-1.redshift.amazonaws.com 5439',
     )

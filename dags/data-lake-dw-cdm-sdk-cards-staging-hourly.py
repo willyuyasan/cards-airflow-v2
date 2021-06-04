@@ -47,7 +47,7 @@ extra_small_task_custom_cluster = {
         'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
-        'java_opts': '-Dconfig.resource='+Variable.get("SDK_CONFIG_FILE")
+        'java_opts': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE")
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",
@@ -80,7 +80,7 @@ small_task_custom_cluster = {
         'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
-        'java_opts': '-Dconfig.resource='+Variable.get("SDK_CONFIG_FILE")
+        'java_opts': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE")
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",
@@ -113,7 +113,7 @@ medium_task_custom_cluster = {
         'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
-        'java_opts': '-Dconfig.resource='+Variable.get("SDK_CONFIG_FILE")
+        'java_opts': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE")
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",

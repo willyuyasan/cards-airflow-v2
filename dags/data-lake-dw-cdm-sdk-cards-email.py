@@ -223,7 +223,7 @@ email_sub_dim_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CARDS_EMAIL_lookback_days")))))).strftime(
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CARDS_EMAIL_lookback_days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.email.warehouse.EmailSubDim",
@@ -255,7 +255,7 @@ email_click_fct_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CARDS_EMAIL_lookback_days")))))).strftime(
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CARDS_EMAIL_lookback_days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.email.warehouse.EmailClickFct",

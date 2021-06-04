@@ -15,11 +15,11 @@ default_args = {
     'email': ['vmalhotra@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),   
+    'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
     'retries': 2,
-    #'queue': 'data_pipeline_queue',
+    # 'queue': 'data_pipeline_queue',
     'retry_delay': timedelta(minutes=5),
-    #'op_kwargs': cfg_dict,
+    # 'op_kwargs': cfg_dict,
     'provide_context': True
 }
 
@@ -27,41 +27,41 @@ default_args = {
 airflow_svc_token = "databricks_airflow_svc_token"
 
 base_params = {
-    "lookBackDays"             : Variable.get("DBX_AMEX_BUSINESS_EVENTING_LOOKBACK_DAYS"),
-    "lookbackHours"            : Variable.get("DBX_AMEX_BUSINESS_EVENTING_LOOKBACK_HOURS"),
-    "loggingPath"              : Variable.get("DBX_AMEX_BUSINESS_Logging_Path"),
-    "dataLakePath"             : Variable.get("DBX_DataLake_Path"),
-    "amexBusinessOpenWriteKey" : Variable.get("DBX_AMEX_BUSINESS_OPEN_WRITE_KEY"),
-    "amexBusinessWriteKey"     : Variable.get("DBX_AMEX_BUSINESS_WRITE_KEY"),
-    "companyIdName"            : "amex",
-    "tenantID"                 : Variable.get("DBX_AMEX_BUSINESS_Tenant_Id"),    
-    "airflowDAGRunID"          : "{{ ti.dag_id }}" + "-" + "{{ ti.task_id }}" + "-" + "{{ ti.execution_date }}",
-    "LoadType"                 : Variable.get("DBX_AMEX_BUSINESS_EVENTING_LOAD_TYPE"),
-    "toDate"                   : "now",
-    "amexBusinessLogTable"     : Variable.get("DBX_AMEX_BUSINESS_LOG_TABLE")
+    "lookBackDays": Variable.get("DBX_AMEX_BUSINESS_EVENTING_LOOKBACK_DAYS"),
+    "lookbackHours": Variable.get("DBX_AMEX_BUSINESS_EVENTING_LOOKBACK_HOURS"),
+    "loggingPath": Variable.get("DBX_AMEX_BUSINESS_Logging_Path"),
+    "dataLakePath": Variable.get("DBX_DataLake_Path"),
+    "amexBusinessOpenWriteKey": Variable.get("DBX_AMEX_BUSINESS_OPEN_WRITE_KEY"),
+    "amexBusinessWriteKey": Variable.get("DBX_AMEX_BUSINESS_WRITE_KEY"),
+    "companyIdName": "amex",
+    "tenantID": Variable.get("DBX_AMEX_BUSINESS_Tenant_Id"),
+    "airflowDAGRunID": "{{ ti.dag_id }}" + "-" + "{{ ti.task_id }}" + "-" + "{{ ti.execution_date }}",
+    "LoadType": Variable.get("DBX_AMEX_BUSINESS_EVENTING_LOAD_TYPE"),
+    "toDate": "now",
+    "amexBusinessLogTable": Variable.get("DBX_AMEX_BUSINESS_LOG_TABLE")
 
 }
 
 # Cluster Setup Step
 small_task_cluster = {
-    'spark_version':            '5.3.x-scala2.11',
-    'node_type_id':             Variable.get("DBX_SMALL_CLUSTER"),
-    'driver_node_type_id':      Variable.get("DBX_SMALL_CLUSTER"),
-    'num_workers':              Variable.get("DBX_SMALL_CLUSTER_NUM_NODES"),
-    'auto_termination_minutes': 0,    
-    'dbfs_cluster_log_conf':    'dbfs://home/cluster_log',
+    'spark_version': '5.3.x-scala2.11',
+    'node_type_id': Variable.get("DBX_SMALL_CLUSTER"),
+    'driver_node_type_id': Variable.get("DBX_SMALL_CLUSTER"),
+    'num_workers': Variable.get("DBX_SMALL_CLUSTER_NUM_NODES"),
+    'auto_termination_minutes': 0,
+    'dbfs_cluster_log_conf': 'dbfs://home/cluster_log',
     'spark_conf': {
-      'spark.sql.sources.partitionOverwriteMode': 'dynamic'
+        'spark.sql.sources.partitionOverwriteMode': 'dynamic'
     },
     'aws_attributes': {
-        'availability':             'SPOT_WITH_FALLBACK',
-        'ebs_volume_count':         2,
-        'ebs_volume_size':          100,
-        'ebs_volume_type':          'GENERAL_PURPOSE_SSD',
-        'first_on_demand':          '2',
-        'spot_bid_price_percent':   '70',
-        'zone_id':                  'us-east-1c',
-        'instance_profile_arn':      Variable.get("DBX_AMEX_IAM_ROLE"),
+        'availability': 'SPOT_WITH_FALLBACK',
+        'ebs_volume_count': 2,
+        'ebs_volume_size': 100,
+        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
+        'first_on_demand': '2',
+        'spot_bid_price_percent': '70',
+        'zone_id': 'us-east-1c',
+        'instance_profile_arn': Variable.get("DBX_AMEX_IAM_ROLE"),
     },
     'custom_tags': {
         'Partner': 'B130',
@@ -69,20 +69,20 @@ small_task_cluster = {
     },
 }
 
-# Libraries 
+# Libraries
 staging_libraries = [
-  {
-    "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
-  },
-  {
-    "jar": "dbfs:/data-warehouse/production/datawarehouse-builder-0.8.1-tmp.jar",
-    #"jar": "dbfs:/Libraries/JVM/data-common/data-common-3.0.1-2.jar",
-  },
-  {
-      "maven": {
-        "coordinates": "org.scalaj:scalaj-http_2.11:2.3.0"
-      }
-  }
+    {
+        "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
+    },
+    {
+        "jar": "dbfs:/data-warehouse/production/datawarehouse-builder-0.8.1-tmp.jar",
+        # "jar": "dbfs:/Libraries/JVM/data-common/data-common-3.0.1-2.jar",
+    },
+    {
+        "maven": {
+            "coordinates": "org.scalaj:scalaj-http_2.11:2.3.0"
+        }
+    }
 ]
 
 # Notebook Task Parameter Setup:
@@ -102,54 +102,54 @@ ivr_path_data_notebook_task = {
 
 delta_optimization_notebook_task = {
     'base_parameters': {
-        "tableName"                : Variable.get("DBX_AMEX_BUSINESS_LOG_TABLE")
+        "tableName": Variable.get("DBX_AMEX_BUSINESS_LOG_TABLE")
     },
     'notebook_path': '/Production/cards-data-mart-amex-business/' + Variable.get("DBX_AMEX_BUSINESS_CODE_ENV") + '/eventing-notebooks/optimizeDeltaTablesAMEXBusiness',
 }
 
-#updating base params
+# updating base params
 i3_call_data_notebook_task['base_parameters'].update(base_params)
 ivr_path_data_notebook_task['base_parameters'].update(base_params)
 
 # DAG Creation Step
 with DAG('amex-db-amex-business-eventing-hourly-workflow',
-          schedule_interval='30 0-4,7-23 * * *',
-          #schedule_interval=None,
-          dagrun_timeout=timedelta(hours=1),
-          catchup=False,
-          max_active_runs=1,
-          default_args=default_args) as dag:
+         schedule_interval='30 0-4,7-23 * * *',
+         # schedule_interval=None,
+         dagrun_timeout=timedelta(hours=1),
+         catchup=False,
+         max_active_runs=1,
+         default_args=default_args) as dag:
 
-        i3_call_data_task = FinServDatabricksSubmitRunOperator(
-            task_id                = 'i3-call-data',
-            new_cluster            = small_task_cluster,
-            notebook_task          = i3_call_data_notebook_task,
-            libraries              = staging_libraries,
-            timeout_seconds        = 900,
-            databricks_conn_id     = airflow_svc_token,
-            polling_period_seconds = 120            
-        )
+    i3_call_data_task = FinServDatabricksSubmitRunOperator(
+        task_id='i3-call-data',
+        new_cluster=small_task_cluster,
+        notebook_task=i3_call_data_notebook_task,
+        libraries=staging_libraries,
+        timeout_seconds=900,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
 
-        ivr_path_call_data_task = FinServDatabricksSubmitRunOperator(
-            task_id                = 'ivr-path-call-data',
-            new_cluster            = small_task_cluster,
-            notebook_task          = ivr_path_data_notebook_task,
-            libraries              = staging_libraries,
-            timeout_seconds        = 900,
-            databricks_conn_id     = airflow_svc_token,
-            polling_period_seconds = 120
-        )
+    ivr_path_call_data_task = FinServDatabricksSubmitRunOperator(
+        task_id='ivr-path-call-data',
+        new_cluster=small_task_cluster,
+        notebook_task=ivr_path_data_notebook_task,
+        libraries=staging_libraries,
+        timeout_seconds=900,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
 
-        delta_optimization_task = FinServDatabricksSubmitRunOperator(
-            task_id                = 'delta-table-optimization',
-            new_cluster            = small_task_cluster,
-            notebook_task          = delta_optimization_notebook_task,
-            libraries              = staging_libraries,
-            timeout_seconds        = 900,
-            databricks_conn_id     = airflow_svc_token,
-            polling_period_seconds = 120
-        )
+    delta_optimization_task = FinServDatabricksSubmitRunOperator(
+        task_id='delta-table-optimization',
+        new_cluster=small_task_cluster,
+        notebook_task=delta_optimization_notebook_task,
+        libraries=staging_libraries,
+        timeout_seconds=900,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
 
-    # Defining  dependencies
-i3_call_data_task  >> delta_optimization_task
-ivr_path_call_data_task      >> delta_optimization_task
+# Defining  dependencies
+i3_call_data_task >> delta_optimization_task
+ivr_path_call_data_task >> delta_optimization_task

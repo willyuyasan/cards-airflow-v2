@@ -4,6 +4,10 @@ from datetime import datetime, timedelta
 from airflow.models import Variable
 from airflow.hooks.S3_hook import S3Hook
 from airflow.hooks.base_hook import BaseHook
+from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
+from airflow.providers.postgres.operators.postgres import PostgresOperator
+from airflow.utils.dates import days_ago
 import csv
 import requests
 import os
@@ -14,7 +18,8 @@ BASE_URI = conn.host
 
 # https://hq.appsflyer.com/export/id924710586/installs_report/v5
 api_key = Variable.get("APPSFLYER_API_TOKEN_V1")
-
+S3_BUCKET = 'cards-de-airflow-logs-qa-us-west-2'
+S3_KEY = 'temp/test3'
 
 def make_request(**kwargs):
 
@@ -63,6 +68,15 @@ with DAG('appsflyer-dw-tpg_appsflyer',
          schedule_interval='03 01 * * *',
          ) as dag:
 
-    extract_appsflyer_data = PythonOperator(
-        task_id="extract_appsflyer_data",
-        python_callable=make_request)
+    # extract_appsflyer_data = PythonOperator(
+    #     task_id="extract_appsflyer_data",
+    #     python_callable=make_request)
+
+    task_transfer_s3_to_redshift = S3ToRedshiftOperator(
+        s3_bucket=S3_BUCKET,
+        s3_key=S3_KEY,
+        schema="PUBLIC",
+        table="appsflyer_install_test",
+        copy_options=['csv'],
+        task_id='transfer_s3_to_redshift',
+    )

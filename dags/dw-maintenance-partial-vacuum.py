@@ -2,7 +2,7 @@ from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.latest_only_operator import LatestOnlyOperator
 from datetime import datetime, timedelta, date
-#import slack_helpers_v2 as sh
+# import slack_helpers_v2 as sh
 import data_pipeline_helpers_v2 as dh
 from rvairflow import slack_hook as sh
 

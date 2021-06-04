@@ -32,16 +32,15 @@ def make_request(**kwargs):
     if os.path.exists(out_file):
         os.remove(out_file)
 
-    f = open(out_file, 'w')
-    w = csv.writer(f, delimiter=',')
-    w.writerows([x.split(',') for x in export_string])
+    f = open(out_file, "w")
+    f.write(export_string)
     f.close()
 
     bucketName = 'cards-de-airflow-logs-qa-us-west-2'
     s3 = boto3.client('s3')
 
     with open(out_file, "rb") as f:
-        response = s3.upload_fileobj(f, bucketName, '%s/%s' % ('temp', 'test2'))
+        response = s3.upload_fileobj(f, bucketName, '%s/%s' % ('temp', 'test3'))
     print(response)
 
     if os.path.exists(out_file):

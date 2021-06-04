@@ -76,6 +76,7 @@ with DAG('appsflyer-dw-tpg_appsflyer',
     task_transfer_s3_to_redshift = S3ToRedshiftOperator(
         s3_bucket=S3_BUCKET,
         s3_key=S3_KEY,
+        redshift_conn_id='appsflyer_redshift_connection',
         schema="PUBLIC",
         table="appsflyer_install_test",
         copy_options=['csv'],

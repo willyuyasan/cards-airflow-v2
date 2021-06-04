@@ -8,6 +8,7 @@ from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.utils.dates import days_ago
+from airflow.operators.bash import BashOperator
 import csv
 import requests
 import os
@@ -81,4 +82,19 @@ with DAG('appsflyer-dw-tpg_appsflyer',
         table="appsflyer_install_test",
         copy_options=['csv'],
         task_id='transfer_s3_to_redshift',
+    )
+
+    run_this = BashOperator(
+        task_id='run_after_loop',
+        bash_command='dig dbops-redshift-cluster-dev.redventures.rv-datascience.privatelinks.redventures.com',
+    )
+
+    also_run_this = BashOperator(
+        task_id='also_run_after_loop',
+        bash_command='dig dbops-redshift-cluster.cd92olv6lp21.us-east-1.redshift.amazonaws.com',
+    )
+
+    also_run_this_2 = BashOperator(
+        task_id='also_run_after_loop_2',
+        bash_command='dig dbops-redshift-cluster-dev.cd92olv6lp21.us-east-1.redshift.amazonaws.com',
     )

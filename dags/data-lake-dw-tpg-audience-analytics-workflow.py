@@ -1,3 +1,4 @@
+# Migrating Legacy to New Airflow 6/7/2021
 from airflow import DAG
 from airflow.models import Variable
 from datetime import datetime, timedelta
@@ -172,8 +173,8 @@ session_flow_raw_sessions_notebook_task = {
         "stagingPath": Variable.get("DBX_TPG_Staging_Path"),
         "reportingPath": Variable.get("DBX_TPG_Reporting_Path"),
         "windowStartDate": (datetime.now() - timedelta(days=60)).date().strftime('%Y-%m-%d'),
-        # "windowEndDate":          datetime.now().date().strftime('%Y-%m-%d'),
-        "windowEndDate": (datetime.now() - timedelta(days=20)).date().strftime('%Y-%m-%d'),
+        "windowEndDate":          datetime.now().date().strftime('%Y-%m-%d'),
+        # "windowEndDate": (datetime.now() - timedelta(days=20)).date().strftime('%Y-%m-%d'),
         "maxAnonSize": "250",
         "raw_session_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/raw_sessions",
         "publish_date_info_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/publish_date",

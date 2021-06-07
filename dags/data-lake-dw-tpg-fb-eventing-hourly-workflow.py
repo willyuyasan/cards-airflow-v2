@@ -1,3 +1,4 @@
+# Migrating Legacy to New Airflow 6/7/2021
 from airflow import DAG
 from airflow.models import Variable
 from datetime import datetime, timedelta

@@ -7,7 +7,7 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.contrib.operators.databricks_operator import DatabricksSubmitRunOperator
 from operators.finserv_operator import FinServDatabricksSubmitRunOperator
 from airflow.operators.python_operator import BranchPythonOperator
-# import slack_helpers_v2 as sh
+
 from rvairflow import slack_hook as sh
 
 default_args = {  # 'op_kwargs': cfg_dict,
@@ -17,7 +17,6 @@ default_args = {  # 'op_kwargs': cfg_dict,
     'email': ['vmalhotra@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    # 'on_failure_callback': sh.slack_failure_callback(),
     'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
     'retries': 2,
     'retry_delay': timedelta(minutes=5),
@@ -32,9 +31,9 @@ airflow_svc_token = 'databricks_airflow_svc_token'
 
 small_i3_x_1w_task_cluster = {
     'spark_version': '7.6.x-scala2.12',
-    'node_type_id': 'i3.xlarge',
-    'driver_node_type_id': 'i3.xlarge',
-    'num_workers': 1,
+    'node_type_id': Variable.get("DBX_SMALL_CLUSTER"),
+    'driver_node_type_id': Variable.get("DBX_SMALL_CLUSTER"),
+    'num_workers': Variable.get("DBX_SMALL_CLUSTER_NUM_NODES"),
     'auto_termination_minutes': 0,
     'dbfs_cluster_log_conf': 'dbfs://home/cluster_log',
     'spark_conf': {
@@ -57,9 +56,9 @@ small_i3_x_1w_task_cluster = {
 
 small_i3_x_3w_task_cluster = {
     'spark_version': '7.6.x-scala2.12',
-    'node_type_id': 'i3.xlarge',
-    'driver_node_type_id': 'i3.xlarge',
-    'num_workers': 3,
+    'node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
+    'driver_node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
+    'num_workers': Variable.get("DBX_MEDIUM_CLUSTER_NUM_NODES"),
     'auto_termination_minutes': 0,
     'dbfs_cluster_log_conf': 'dbfs://home/cluster_log',
     'spark_conf': {
@@ -83,9 +82,9 @@ small_i3_x_3w_task_cluster = {
 
 small_r4_2x_2w_task_cluster = {
     'spark_version': '7.6.x-scala2.12',
-    'node_type_id': 'r4.2xlarge',
-    'driver_node_type_id': 'r4.2xlarge',
-    'num_workers': 2,
+    'node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
+    'driver_node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
+    'num_workers': Variable.get("DBX_MEDIUM_CLUSTER_NUM_NODES"),
     'auto_termination_minutes': 0,
     'dbfs_cluster_log_conf': 'dbfs://home/cluster_log',
     'spark_conf': {
@@ -109,9 +108,9 @@ small_r4_2x_2w_task_cluster = {
 
 small_r4_2x_4w_task_cluster = {
     'spark_version': '7.6.x-scala2.12',
-    'node_type_id': 'r4.2xlarge',
-    'driver_node_type_id': 'r4.2xlarge',
-    'num_workers': 4,
+    'node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
+    'driver_node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
+    'num_workers': Variable.get("DBX_MEDIUM_CLUSTER_NUM_NODES"),
     'auto_termination_minutes': 0,
     'dbfs_cluster_log_conf': 'dbfs://home/cluster_log',
     'spark_conf': {
@@ -139,12 +138,8 @@ notebook_libraries = [
         "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
     },
     {
-        # "jar": "dbfs:/data-warehouse/production/datawarehouse-builder-0.8.1-tmp.jar",
         "jar": "dbfs:/Libraries/JVM/data-common/data-common-3.0.1-2.jar",
     },
-    # {
-    # "jar": "dbfs:/FileStore/jars/5168d529_c94b_4aa6_87bc_4d1cfe9b6abb-data_common_2_3_0-4f440.jar",
-    # },
     {
         "maven": {
             "coordinates": "org.scalaj:scalaj-http_2.12:2.4.2"
@@ -185,7 +180,6 @@ dimensions_table_notebook_task = {
         "redshiftEnvironment": Variable.get("DBX_TPG_Adzerk_Redshift_Environment"),
     },
     'notebook_path': '/Production/cards-data-mart-tpg/' + Variable.get("DBX_TPG_CODE_ENV") + '/tpg-adzerk/adzerk-dim-tables',
-    # 'notebook_path': '/Users/rzagade@redventures.net/adzerk-dim-tables',
 }
 
 # Adzerk Notebook Task Parameter Setup:
@@ -213,7 +207,6 @@ adzerk_queued_report_notebook_task = {
 
 with DAG('adzerk-dw-tpg-adzerk-hourly-workflow',
          schedule_interval='0 * * * *',
-         # schedule_interval=None,
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
          max_active_runs=1,

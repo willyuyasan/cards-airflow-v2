@@ -7,7 +7,6 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.contrib.operators.databricks_operator import DatabricksSubmitRunOperator
 from operators.finserv_operator import FinServDatabricksSubmitRunOperator
 from airflow.operators.python_operator import BranchPythonOperator
-# import slack_helpers_v2 as sh
 from rvairflow import slack_hook as sh
 
 default_args = {
@@ -17,11 +16,9 @@ default_args = {
     'email': ['vmalhotra@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    #    'on_failure_callback': sh.slack_failure_callback(),
     'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
     'retries': 2,
     'retry_delay': timedelta(minutes=5),
-    # 'op_kwargs': cfg_dict,
     'provide_context': True
 }
 
@@ -148,12 +145,8 @@ notebook_libraries = [
         "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
     },
     {
-        # "jar": "dbfs:/data-warehouse/production/datawarehouse-builder-0.6.1.jar",
         "jar": "dbfs:/Libraries/JVM/data-common/data-common-3.0.1-2.jar",
     },
-    # {
-    #   "jar": "dbfs:/FileStore/jars/8a230257_57b0_4170_9d58_57ab8b160f78-scalapb_models_assembly_bom_1_326_0-c0937.jar",
-    # },
     {
         "pypi": {
             "package": "datarobot",
@@ -173,8 +166,7 @@ session_flow_raw_sessions_notebook_task = {
         "stagingPath": Variable.get("DBX_TPG_Staging_Path"),
         "reportingPath": Variable.get("DBX_TPG_Reporting_Path"),
         "windowStartDate": (datetime.now() - timedelta(days=60)).date().strftime('%Y-%m-%d'),
-        "windowEndDate":          datetime.now().date().strftime('%Y-%m-%d'),
-        # "windowEndDate": (datetime.now() - timedelta(days=20)).date().strftime('%Y-%m-%d'),
+        "windowEndDate": datetime.now().date().strftime('%Y-%m-%d'),
         "maxAnonSize": "250",
         "raw_session_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/raw_sessions",
         "publish_date_info_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/publish_date",
@@ -207,8 +199,7 @@ session_flow_score_sessions_notebook_task = {
         "stagingPath": Variable.get("DBX_TPG_Staging_Path"),
         "reportingPath": Variable.get("DBX_TPG_Reporting_Path"),
         "windowStartDate": (datetime.now() - timedelta(days=60)).date().strftime('%Y-%m-%d'),
-        # "windowEndDate":                datetime.now().date().strftime('%Y-%m-%d'),
-        "windowEndDate": (datetime.now() - timedelta(days=20)).date().strftime('%Y-%m-%d'),
+        "windowEndDate": datetime.now().date().strftime('%Y-%m-%d'),
         "maxAnonSize": "250",
         "raw_session_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/raw_sessions",
         "session_means_raw_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/session_means_raw",
@@ -238,8 +229,7 @@ core_url_flow_raw_url_notebook_task = {
         "stagingPath": Variable.get("DBX_TPG_Staging_Path"),
         "reportingPath": Variable.get("DBX_TPG_Reporting_Path"),
         "windowStartDate": "2018-07-01",
-        # "windowEndDate":                datetime.now().date().strftime('%Y-%m-%d'),
-        "windowEndDate": (datetime.now() - timedelta(days=20)).date().strftime('%Y-%m-%d'),
+        "windowEndDate": datetime.now().date().strftime('%Y-%m-%d'),
         "maxAnonSize": "250",
         "raw_session_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/raw_sessions",
         "raw_url_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/raw_url",
@@ -271,8 +261,7 @@ core_url_flow_score_url_notebook_task = {
         "stagingPath": Variable.get("DBX_TPG_Staging_Path"),
         "reportingPath": Variable.get("DBX_TPG_Reporting_Path"),
         "windowStartDate": "2018-07-01",
-        # "windowEndDate":                datetime.now().date().strftime('%Y-%m-%d'),
-        "windowEndDate": (datetime.now() - timedelta(days=20)).date().strftime('%Y-%m-%d'),
+        "windowEndDate": datetime.now().date().strftime('%Y-%m-%d'),
         "maxAnonSize": "250",
         "url_means_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/url_means",
         "raw_url_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/raw_url",
@@ -286,8 +275,7 @@ core_url_flow_score_url_notebook_task = {
 
 core_url_flow_content_score_predictions_notebook_task = {
     'base_parameters': {
-        # "windowEndDate":                datetime.now().date().strftime('%Y-%m-%d'),
-        "windowEndDate": (datetime.now() - timedelta(days=20)).date().strftime('%Y-%m-%d'),
+        "windowEndDate": datetime.now().date().strftime('%Y-%m-%d'),
         "maxAnonSize": "250",
         "audience_url_table_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/url_table",
         "content_predictions_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/content_predictions",
@@ -301,8 +289,7 @@ core_url_flow_score_url_table_update_notebook_task = {
         "stagingPath": Variable.get("DBX_TPG_Staging_Path"),
         "reportingPath": Variable.get("DBX_TPG_Reporting_Path"),
         "windowStartDate": "2018-07-01",
-        # "windowEndDate":                datetime.now().date().strftime('%Y-%m-%d'),
-        "windowEndDate": (datetime.now() - timedelta(days=20)).date().strftime('%Y-%m-%d'),
+        "windowEndDate": datetime.now().date().strftime('%Y-%m-%d'),
         "maxAnonSize": "250",
         "url_means_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/url_means",
         "raw_url_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/raw_url",
@@ -329,8 +316,7 @@ core_url_flow_write_url_to_redshift_notebook_task = {
 core_campaign_flow_raw_adid_notebook_task = {
     'base_parameters': {
         "windowStartDate": "2018-07-01",
-        # "windowEndDate":                datetime.now().date().strftime('%Y-%m-%d'),
-        "windowEndDate": (datetime.now() - timedelta(days=20)).date().strftime('%Y-%m-%d'),
+        "windowEndDate": datetime.now().date().strftime('%Y-%m-%d'),
         "maxAnonSize": "250",
         "audience_session_table_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/session_table",
         "raw_adid_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/raw_adid",
@@ -342,8 +328,7 @@ core_campaign_flow_raw_adid_notebook_task = {
 core_campaign_flow_raw_adset_notebook_task = {
     'base_parameters': {
         "windowStartDate": "2018-07-01",
-        # "windowEndDate":                datetime.now().date().strftime('%Y-%m-%d'),
-        "windowEndDate": (datetime.now() - timedelta(days=20)).date().strftime('%Y-%m-%d'),
+        "windowEndDate": datetime.now().date().strftime('%Y-%m-%d'),
         "maxAnonSize": "250",
         "audience_session_table_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/session_table",
         "raw_adset_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/raw_adset",
@@ -354,8 +339,7 @@ core_campaign_flow_raw_adset_notebook_task = {
 core_campaign_flow_raw_postid_notebook_task = {
     'base_parameters': {
         "windowStartDate": "2018-07-01",
-        # "windowEndDate":                datetime.now().date().strftime('%Y-%m-%d'),
-        "windowEndDate": (datetime.now() - timedelta(days=20)).date().strftime('%Y-%m-%d'),
+        "windowEndDate": datetime.now().date().strftime('%Y-%m-%d'),
         "maxAnonSize": "250",
         "audience_session_table_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/session_table",
         "raw_postid_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/raw_postid",
@@ -405,8 +389,7 @@ core_campaign_flow_postid_means_notebook_task = {
 core_campaign_flow_score_adid_notebook_task = {
     'base_parameters': {
         "windowStartDate": (datetime.now() - timedelta(days=60)).date().strftime('%Y-%m-%d'),
-        # "windowEndDate":                datetime.now().date().strftime('%Y-%m-%d'),
-        "windowEndDate": (datetime.now() - timedelta(days=20)).date().strftime('%Y-%m-%d'),
+        "windowEndDate": datetime.now().date().strftime('%Y-%m-%d'),
         "maxAnonSize": "250",
         "audience_adid_table_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/adid_table",
         "raw_adid_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/raw_adid",
@@ -417,8 +400,7 @@ core_campaign_flow_score_adid_notebook_task = {
 core_campaign_flow_score_adset_notebook_task = {
     'base_parameters': {
         "windowStartDate": (datetime.now() - timedelta(days=60)).date().strftime('%Y-%m-%d'),
-        # "windowEndDate":                datetime.now().date().strftime('%Y-%m-%d'),
-        "windowEndDate": (datetime.now() - timedelta(days=20)).date().strftime('%Y-%m-%d'),
+        "windowEndDate": datetime.now().date().strftime('%Y-%m-%d'),
         "maxAnonSize": "250",
         "audience_adset_table_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/adset_table",
         "raw_adset_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/raw_adset",
@@ -429,8 +411,7 @@ core_campaign_flow_score_adset_notebook_task = {
 core_campaign_flow_score_postid_notebook_task = {
     'base_parameters': {
         "windowStartDate": (datetime.now() - timedelta(days=60)).date().strftime('%Y-%m-%d'),
-        # "windowEndDate":                datetime.now().date().strftime('%Y-%m-%d'),
-        "windowEndDate": (datetime.now() - timedelta(days=20)).date().strftime('%Y-%m-%d'),
+        "windowEndDate": datetime.now().date().strftime('%Y-%m-%d'),
         "maxAnonSize": "250",
         "audience_postid_table_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/postid_table",
         "raw_postid_path": Variable.get("DBX_TPG_Audience_Analytics_Environment") + "/raw_postid",
@@ -453,7 +434,6 @@ core_campaign_flow_write_campaign_to_redshift_notebook_task = {
     },
     'notebook_path': '/Production/cards-data-analytics-tpg-audience/' + Variable.get("DBX_TPG_AUDIENCE_CODE_ENV") + '/core-campaign-flow-notebooks/Write Campaign to Redshift',
 }
-# "redshiftEnvironment":    Variable.get("DBX_TPG_Audience_Analytics_Redshift_Environment"),
 
 
 def check_session_flow_sessions_mean(**kwargs):

@@ -7,7 +7,6 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.contrib.operators.databricks_operator import DatabricksSubmitRunOperator
 from airflow.operators.python_operator import BranchPythonOperator
 from operators.finserv_operator import FinServDatabricksSubmitRunOperator
-# import slack_helpers_v2 as sh
 from rvairflow import slack_hook as sh
 
 default_args = {
@@ -17,11 +16,9 @@ default_args = {
     'email': ['vmalhotra@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    # 'on_failure_callback': sh.slack_failure_callback(),
     'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
     'retries': 2,
     'retry_delay': timedelta(minutes=5),
-    # 'op_kwargs': cfg_dict,
     'provide_context': True
 }
 

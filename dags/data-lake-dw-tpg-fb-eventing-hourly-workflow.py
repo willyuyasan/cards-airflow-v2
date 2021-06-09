@@ -6,7 +6,6 @@ from airflow.operators.python_operator import PythonOperator
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.contrib.operators.databricks_operator import DatabricksSubmitRunOperator
 from operators.finserv_operator import FinServDatabricksSubmitRunOperator
-# import slack_helpers_v2 as sh
 from rvairflow import slack_hook as sh
 
 default_args = {
@@ -18,9 +17,7 @@ default_args = {
     'email_on_retry': False,
     'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
     'retries': 0,
-    # 'queue': 'data_pipeline_queue',
     'retry_delay': timedelta(minutes=5),
-    # 'op_kwargs': cfg_dict,
     'provide_context': True
 }
 
@@ -42,7 +39,7 @@ base_params = {
 
 # Cluster Setup Step
 medium_task_cluster = {
-    'spark_version': '5.3.x-scala2.11',
+    'spark_version': '7.6.x-scala2.12',
     'node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
     'driver_node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
     'num_workers': 2,
@@ -75,12 +72,11 @@ staging_libraries = [
         "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
     },
     {
-        "jar": "dbfs:/data-warehouse/production/datawarehouse-builder-0.8.1-tmp.jar",
-        # "jar": "dbfs:/Libraries/JVM/data-common/data-common-3.0.1-2.jar",
+        "jar": "dbfs:/Libraries/JVM/data-common/data-common-3.0.1-2.jar",
     },
     {
         "maven": {
-            "coordinates": "org.scalaj:scalaj-http_2.11:2.3.0"
+            "coordinates": "org.scalaj:scalaj-http_2.12:2.3.0"
         }
     }
 ]

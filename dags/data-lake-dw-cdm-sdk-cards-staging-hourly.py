@@ -1038,7 +1038,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     pzn_offers_received_staging = FinServDatabricksSubmitRunOperator(
         task_id='pzn-offers-received-staging',
-        new_cluster=extra_small_task_custom_cluster,
+        new_cluster=small_task_custom_cluster,
         spark_jar_task=pzn_offers_received_staging_jar_task,
         libraries=staging_libraries,
         timeout_seconds=1200,

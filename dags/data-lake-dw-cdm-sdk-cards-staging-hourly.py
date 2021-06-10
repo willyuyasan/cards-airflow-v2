@@ -838,7 +838,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     page_view_staging = FinServDatabricksSubmitRunOperator(
         task_id='page-view-staging',
-        new_cluster=extra_small_task_custom_cluster,
+        new_cluster=small_task_custom_cluster,
         spark_jar_task=page_view_staging_jar_task,
         libraries=staging_libraries,
         timeout_seconds=3600,
@@ -888,7 +888,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     decsion_staging = FinServDatabricksSubmitRunOperator(
         task_id='decision-staging',
-        new_cluster=extra_small_task_custom_cluster,
+        new_cluster=small_task_custom_cluster,
         spark_jar_task=decision_staging_jar_task,
         libraries=staging_libraries,
         timeout_seconds=3600,
@@ -898,7 +898,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     page_metrics_staging = FinServDatabricksSubmitRunOperator(
         task_id='page-metrics-staging',
-        new_cluster=extra_small_task_custom_cluster,
+        new_cluster=small_task_custom_cluster,
         spark_jar_task=page_metrics_staging_jar_task,
         libraries=staging_libraries,
         timeout_seconds=3600,

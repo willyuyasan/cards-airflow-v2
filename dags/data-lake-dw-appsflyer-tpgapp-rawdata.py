@@ -4,21 +4,23 @@ from datetime import datetime, timedelta
 from airflow.models import Variable
 from airflow.hooks.S3_hook import S3Hook
 from airflow.hooks.base_hook import BaseHook
-
+from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
+from airflow.providers.postgres.operators.postgres import PostgresOperator
+from airflow.utils.dates import days_ago
+from airflow.operators.bash_operator import BashOperator
+import csv
 import requests
-import gzip as gz
 import os
-import subprocess
-
-import logging
 import boto3
-from botocore.exceptions import ClientError
 
 conn = BaseHook.get_connection("appsflyer")
 BASE_URI = conn.host
 
 # https://hq.appsflyer.com/export/id924710586/installs_report/v5
 api_key = Variable.get("APPSFLYER_API_TOKEN_V1")
+S3_BUCKET = 'cards-de-airflow-logs-qa-us-west-2'
+S3_KEY = 'temp/test3'
 
 
 def make_request(**kwargs):
@@ -30,38 +32,31 @@ def make_request(**kwargs):
     }
 
     response = requests.get(BASE_URI, params=params)
-    tsv_response = response.text.replace(',', '\t')
-
-    tsv_response_list = tsv_response.split('\n')[1:]
-
-    export_string = '\n'.join(tsv_response_list)
-
-    out_file = "/home/airflow/" + "appsflyer.tsv.gz"
-
+    export_string = response.text
+    out_file = "/home/airflow/temp/appsflyer.csv"
     print(export_string)
 
-    with gz.open(out_file, 'wt') as tsvfile:
-        tsvfile.write(export_string)
+    if os.path.exists(out_file):
+        os.remove(out_file)
 
-    new_prefix = 's3a://rv-core-tpg-datamart-qa/model/tpg/test/'
-    prefix = out_file
-    cmd = 'aws s3 cp ' + str(prefix) + ' ' + str(new_prefix)
+    f = open(out_file, "w")
+    f.write(export_string)
+    f.close()
 
-    try:
-        print(cmd)
-        returned_value = subprocess.call(cmd, shell=True)
-        returned_value = os.system(cmd)
-        print('Returned value:', returned_value)
-        print("File copied successfully")
+    bucketName = 'cards-de-airflow-logs-qa-us-west-2'
+    s3 = boto3.client('s3')
 
-    except Exception as e:
-        print(e)
-        raise e
+    with open(out_file, "rb") as f:
+        response = s3.upload_fileobj(f, bucketName, '%s/%s' % ('temp', 'test3'))
+    print(response)
+
+    if os.path.exists(out_file):
+        os.remove(out_file)
 
 
 default_args = {'owner': 'airflow',
                 'depends_on_past': False,
-                'start_date': datetime(2021, 1, 1, 00, 00, 00),
+                'start_date': datetime(2021, 6, 2, 00, 00, 00),
                 'email': ["kbhargavaram@redventures.com"],
                 'email_on_failure': False,
                 'retries': 1,
@@ -75,6 +70,31 @@ with DAG('appsflyer-dw-tpg_appsflyer',
          schedule_interval='03 01 * * *',
          ) as dag:
 
-    extract_appsflyer_data = PythonOperator(
-        task_id="extract_appsflyer_data",
-        python_callable=make_request)
+    # extract_appsflyer_data = PythonOperator(
+    #     task_id="extract_appsflyer_data",
+    #     python_callable=make_request)
+
+    task_transfer_s3_to_redshift = S3ToRedshiftOperator(
+        s3_bucket=S3_BUCKET,
+        s3_key=S3_KEY,
+        redshift_conn_id='appsflyer_redshift_connection',
+        schema="PUBLIC",
+        table="appsflyer_install_test",
+        copy_options=['csv'],
+        task_id='transfer_s3_to_redshift',
+    )
+
+    run_this = BashOperator(
+        task_id='run_after_loop',
+        bash_command='nc -zv dbops-redshift-cluster-dev.redventures.rv-datascience.privatelinks.redventures.com 5439',
+    )
+
+    also_run_this = BashOperator(
+        task_id='also_run_after_loop',
+        bash_command='nc -zv dbops-redshift-cluster.cd92olv6lp21.us-east-1.redshift.amazonaws.com 5439',
+    )
+
+    also_run_this_2 = BashOperator(
+        task_id='also_run_after_loop_2',
+        bash_command='nc -zv dbops-redshift-cluster-dev.cd92olv6lp21.us-east-1.redshift.amazonaws.com 5439',
+    )

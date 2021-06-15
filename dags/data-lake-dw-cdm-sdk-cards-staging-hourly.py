@@ -105,7 +105,7 @@ medium_task_custom_cluster = {
     'spark_version': '7.3.x-scala2.12',
     'node_type_id': 'm5a.2xlarge',
     'driver_node_type_id': 'm5a.2xlarge',
-    'num_workers': 6,
+    'num_workers': 8,
     'auto_termination_minutes': 0,
     'cluster_log_conf': LOG_PATH,
     'spark_conf': {
@@ -818,7 +818,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
          default_args=default_args) as dag:
     session_staging = FinServDatabricksSubmitRunOperator(
         task_id='session-staging',
-        new_cluster=small_task_custom_cluster,
+        new_cluster=medium_task_custom_cluster,
         spark_jar_task=session_staging_jar_task,
         libraries=staging_libraries,
         timeout_seconds=3600,
@@ -868,7 +868,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     location_staging = FinServDatabricksSubmitRunOperator(
         task_id='location-staging',
-        new_cluster=extra_small_task_custom_cluster,
+        new_cluster=small_task_custom_cluster,
         spark_jar_task=location_staging_jar_task,
         libraries=staging_libraries,
         timeout_seconds=3600,
@@ -878,7 +878,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
 
     device_staging = FinServDatabricksSubmitRunOperator(
         task_id='device-staging',
-        new_cluster=extra_small_task_custom_cluster,
+        new_cluster=small_task_custom_cluster,
         spark_jar_task=device_staging_jar_task,
         libraries=staging_libraries,
         timeout_seconds=3600,

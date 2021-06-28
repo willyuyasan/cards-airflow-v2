@@ -36,3 +36,4 @@ clear_cache = SimpleHttpOperator(
     extra_options={'verify': True},
     priority_weight=50,
     dag=dag)
+    

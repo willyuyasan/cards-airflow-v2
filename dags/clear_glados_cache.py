@@ -32,7 +32,7 @@ clear_cache = SimpleHttpOperator(
     execution_timeout=timedelta(minutes=5),
     http_conn_id='http_glados_prod',
     endpoint='/api/v1/products/cache',
-    headers={'Authorization' : 'Basic %s' % headers_value},
+    headers={'Authorization': 'Basic %s' % headers_value},
     extra_options={'verify': True},
     priority_weight=50,
     dag=dag)

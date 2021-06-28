@@ -33,7 +33,7 @@ def make_request(**kwargs):
 
     response = requests.get(BASE_URI, params=params)
     export_string = response.text
-    out_file = "/home/airflow/temp/appsflyer.csv"
+    out_file = "/home/airflow/appsflyer.csv"
     print(export_string)
 
     if os.path.exists(out_file):

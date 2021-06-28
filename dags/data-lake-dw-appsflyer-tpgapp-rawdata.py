@@ -20,7 +20,7 @@ BASE_URI = conn.host
 # https://hq.appsflyer.com/export/id924710586/installs_report/v5
 api_key = Variable.get("APPSFLYER_API_TOKEN_V1")
 S3_BUCKET = 'cards-de-airflow-logs-qa-us-west-2'
-S3_KEY = 'temp/test3'
+S3_KEY = 'temp/test4'
 
 
 def make_request(**kwargs):
@@ -47,7 +47,7 @@ def make_request(**kwargs):
     s3 = boto3.client('s3')
 
     with open(out_file, "rb") as f:
-        response = s3.upload_fileobj(f, bucketName, '%s/%s' % ('temp', 'test3'))
+        response = s3.upload_fileobj(f, bucketName, '%s/%s' % ('temp', 'test4'))
     print(response)
 
     if os.path.exists(out_file):
@@ -70,9 +70,9 @@ with DAG('appsflyer-dw-tpg_appsflyer',
          schedule_interval='03 01 * * *',
          ) as dag:
 
-    # extract_appsflyer_data = PythonOperator(
-    #     task_id="extract_appsflyer_data",
-    #     python_callable=make_request)
+    extract_appsflyer_data = PythonOperator(
+        task_id="extract_appsflyer_data",
+        python_callable=make_request)
 
     task_transfer_s3_to_redshift = S3ToRedshiftOperator(
         s3_bucket=S3_BUCKET,

@@ -153,7 +153,7 @@ large_task_cluster = {
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",
-        'ebs_volume_count': 2,
+        'ebs_volume_count': 3,
         'ebs_volume_size': 100,
         'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
         'first_on_demand': '2',

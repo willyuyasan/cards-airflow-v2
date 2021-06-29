@@ -4,6 +4,7 @@ airflow_settings.yaml
 .data
 .secrets
 dags/__pycache__/
+dags/data-science-dags/__pycache__/
 plugins/__pycache__/
 plugins/hooks/__pycache__/
 plugins/operators/__pycache__/

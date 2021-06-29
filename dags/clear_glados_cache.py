@@ -3,19 +3,17 @@ from airflow.operators.http_operator import SimpleHttpOperator
 from datetime import datetime, timedelta
 from airflow.models import Variable
 from base64 import b64encode
-import slack_helpers as sh
 
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
     'start_date': datetime.now() - timedelta(hours=1),
-    'email': ['nathan.warshauer@creditcards.com'],
+    'email': ['tdicken@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
-    'sla': timedelta(minutes=20),
-    'on_failure_callback': sh.slack_failure_callback('dash-team')
+    'sla': timedelta(minutes=20)
 }
 
 dag = DAG('clear_glados_cache_v2',

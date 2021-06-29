@@ -4,6 +4,7 @@ import pandas as pd
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from airflow.hooks.base_hook import BaseHook
 
+
 def full_vacuum_tables(**kwargs):
     # create a connection to redshift
     if kwargs['conn_type'] != 'postgres':
@@ -35,7 +36,7 @@ def full_vacuum_tables(**kwargs):
                     from tab_info ti
                     join pg_tab pt
                     on (ti.table_name = pt.tablename)
-    """.format(kwargs['db_schema'],kwargs['login'])
+    """.format(kwargs['db_schema'], kwargs['login'])
 
     select_df = pd.read_sql(select_query, engine)
     print(select_df)
@@ -50,7 +51,7 @@ def full_vacuum_tables(**kwargs):
             svv_vacuum_progress_df = pd.read_sql(svv_vacuum_progress, engine)
 
             if (svv_vacuum_progress_df['status'].iloc[0] == 'Complete' or
-                    svv_vacuum_progress_df['status'].iloc[0] == 'Failed'   or
+                    svv_vacuum_progress_df['status'].iloc[0] == 'Failed' or
                     svv_vacuum_progress_df['status'].iloc[0] == 'Skipped (delete only)' or
                     svv_vacuum_progress_df['status'].iloc[0] == 'Skipped' or
                     svv_vacuum_progress_df['status'].iloc[0] == 'Skipped(sorted>=95%)'):
@@ -78,6 +79,7 @@ def full_vacuum_tables(**kwargs):
             print("----------")
     raw_connection.close()
 
+
 if __name__ == '__main__':
     try:
 
@@ -96,6 +98,6 @@ if __name__ == '__main__':
         full_vacuum_tables(**kwargs)
 
     except Exception as e:
-        print ("Exception: %s.\n" % str(e))
+        print("Exception: %s.\n" % str(e))
         ph.print_exception()
         sys.exit(1)

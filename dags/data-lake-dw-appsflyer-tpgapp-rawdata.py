@@ -78,10 +78,10 @@ with DAG('appsflyer-dw-tpg_appsflyer',
         s3_bucket=S3_BUCKET,
         s3_key=S3_KEY,
         redshift_conn_id='appsflyer_redshift_connection',
-        aws_conn_id='appsflyer_aws_connection_id',
+        aws_conn_id='appsflyer_aws_s3_connection_id',
         schema="PUBLIC",
         table="appsflyer_install_test",
-        copy_options=['csv', "region 'us-west-2'"],
+        copy_options=['csv', "iam_role 'arn:aws:iam::594144519693:role/dbops-redshift-spectrum'", "region 'us-west-2'"],
         task_id='transfer_s3_to_redshift',
     )
 

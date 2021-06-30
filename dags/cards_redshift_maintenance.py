@@ -27,7 +27,7 @@ with DAG('cards-redshift-maintenance',
 
     full_vacuum_table_task = BashOperator(
         task_id='full_vacuum_table',
-        bash_command='python ${AIRFLOW_HOME}/dags/scripts/python/redshift_maintenance_script.py {{ params.redshift_connection_name }} {{ params.db_schema }} ',
+        bash_command='python ${AIRFLOW__CORE__DAGS_FOLDER}/scripts/python/redshift_maintenance_script.py {{ params.redshift_connection_name }} {{ params.db_schema }} ',
         params={"redshift_connection_name": 'cards-redshift-cluster',
                 "db_schema": Variable.get("cards_redshift_maintenance_db_schemas")},
         dag=dag)

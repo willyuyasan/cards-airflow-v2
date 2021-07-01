@@ -16,8 +16,8 @@ locals {
     "production"
   ]
 
-  airflow_nonprod_image_version = "1.10.9-latest"
-  airflow_prod_image_version    = "1.10.9-latest"
+  airflow_nonprod_image_version = "1.10.14"
+  airflow_prod_image_version    = "1.10.14"
   airflow_team_name             = "cards-data-developers"
   airflow_owner                 = "cards-data-developers@RedVentures.com"
 }

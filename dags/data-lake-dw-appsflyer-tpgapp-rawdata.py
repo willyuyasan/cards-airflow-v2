@@ -19,8 +19,10 @@ BASE_URI = conn.host
 
 # https://hq.appsflyer.com/export/id924710586/installs_report/v5
 api_key = Variable.get("APPSFLYER_API_TOKEN_V1")
-S3_BUCKET = 'cards-de-airflow-logs-qa-us-west-2'
-S3_KEY = 'temp/test4'
+S3_BUCKET = 'rv-core-cards-datamart'
+S3_KEY = 'data-lake/temp/test_1'
+#S3_BUCKET = 'cards-de-airflow-logs-qa-us-west-2'
+#S3_KEY = 'temp/test4'
 
 
 def make_request(**kwargs):
@@ -81,7 +83,7 @@ with DAG('appsflyer-dw-tpg_appsflyer',
         aws_conn_id='appsflyer_aws_s3_connection_id',
         schema="PUBLIC",
         table="appsflyer_install_test",
-        copy_options=['csv', "iam_role 'arn:aws:iam::594144519693:role/dbops-redshift-spectrum'", "region 'us-west-2'"],
+        copy_options=['csv', "region 'us-west-2'"],
         task_id='transfer_s3_to_redshift',
     )
 

@@ -21,8 +21,8 @@ BASE_URI = conn.host
 api_key = Variable.get("APPSFLYER_API_TOKEN_V1")
 S3_BUCKET = 'rv-core-cards-datamart'
 S3_KEY = 'data-lake/temp/test_1'
-#S3_BUCKET = 'cards-de-airflow-logs-qa-us-west-2'
-#S3_KEY = 'temp/test4'
+# S3_BUCKET = 'cards-de-airflow-logs-qa-us-west-2'
+# S3_KEY = 'temp/test4'
 
 
 def make_request(**kwargs):

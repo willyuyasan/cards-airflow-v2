@@ -1,0 +1,44 @@
+name: DAG Repo Upgrade (Cookiecutter)
+
+# Allow this to be either triggered or requested by a user
+on:
+  repository_dispatch:
+
+jobs:
+  cookiecutter_upgrade:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'cookiecutter_replay'
+    env:
+      GITHUB_REPO_NAME: ${{ github.repository }}
+      COOKIECUTTER_REPO_TEMPLATE: ${{ github.event.client_payload.source_repo }}
+      COOKIECUTTER_CONF: .cookiecutter.conf.yaml
+      PR_TITLE: ${{ github.event.client_payload.pr_title }}
+      PR_BODY: ${{ github.event.client_payload.pr_body }}
+      SOURCE_BRANCH: ${{ github.event.client_payload.source_branch }}
+    steps:
+      - name: Checkout local repo
+        uses: actions/checkout@v2
+        with:
+          branch: develop
+          token: ${{ secrets.CDM_SVC_TOKEN }}
+          path: ${{ env.GITHUB_REPO_NAME }}
+      - name: Checkout airflow-template repo for replay value
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.COOKIECUTTER_REPO_TEMPLATE }}
+          token: ${{ secrets.CDM_SVC_TOKEN }}
+          path: RedVentures/repo
+          branch: ${{ env.SOURCE_BRANCH }}
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.7.x'
+      - name: Install cookiecutter & jinja2
+        run: pip install cookiecutter jinja2
+      # TODO: Replace this with some Python
+      - name: Upgrade DAG Repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.CDM_SVC_TOKEN }}
+        run: |
+          # We copy the cookiecutter_replay.sh script first so we don't accidentally alter it while running
+          cp ${GITHUB_REPO_NAME}/bin/cookiecutter_replay.sh cookiecutter_replay.sh
+          ./cookiecutter_replay.sh

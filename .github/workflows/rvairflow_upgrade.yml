@@ -1,0 +1,45 @@
+name: Upgrade rvairflow Docker image
+
+# Allow this to be either triggered or requested by a user
+on:
+  repository_dispatch:
+  workflow_dispatch:
+  # TODO: How would I pass the reponame via workflow_dispatch
+
+jobs:
+  # In DAG repos, this should update:
+  #   .cookiecutter/repo.json
+  #   Dockerfile
+  #   docker-compose.yml
+  #   README.md
+  # In TFE repos, this should update:
+  #   airflow.tf (If versioned)
+  docker_upgrade:
+    runs-on: ubuntu-latest
+    env:
+      NEW_VERSION: 1.10.14
+    steps:
+      - uses: actions/checkout@v2
+      - name: Find all occurrences of a rvairflow image string
+        run: |
+          rvairflow_files=$(grep "rvairflow\:.*" * | awk -F':' '{print $1;}' | sort -u)
+          for fd in ${rvairflow_files}; do
+            echo "Changing ${fd} to use latest"
+            sed -i "s/rvairflow\:(.*)/rvairflow\:${{ env.NEW_VERSION }}/" ${fd}
+          done
+      - name: Push changes up as a PR
+        run: |
+          PR_TITLE="fix(docker): Updated docker to the latest version (${{ env.NEW_VERSION }})"
+          PR_BODY="This will update your local environment to the latest version of Airflow."
+          INPUT_AUTHOR_EMAIL=${INPUT_AUTHOR_EMAIL:-'github-actions[bot]@users.noreply.github.com'}
+          INPUT_AUTHOR_NAME=${INPUT_AUTHOR_NAME:-'github-actions[bot]'}
+
+          git config --local user.email "${INPUT_AUTHOR_EMAIL}"
+          git config --local user.name "${INPUT_AUTHOR_NAME}"
+          git checkout -b feature/docker_upgrade_$(date +%Y-%m-%d) && \
+          git add . && \
+          git status && \
+          git commit -m "fix(docker): Updated docker to the latest version (${{ env.NEW_VERSION }})" && \
+          git push origin HEAD && \
+          gh pr create -t "${PR_TITLE}" -b "${PR_BODY}" -B develop
+    # TODO: Add support for tagging via actions/create-release or git tag && git push --tags for Shield

@@ -45,11 +45,11 @@ def make_request(**kwargs):
     f.write(export_string)
     f.close()
 
-    bucketName = 'cards-de-airflow-logs-qa-us-west-2'
+    bucketName = 'rv-core-cards-datamart-qa'
     s3 = boto3.client('s3')
 
     with open(out_file, "rb") as f:
-        response = s3.upload_fileobj(f, bucketName, '%s/%s' % ('temp', 'test4'))
+        response = s3.upload_fileobj(f, bucketName, '%s/%s' % ('data-lake/temp', 'test_1'))
     print(response)
 
     if os.path.exists(out_file):

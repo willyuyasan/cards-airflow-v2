@@ -19,8 +19,10 @@ BASE_URI = conn.host
 
 # https://hq.appsflyer.com/export/id924710586/installs_report/v5
 api_key = Variable.get("APPSFLYER_API_TOKEN_V1")
-S3_BUCKET = 'cards-de-airflow-logs-qa-us-west-2'
-S3_KEY = 'temp/test4'
+S3_BUCKET = 'rv-core-cards-datamart-qa'
+S3_KEY = 'data-lake/temp/test_1'
+# S3_BUCKET = 'cards-de-airflow-logs-qa-us-west-2'
+# S3_KEY = 'temp/test4'
 
 
 def make_request(**kwargs):
@@ -43,11 +45,11 @@ def make_request(**kwargs):
     f.write(export_string)
     f.close()
 
-    bucketName = 'cards-de-airflow-logs-qa-us-west-2'
+    bucketName = 'rv-core-cards-datamart-qa'
     s3 = boto3.client('s3')
 
     with open(out_file, "rb") as f:
-        response = s3.upload_fileobj(f, bucketName, '%s/%s' % ('temp', 'test4'))
+        response = s3.upload_fileobj(f, bucketName, '%s/%s' % ('data-lake/temp', 'test_1'))
     print(response)
 
     if os.path.exists(out_file):
@@ -78,9 +80,10 @@ with DAG('appsflyer-dw-tpg_appsflyer',
         s3_bucket=S3_BUCKET,
         s3_key=S3_KEY,
         redshift_conn_id='appsflyer_redshift_connection',
+        aws_conn_id='appsflyer_aws_s3_connection_id',
         schema="PUBLIC",
         table="appsflyer_install_test",
-        copy_options=['csv', "region 'us-west-2'"],
+        copy_options=['csv', "region 'us-east-1'"],
         task_id='transfer_s3_to_redshift',
     )
 

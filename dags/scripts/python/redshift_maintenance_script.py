@@ -99,5 +99,4 @@ if __name__ == '__main__':
 
     except Exception as e:
         print("Exception: %s.\n" % str(e))
-        ph.print_exception()
         sys.exit(1)

@@ -3,6 +3,7 @@ import sqlalchemy
 import pandas as pd
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from airflow.hooks.base_hook import BaseHook
+import time
 
 
 def full_vacuum_tables(**kwargs):

@@ -5,6 +5,7 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from airflow.hooks.base_hook import BaseHook
 import time
 
+
 def full_vacuum_tables(**kwargs):
     # create a connection to redshift
     if kwargs['conn_type'] != 'postgres':

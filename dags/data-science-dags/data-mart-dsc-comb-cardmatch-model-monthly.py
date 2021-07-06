@@ -181,7 +181,7 @@ citi_model_training_notebook_task_a = {
 citi_model_training_notebook_task_b = {
     'base_parameters': {
         "issuer": "Citi",
-        "card_ids": "221411361, 221411362, 22145695, 22146209, 221410118, 7815"
+        "card_ids": "221411361, 221411362, 22145695, 22146209, 221410118, 7815, 22144567"
     },
     'notebook_path': '/Production/CardMatchDS/Combined/CardMatch_python_train',
 }
@@ -285,7 +285,7 @@ petal_model_training_notebook_task = {
 wells_fargo_model_training_notebook_task = {
     'base_parameters': {
         "issuer": "Wells Fargo",
-        "card_ids": "7683, 7684, 7685, 7730, 7731"
+        "card_ids": "7683, 7684, 7685, 7730, 7731, 7878, 7879"
     },
     'notebook_path': '/Production/CardMatchDS/Combined/CardMatch_python_train',
 }

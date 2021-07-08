@@ -134,6 +134,39 @@ medium_task_custom_cluster = {
     },
 }
 
+large_task_custom_cluster = {
+    'spark_version': '7.3.x-scala2.12',
+    'node_type_id': 'm5a.4xlarge',
+    'driver_node_type_id': 'm5a.4xlarge',
+    'num_workers': 6,
+    'auto_termination_minutes': 0,
+    'cluster_log_conf': LOG_PATH,
+    'spark_conf': {
+        'spark.sql.sources.partitionOverwriteMode': 'dynamic',
+        'spark.driver.extraJavaOptions': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE"),
+        'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
+    },
+    'spark_env_vars': {
+        'java_opts': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE")
+    },
+    "aws_attributes": {
+        "availability": "SPOT_WITH_FALLBACK",
+        'ebs_volume_count': 3,
+        'ebs_volume_size': 100,
+        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
+        'first_on_demand': '2',
+        'spot_bid_price_percent': '60',
+        'zone_id': 'us-east-1b',
+        "instance_profile_arn": Variable.get("DBX_CARDS_IAM_ROLE"),
+    },
+    'custom_tags': {
+        'Partner': 'B814',
+        'Project': 'Cards Allocation',
+        'Dag_id': "{{ ti.dag_id }}",
+        'Task_id': "{{ ti.task_id }}"
+    },
+}
+
 # Libraries
 staging_libraries = [
     {
@@ -1060,7 +1093,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
 
     amex_ot_details_staging = FinServDatabricksSubmitRunOperator(
         task_id='amex-ot-details-staging',
-        new_cluster=medium_task_custom_cluster,
+        new_cluster=large_task_custom_cluster,
         spark_jar_task=ot_details_staging_jar_task,
         libraries=staging_libraries,
         timeout_seconds=2400,

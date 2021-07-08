@@ -23,7 +23,7 @@ def my_custom_function(ts, **kwargs):
     The code is not executed until the task is run by the airflow scheduler.
     """
     hook = MySqlHook(mysql_conn_id='mysql_ro_conn')
-    hook.run("select 'test'")
+    hook.run("select * from information_schema.tables")
     print('hooked')
     # hook.run(copy_command)
     print(f"I am task number {kwargs['task_number']}. This DAG Run execution date is {ts} and the current time is {datetime.now()}")

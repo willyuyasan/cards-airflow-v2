@@ -16,6 +16,7 @@ BASE_URI = conn.host
 S3_BUCKET = 'cards-de-airflow-logs-qa-us-west-2'
 S3_KEY = 'temp/test_mysql_conn'
 
+
 def my_custom_function(ts, **kwargs):
     """
     This can be any python code you want and is called from the python operator.

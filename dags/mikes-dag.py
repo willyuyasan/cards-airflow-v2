@@ -50,17 +50,6 @@ with DAG('mikes_dag',
          # catchup=False # enable if you don't want historical dag runs to run
          ) as dag:
 
-
-    # task_transfer_mysql_to_s3 = MySQLToS3Operator(
-    #     query="select 'test'",
-    #     s3_bucket=S3_BUCKET,
-    #     s3_key=S3_KEY,
-    #     mysql_conn_id='mysql_conn_id',
-    #     aws_conn_id='aws_default',
-    #     verify=False,
-    #     task_id='transfer_mysql_to_s3'
-    # )
-
     t0 = DummyOperator(
         task_id='start'
     )

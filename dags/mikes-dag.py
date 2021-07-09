@@ -46,7 +46,7 @@ def execute(**kwargs):
         cursor.close()
         conn.close()
     print("Loading file into S3")
-    with open(file, 'r', encoding='utf-8') as f:
+    with open(file, 'rb') as f:
         response = s3.upload_fileobj(f, S3_BUCKET, 'data-lake/temp/mike_test')
     print(response)
 

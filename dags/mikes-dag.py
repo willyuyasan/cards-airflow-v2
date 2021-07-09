@@ -5,8 +5,7 @@ from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
 from airflow.hooks.base_hook import BaseHook
 from airflow.hooks.mysql_hook import MySqlHook
-# from mysql_to_s3 import MySQLToS3Operator
-
+import csv
 
 conn = BaseHook.get_connection("mysql_conn_id")
 BASE_URI = conn.host
@@ -29,6 +28,25 @@ def my_custom_function(ts, **kwargs):
     print(f"I am task number {kwargs['task_number']}. This DAG Run execution date is {ts} and the current time is {datetime.now()}")
     print('Here is the full DAG Run context. It is available because provide_context=True')
     print(kwargs)
+
+
+def execute(**kwargs):
+    s3 = boto3.client('s3')
+    mysql = MySqlHook(mysql_conn_id='mysql_ro_conn')
+    print("Dumping MySQL query results to local file")
+    conn = mysql.get_conn()
+    cursor = conn.cursor()
+    cursor.execute('select * from information_schema.tables')
+    with open('mike_temp.csv', 'w', newline='') as f:
+        csv_writer = csv.writer(f, delimiter=',', encoding="utf-8")
+        csv_writer.writerows(cursor)
+        f.flush()
+        cursor.close()
+        conn.close()
+        print("Loading file into S3")
+        with open(out_file, "r") as f:
+            response = s3.upload_fileobj(f, S3_BUCKET, 'data-lake/temp/mike_test')
+        print(response)
 
 
 # Default settings applied to all tasks
@@ -64,4 +82,13 @@ with DAG('mikes_dag',
         provide_context=True
     )
 
-    t0 >> tn  # indented inside for loop so each task is added downstream of t0
+    # generate tasks with a loop. task_id must be unique
+    # for task in range(5):
+    tm = PythonOperator(
+        task_id=f'load_mysql',
+        python_callable=execute,  # make sure you don't include the () of the function
+        op_kwargs={'task_number': 0},
+        provide_context=True
+    )
+
+    t0 >> [tn, tnm]

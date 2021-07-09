@@ -39,7 +39,7 @@ def execute(**kwargs):
     cursor = conn.cursor()
     cursor.execute('select * from information_schema.tables')
     with open('mike_temp.csv', 'w', newline='') as f:
-        csv_writer = csv.writer(f, delimiter=',', encoding="utf-8")
+        csv_writer = csv.writer(f)
         csv_writer.writerows(cursor)
         f.flush()
         cursor.close()

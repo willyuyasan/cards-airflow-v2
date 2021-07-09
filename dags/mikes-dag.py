@@ -7,7 +7,6 @@ from airflow.hooks.base_hook import BaseHook
 from airflow.hooks.mysql_hook import MySqlHook
 import csv
 import boto3
-import mysql_to_s3 as dh
 
 
 conn = BaseHook.get_connection("mysql_conn_id")

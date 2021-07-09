@@ -91,4 +91,4 @@ with DAG('mikes_dag',
         provide_context=True
     )
 
-    t0 >> [tn, tnm] # indented inside for loop so each task is added downstream of t0
+    t0 >> [tn, tnm]

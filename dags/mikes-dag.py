@@ -91,4 +91,4 @@ with DAG('mikes_dag',
         provide_context=True
     )
 
-    t0 >> [tn, tnm]
+    t0 >> [tn, tm]

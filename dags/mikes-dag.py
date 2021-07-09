@@ -38,16 +38,17 @@ def execute(**kwargs):
     conn = mysql.get_conn()
     cursor = conn.cursor()
     cursor.execute('select * from information_schema.tables')
-    with open('mike_temp.csv', 'w', newline='') as f:
+    file = 'mike_temp.csv'
+    with open(file, 'w', newline='') as f:
         csv_writer = csv.writer(f)
         csv_writer.writerows(cursor)
         f.flush()
         cursor.close()
         conn.close()
         print("Loading file into S3")
-        with open(out_file, "r") as f:
-            response = s3.upload_fileobj(f, S3_BUCKET, 'data-lake/temp/mike_test')
-        print(response)
+    with open(file, "r") as f:
+        response = s3.upload_fileobj(f, S3_BUCKET, 'data-lake/temp/mike_test')
+    print(response)
 
 
 # Default settings applied to all tasks

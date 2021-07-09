@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from airflow.hooks.base_hook import BaseHook
 from airflow.hooks.mysql_hook import MySqlHook
 import csv
+import boto3
 
 conn = BaseHook.get_connection("mysql_conn_id")
 BASE_URI = conn.host

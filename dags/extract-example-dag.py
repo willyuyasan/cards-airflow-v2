@@ -18,34 +18,17 @@ S3_BUCKET = 'cards-de-airflow-logs-qa-us-west-2'
 S3_KEY = 'temp/test_mysql_conn'
 
 
-def execute(**kwargs):
-    s3 = boto3.client('s3')
-    mysql = MySqlHook(mysql_conn_id='mysql_ro_conn')
-    print("Dumping MySQL query results to local file")
-    conn = mysql.get_conn()
-    cursor = conn.cursor()
-    cursor.execute('select * from information_schema.tables')
-    file = 'mike_temp.csv'
-    with open(file, 'w', newline='') as f:
-        csv_writer = csv.writer(f)
-        csv_writer.writerows(cursor)
-        f.flush()
-        cursor.close()
-        conn.close()
-    print("Loading file into S3")
-    with open(file, 'rb') as f:
-        response = s3.upload_fileobj(f, S3_BUCKET, 'data-lake/temp/mike_test')
-    print(response)
-
-
 def mysql_table_to_s3(**kwargs):
+    print('Retrieving query from .sql file')
+    with open(f"./sql/extract/{kwargs['query']}.sql", 'r') as f:
+        query = f.read()
     s3 = boto3.client('s3')
     mysql = MySqlHook(mysql_conn_id='mysql_ro_conn')
     print("Dumping MySQL query results to local file")
     conn = mysql.get_conn()
     cursor = conn.cursor()
-    cursor.execute(f'select * from {kwargs["table"]}')
-    file = 'mike_temp.csv'
+    cursor.execute(query)
+    file = 'extract_example_temp.csv'
     with open(file, 'w', newline='') as f:
         csv_writer = csv.writer(f)
         csv_writer.writerows(cursor)
@@ -69,7 +52,7 @@ default_args = {
 }
 
 # Using a DAG context manager, you don't have to specify the dag property of each task
-with DAG('mikes_dag',
+with DAG('extract_example_dag',
          start_date=datetime(2021, 1, 1),
          max_active_runs=1,
          catchup=False,
@@ -87,7 +70,7 @@ with DAG('mikes_dag',
     tm = PythonOperator(
         task_id=f'load_mysql_new',
         python_callable=mysql_table_to_s3,  # make sure you don't include the () of the function
-        op_kwargs={'bucket': S3_BUCKET, 'key': S3_KEY, 'table': 'information_schema.tables'},
+        op_kwargs={'bucket': S3_BUCKET, 'key': S3_KEY, 'query': 'partner_affiliates'},
         provide_context=True
     )
 

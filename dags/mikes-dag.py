@@ -38,7 +38,7 @@ def execute(**kwargs):
     print(response)
 
 
-def mysql_table_to_s3(table, bucket, key, **kwargs):
+def mysql_table_to_s3(**kwargs):
     s3 = boto3.client('s3')
     mysql = MySqlHook(mysql_conn_id='mysql_ro_conn')
     print("Dumping MySQL query results to local file")

@@ -15,7 +15,7 @@ BASE_URI = conn.host
 
 # api_key = Variable.get("APPSFLYER_API_TOKEN_V1")
 S3_BUCKET = 'cards-de-airflow-logs-qa-us-west-2'
-S3_KEY = 'example_dags/extract_example.csv'
+S3_DIR = 'example_dags/extract_examples/'
 
 
 def mysql_table_to_s3(**kwargs):
@@ -36,8 +36,9 @@ def mysql_table_to_s3(**kwargs):
         cursor.close()
         conn.close()
     print("Loading file into S3")
+    S3_KEY = S3_DIR + kwargs['query'] + '.csv'
     with open(file, 'rb') as f:
-        response = s3.upload_fileobj(f, kwargs['bucket'], kwargs['key'])
+        response = s3.upload_fileobj(f, S3_BUCKET, S3_KEY)
     print(response)
 
 
@@ -70,7 +71,7 @@ with DAG('extract_example_dag',
     tm = PythonOperator(
         task_id=f'load_mysql_new',
         python_callable=mysql_table_to_s3,  # make sure you don't include the () of the function
-        op_kwargs={'bucket': S3_BUCKET, 'key': S3_KEY, 'query': 'partner_affiliates'},
+        op_kwargs={'query': 'partner_affiliates'},
         provide_context=True
     )
 

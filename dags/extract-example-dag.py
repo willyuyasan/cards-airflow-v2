@@ -5,11 +5,11 @@ from datetime import datetime, timedelta
 from airflow.hooks.base_hook import BaseHook
 from airflow.hooks.mysql_hook import MySqlHook
 from airflow.models import Variable
-from helper-modules.ExtractOperators import mysql_table_to_s3, make_request
-import sys
+from operators.extract_operator import mysql_table_to_s3, make_request
+# import sys
 
 # sys.path.insert(0, '/usr/local/airflow/dags/helper-modules')
-# from ExtractOperators import
+# from ExtractOperators import mysql_table_to_s3, make_request
 S3_BUCKET = Variable.get('EXTRACT-EXAMPLE-BUCKET')
 
 # Default settings applied to all tasks

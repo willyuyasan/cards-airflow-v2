@@ -75,4 +75,3 @@ with DAG('extract_example_dag',
     )
 
     t0 >> tm
-

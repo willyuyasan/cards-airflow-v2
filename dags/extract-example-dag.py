@@ -56,13 +56,23 @@ with DAG('extract_example_dag',
          start_date=datetime(2021, 1, 1),
          max_active_runs=1,
          catchup=False,
-         schedule_interval=timedelta(minutes=120),  # https://airflow.apache.org/docs/stable/scheduler.html#dag-runs
+         schedule_interval=timedelta(hours=12),  # https://airflow.apache.org/docs/stable/scheduler.html#dag-runs
          default_args=default_args,
          # catchup=False # enable if you don't want historical dag runs to run
          ) as dag:
 
     t0 = DummyOperator(
         task_id='start'
+    )
+
+    t2 = BashOperator(
+        task_id='t2',
+        bash_command='pwd'
+    )
+
+    t3 = BashOperator(
+        task_id='t3',
+        bash_command='ls'
     )
 
     # generate tasks with a loop. task_id must be unique

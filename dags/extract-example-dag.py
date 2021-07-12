@@ -20,7 +20,7 @@ S3_KEY = 'temp/test_mysql_conn'
 
 def mysql_table_to_s3(**kwargs):
     print('Retrieving query from .sql file')
-    with open(f"./sql/extract/{kwargs['query']}.sql", 'r') as f:
+    with open(f"/usr/local/airflow/dags/sql/extract/{kwargs['query']}.sql", 'r') as f:
         query = f.read()
     s3 = boto3.client('s3')
     mysql = MySqlHook(mysql_conn_id='mysql_ro_conn')
@@ -63,16 +63,6 @@ with DAG('extract_example_dag',
 
     t0 = DummyOperator(
         task_id='start'
-    )
-
-    t2 = BashOperator(
-        task_id='t2',
-        bash_command='pwd'
-    )
-
-    t3 = BashOperator(
-        task_id='t3',
-        bash_command='ls'
     )
 
     # generate tasks with a loop. task_id must be unique

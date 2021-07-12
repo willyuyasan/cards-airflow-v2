@@ -50,7 +50,7 @@ def mysql_table_to_s3(**kwargs):
     outfile_to_S3(outfile, kwargs)
 
 
-def outfile_to_S3(outfile, **kwargs):
+def outfile_to_S3(outfile, kwargs):
     print('Loading file into S3')
     S3_KEY = kwargs.get('key') if kwargs.get('key') else 'example_dags/extract_examples/no_name.csv'
     with open(outfile, 'rb') as f:

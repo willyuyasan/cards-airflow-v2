@@ -6,10 +6,7 @@ from airflow.hooks.base_hook import BaseHook
 from airflow.hooks.mysql_hook import MySqlHook
 from airflow.models import Variable
 from operators.extract_operator import mysql_table_to_s3, make_request
-# import sys
 
-# sys.path.insert(0, '/usr/local/airflow/dags/helper-modules')
-# from ExtractOperators import mysql_table_to_s3, make_request
 S3_BUCKET = Variable.get('EXTRACT-EXAMPLE-BUCKET')
 
 # Default settings applied to all tasks
@@ -35,12 +32,13 @@ with DAG('extract_example_dag',
     extract_appsflyer_data = PythonOperator(
         task_id="extract_appsflyer_data",
         python_callable=make_request,
-        op_kwargs={'key': 'example_dags/extract_examples/appsflyer_data.csv'}
+        op_kwargs={'key': 'example_dags/extract_examples/appsflyer_data.csv'},
+        provide_context=True
     )
 
     extract_mysql_data = PythonOperator(
         task_id=f'extract_mysql_data',
         python_callable=mysql_table_to_s3,  # make sure you don't include the () of the function
-        op_kwargs={'query': 'partner_affiliates.sql', 'key': 'example_dags/extract_examples/partner_affiliates.csv'},
+        op_kwargs={'query_file': 'partner_affiliates.sql', 'key': 'example_dags/extract_examples/partner_affiliates.csv'},
         provide_context=True
     )

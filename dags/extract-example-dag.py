@@ -1,10 +1,10 @@
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
-from airflow.operators.bash_operator import BashOperator
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
 from airflow.hooks.base_hook import BaseHook
 from airflow.hooks.mysql_hook import MySqlHook
+from airflow.models import Variable
 import csv
 import boto3
 
@@ -12,9 +12,7 @@ import boto3
 conn = BaseHook.get_connection("mysql_conn_id")
 BASE_URI = conn.host
 
-
-# api_key = Variable.get("APPSFLYER_API_TOKEN_V1")
-S3_BUCKET = 'cards-de-airflow-logs-qa-us-west-2'
+S3_BUCKET = Variable.get('EXTRACT-EXAMPLE-BUCKET')
 S3_DIR = 'example_dags/extract_examples/'
 
 

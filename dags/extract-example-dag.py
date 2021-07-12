@@ -84,4 +84,5 @@ with DAG('extract_example_dag',
         provide_context=True
     )
 
-    t0 >> tm
+    t0 >> t2 >> t3 >> tm
+

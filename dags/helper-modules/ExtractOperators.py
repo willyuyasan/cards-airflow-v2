@@ -27,7 +27,6 @@ def make_request(**kwargs):
     outfile_to_S3(outfile, kwargs)
 
 
-
 def mysql_table_to_s3(**kwargs):
     print('Retrieving query from .sql file')
     if kwargs.get('query_file'):
@@ -59,7 +58,3 @@ def outfile_to_S3(outfile, **kwargs):
     print(response)
     if os.path.exists(outfile):
         os.remove(outfile)
-
-
-
-

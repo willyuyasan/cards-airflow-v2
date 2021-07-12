@@ -5,12 +5,11 @@ from datetime import datetime, timedelta
 from airflow.hooks.base_hook import BaseHook
 from airflow.hooks.mysql_hook import MySqlHook
 from airflow.models import Variable
-import csv
-import boto3
+from helper-modules.ExtractOperators import mysql_table_to_s3, make_request
 import sys
-sys.path.insert(0, '/usr/local/airflow/dags/helper-modules')
-from ExtractOperators import mysql_table_to_s3, make_request
 
+# sys.path.insert(0, '/usr/local/airflow/dags/helper-modules')
+# from ExtractOperators import
 S3_BUCKET = Variable.get('EXTRACT-EXAMPLE-BUCKET')
 
 # Default settings applied to all tasks
@@ -45,4 +44,3 @@ with DAG('extract_example_dag',
         op_kwargs={'query': 'partner_affiliates.sql', 'key': 'example_dags/extract_examples/partner_affiliates.csv'},
         provide_context=True
     )
-

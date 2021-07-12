@@ -7,7 +7,7 @@ import csv
 import boto3
 import os
 
-conn = BaseHook.get_connection('mysql_conn_id')
+conn = BaseHook.get_connection('appsflyer')
 BASE_URI = conn.host
 S3_BUCKET = Variable.get('EXTRACT-EXAMPLE-BUCKET')
 s3 = boto3.client('s3')

@@ -17,9 +17,9 @@ default_args = {
 }
 
 with DAG('cccom-db-card_apr_history',
-        default_args=default_args,
-        max_active_runs=1,
-        schedule_interval='40 8 * * *') as dag:
+            default_args=default_args,
+            max_active_runs=1,
+            schedule_interval='40 8 * * *') as dag:
 
     latest_only_task = LatestOnlyOperator(
         task_id='latest_only_tasks',

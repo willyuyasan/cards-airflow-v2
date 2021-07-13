@@ -39,6 +39,7 @@ with DAG('extract_example_dag',
     extract_mysql_data = PythonOperator(
         task_id=f'extract_mysql_data',
         python_callable=mysql_table_to_s3,  # make sure you don't include the () of the function
-        op_kwargs={'query_file': 'partner_affiliates.sql', 'key': 'example_dags/extract_examples/partner_affiliates.csv'},
+        op_kwargs={'query_file': 'cccom/extract_affiliates.sql',
+                   'key': 'example_dags/extract_examples/partner_affiliates.csv'},
         provide_context=True
     )

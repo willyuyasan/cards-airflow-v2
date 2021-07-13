@@ -1,0 +1,7 @@
+Begin Transaction;
+ANALYZE affiliated_reporting.fact_transaction_sales_reversals_load;
+ALTER TABLE affiliated_reporting.fact_transaction_sales_reversals RENAME TO fact_transaction_sales_reversals_temphold;
+ALTER TABLE affiliated_reporting.fact_transaction_sales_reversals_load RENAME TO fact_transaction_sales_reversals;
+ALTER TABLE affiliated_reporting.fact_transaction_sales_reversals_temphold RENAME TO fact_transaction_sales_reversals_load;
+
+COMMIT;

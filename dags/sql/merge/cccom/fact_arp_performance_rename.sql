@@ -1,0 +1,7 @@
+Begin Transaction;
+ANALYZE affiliated_reporting.fact_performance_load;
+ALTER TABLE affiliated_reporting.fact_performance RENAME TO fact_performance_temphold;
+ALTER TABLE affiliated_reporting.fact_performance_load RENAME TO fact_performance;
+ALTER TABLE affiliated_reporting.fact_performance_temphold RENAME TO fact_performance_load;
+
+COMMIT;

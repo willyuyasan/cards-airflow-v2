@@ -1,0 +1,7 @@
+Begin Transaction;
+ANALYZE affiliated_reporting.fact_transaction_applications_load;
+ALTER TABLE affiliated_reporting.fact_transaction_applications RENAME TO fact_transaction_applications_temphold;
+ALTER TABLE affiliated_reporting.fact_transaction_applications_load RENAME TO fact_transaction_applications;
+ALTER TABLE affiliated_reporting.fact_transaction_applications_temphold RENAME TO fact_transaction_applications_load;
+
+COMMIT;

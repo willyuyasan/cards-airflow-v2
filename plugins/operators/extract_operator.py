@@ -29,8 +29,8 @@ def make_request(**kwargs):
 
 def mysql_table_to_s3(**kwargs):
     print('Retrieving query from .sql file')
-    if kwargs.get('query_file'):
-        with open(f'/usr/local/airflow/dags/sql/extract/{kwargs["query_file"]}', 'r') as f:
+    if kwargs.get('extract_script'):
+        with open(f'/usr/local/airflow/dags/sql/extract/{kwargs["extract_script"]}', 'r') as f:
             query = f.read()
     else:
         print('Query file not found')

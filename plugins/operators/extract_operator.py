@@ -136,7 +136,7 @@ class PostgresExtractOperator(BaseOperator):
 
                 with NamedTemporaryFile('w') as temp_file:
                     with gzip.GzipFile(temp_file.name, 'w') as zf:
-                        tsvwriter = csv.writer(zf, delimiter= self.delimiter, dialect='excel-tab')
+                        tsvwriter = csv.writer(zf, delimiter=self.delimiter, dialect='excel-tab')
                         if self.header:
                             tsvwriter.writerow(self.header)
                         for row in cur:

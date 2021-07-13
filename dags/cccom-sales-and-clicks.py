@@ -20,8 +20,8 @@ with DAG('cccom-dw-sales-and-clicks',
          schedule_interval='0 * * * *',
          catchup=False,
          max_active_runs=1,
-         dagrun_timeout = timedelta(hours=2),
-         default_args = default_args) as dag:
+         dagrun_timeout=timedelta(hours=2),
+         default_args=default_args) as dag:
 
     extract_affiliates = PythonOperator(
         task_id=f'extract-cccom-affiliates',

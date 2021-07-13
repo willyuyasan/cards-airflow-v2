@@ -40,7 +40,7 @@ with DAG('cccom-dw-clicks_sales_applications-no-dependencies',
     )
 
     merge_clicks_sales_applications_with_cutover_date = PythonOperator(
-        task_id = 'merge-clicks-sales-applications_rms-with-cutover-date',
+        task_id='merge-clicks-sales-applications_rms-with-cutover-date',
         python_callable=tbd,
         op_kwargs={'extract_script': 'cccom/extract_click_transactions.sql', 'key': PREFIX + 'click_transactions.csv'},
         provide_context=True,

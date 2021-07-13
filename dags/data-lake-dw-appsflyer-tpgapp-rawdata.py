@@ -2,14 +2,8 @@ from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
 from airflow.models import Variable
-from airflow.hooks.S3_hook import S3Hook
 from airflow.hooks.base_hook import BaseHook
-from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
-from airflow.providers.postgres.operators.postgres import PostgresOperator
-from airflow.utils.dates import days_ago
-from airflow.operators.bash_operator import BashOperator
-import csv
 import requests
 import os
 import boto3
@@ -21,8 +15,6 @@ BASE_URI = conn.host
 api_key = Variable.get("APPSFLYER_API_TOKEN_V1")
 S3_BUCKET = 'rv-core-cards-datamart-qa'
 S3_KEY = 'data-lake/temp/test_1'
-# S3_BUCKET = 'cards-de-airflow-logs-qa-us-west-2'
-# S3_KEY = 'temp/test4'
 
 
 def make_request(**kwargs):
@@ -85,19 +77,4 @@ with DAG('appsflyer-dw-tpg_appsflyer',
         table="appsflyer_install_test",
         copy_options=['csv', "IGNOREHEADER 1", "region 'us-east-1'", "timeformat 'auto'"],
         task_id='transfer_s3_to_redshift',
-    )
-
-    run_this = BashOperator(
-        task_id='run_after_loop',
-        bash_command='nc -zv dbops-redshift-cluster-dev.redventures.rv-datascience.privatelinks.redventures.com 5439',
-    )
-
-    also_run_this = BashOperator(
-        task_id='also_run_after_loop',
-        bash_command='nc -zv dbops-redshift-cluster.cd92olv6lp21.us-east-1.redshift.amazonaws.com 5439',
-    )
-
-    also_run_this_2 = BashOperator(
-        task_id='also_run_after_loop_2',
-        bash_command='nc -zv dbops-redshift-cluster-dev.cd92olv6lp21.us-east-1.redshift.amazonaws.com 5439',
     )

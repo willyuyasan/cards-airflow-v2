@@ -96,7 +96,7 @@ class PostgresExtractOperator(BaseOperator):
                  sql,
                  s3_bucket=S3_BUCKET,
                  s3_file_name='no_name',
-                 s3_key = 'example_dags/extract_examples/',
+                 s3_key='example_dags/extract_examples/',
                  s3_conn_id='s3_default',
                  postgres_conn_id='postgres_default',
                  iter_size=10000,
@@ -117,18 +117,16 @@ class PostgresExtractOperator(BaseOperator):
         self.header = header
 
     def execute(self, context):
-
         execution_date = context['execution_date']
+        ts = execution_date.strftime('%Y/%m/%d')
         s3_file_name = self.s3_file_name + "_{0}_{1}_{2}".format(execution_date.year,
                                                                  execution_date.month, execution_date.day)
-        s3_file_path = self.s3_key + execution_date.strftime('%Y/%m/%d') + \
-                       "/" + s3_file_name + "." + self.file_format + ".gz"
-
+        s3_file_path = self.s3_key + ts + "/" + s3_file_name + "." + self.file_format + ".gz"
         hook = PostgresHook(postgres_conn_id=self.postgres_conn_id)
         s3 = S3Hook(s3_conn_id=self.s3_conn_id)
         logging.info("Executing the sql")
 
-        #ToDo: explore the cur.copy_to module along with iter_size
+        # ToDo: explore the cur.copy_to module along with iter_size
         with closing(hook.get_conn()) as conn:
             # creating a named cursor: supposedly, a server side cursor
             # server side cursor transfers to the client only a controlled amount of data
@@ -139,7 +137,6 @@ class PostgresExtractOperator(BaseOperator):
                 with NamedTemporaryFile('w') as temp_file:
                     with gzip.GzipFile(temp_file.name, 'w') as zf:
                         tsvwriter = csv.writer(zf, delimiter= self.delimiter, dialect='excel-tab')
-
                         if self.header:
                             tsvwriter.writerow(self.header)
                         for row in cur:

@@ -19,13 +19,12 @@ default_args = {
     'provide_context': True
 }
 
-
 with DAG('cccom-dw-clicks_sales_and_applications_rms',
-          schedule_interval='0 * * * *',
-          dagrun_timeout=timedelta(hours=1),
-          catchup=False,
-          max_active_runs=1,
-          default_args=default_args) as dag:
+         schedule_interval='0 * * * *',
+         catchup=False,
+         max_active_runs=1,
+         dagrun_timeout=timedelta(hours=1),
+         default_args=default_args) as dag:
 
     extract_applications_rms_task = PostgresExtractOperator(
                             task_id='extract-cccom-applications_rms',

@@ -32,13 +32,13 @@ with DAG('cccom-dw-clicks_sales_applications-no-dependencies',
     merge_csa = PostgresOperator(
         task_id='merge-clicks_sales_applications',
         postgres_conn_id=redshift_conn,
-        sql='/scripts/sql/merge/cccom/merge_clicks_sales_applications.sql'
+        sql='/sql/merge/cccom/merge_clicks_sales_applications.sql'
     )
 
     merge_clicks_sales_applications_with_cutover_date = PostgresOperator(
         task_id='merge-clicks-sales-applications_rms-with-cutover-date',
         postgres_conn_id=redshift_conn,
-        sql='/scripts/sql/merge/cccom/merge_clicks_sales_applications_rms.sql'
+        sql='/sql/merge/cccom/merge_clicks_sales_applications_rms.sql'
     )
 
 merge_csa >> merge_clicks_sales_applications_with_cutover_date

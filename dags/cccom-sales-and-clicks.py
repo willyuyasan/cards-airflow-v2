@@ -2,10 +2,12 @@ from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
 from operators.extract_operator import mysql_table_to_s3, make_request, PostgresExtractOperator
+from airflow.operators.postgres_operator import PostgresOperator
 from rvairflow import slack_hook as sh
 from airflow.models import Variable
 
 PREFIX = 'example_dags/extract_examples/'
+redshift_conn = 'cards-redshift-cluster'
 # Default settings applied to all tasks
 default_args = {
     'owner': 'airflow',
@@ -38,11 +40,12 @@ with DAG('cccom-dw-sales-and-clicks',
     #     task_id='load-cccom-affiliates',
     #     python_callable=dh.execute_pipeline,
     #     execution_timeout=timedelta(minutes=7))
-    #
-    # merge_affiliates = PythonOperator(
-    #     task_id='merge-cccom-affiliates',
-    #     python_callable=dh.execute_pipeline,
-    #     execution_timeout=timedelta(minutes=5))
+
+    merge_csa = PostgresOperator(
+        task_id='merge-cccom-affiliates',
+        postgres_conn_id=redshift_conn,
+        sql='/sql/merge/cccom/merge_affiliates.sql'
+    )
 
     # This is a long-running job, so we up its priority so it
     # starts early in the DAG, and other tasks can happen in parallel.
@@ -58,11 +61,12 @@ with DAG('cccom-dw-sales-and-clicks',
     #     task_id='load-cccom-click_trans',
     #     python_callable=dh.execute_pipeline,
     #     execution_timeout=timedelta(minutes=9))
-    #
-    # merge_click_transactions = PythonOperator(
-    #     task_id='merge-cccom-click_trans',
-    #     python_callable=dh.execute_pipeline,
-    #     execution_timeout=timedelta(minutes=5))
+
+    merge_click_transactions = PostgresOperator(
+        task_id='merge-cccom-click_trans',
+        postgres_conn_id=redshift_conn,
+        sql='/sql/merge/cccom/merge_clicks.sql'
+    )
 
     extract_device_types = PythonOperator(
         task_id='extract-cccom-device_types',
@@ -75,11 +79,12 @@ with DAG('cccom-dw-sales-and-clicks',
     #     task_id='load-cccom-device_types',
     #     python_callable=dh.execute_pipeline,
     #     execution_timeout=timedelta(minutes=4))
-    #
-    # merge_device_types = PythonOperator(
-    #     task_id='merge-cccom-device_types',
-    #     python_callable=dh.execute_pipeline,
-    #     execution_timeout=timedelta(minutes=2))
+
+    merge_device_types = PostgresOperator(
+        task_id='merge-cccom-device_types',
+        postgres_conn_id=redshift_conn,
+        sql='/sql/merge/cccom/merge_device_types.sql'
+    )
 
     extract_pages = PythonOperator(
         task_id='extract-cccom-pages',
@@ -92,11 +97,12 @@ with DAG('cccom-dw-sales-and-clicks',
     #     task_id='load-cccom-pages',
     #     python_callable=dh.execute_pipeline,
     #     execution_timeout=timedelta(minutes=4))
-    #
-    # merge_pages = PythonOperator(
-    #     task_id='merge-cccom-pages',
-    #     python_callable=dh.execute_pipeline,
-    #     execution_timeout=timedelta(minutes=3))
+
+    merge_pages = PostgresOperator(
+        task_id='merge-cccom-pages',
+        postgres_conn_id=redshift_conn,
+        sql='/sql/merge/cccom/merge_pages.sql'
+    )
 
     # This is a long-running job, so we up its priority so it
     # starts early in the DAG, and other tasks can happen in parallel.
@@ -112,11 +118,12 @@ with DAG('cccom-dw-sales-and-clicks',
     #     task_id='load-cccom-sale_trans',
     #     python_callable=dh.execute_pipeline,
     #     execution_timeout=timedelta(minutes=7))
-    #
-    # merge_sale_transactions = PythonOperator(
-    #     task_id='merge-cccom-sale_trans',
-    #     python_callable=dh.execute_pipeline,
-    #     execution_timeout=timedelta(minutes=2))
+
+    merge_sale_transactions = PostgresOperator(
+        task_id='merge-cccom-sale_trans',
+        postgres_conn_id=redshift_conn,
+        sql='/sql/merge/cccom/merge_sales.sql'
+    )
 
     """Adding new tasks for sale trans from RMS"""
     extract_sale_rms_with_cutover_date = PostgresExtractOperator(
@@ -135,12 +142,12 @@ with DAG('cccom-dw-sales-and-clicks',
     #     python_callable=dh.execute_pipeline,
     #     execution_timeout=timedelta(minutes=9),
     # )
-    #
-    # merge_sales_rms_with_cutover_date = PythonOperator(
-    #     task_id='merge-cccom-sales_rms-with-cutover-date',
-    #     python_callable=dh.execute_pipeline,
-    #     execution_timeout=timedelta(minutes=2)
-    # )
+
+    merge_sales_rms_with_cutover_date = PostgresOperator(
+        task_id='merge-cccom-sales_rms_with_cutover_date',
+        postgres_conn_id=redshift_conn,
+        sql='/sql/merge/cccom/merge_sales_rms.sql'
+    )
 
     """End of task defs for sale trans"""
     extract_transaction_types = PythonOperator(
@@ -154,11 +161,12 @@ with DAG('cccom-dw-sales-and-clicks',
     #     task_id='load-cccom-trans_types',
     #     python_callable=dh.execute_pipeline,
     #     execution_timeout=timedelta(minutes=4))
-    #
-    # merge_transaction_types = PythonOperator(
-    #     task_id='merge-cccom-trans_types',
-    #     python_callable=dh.execute_pipeline,
-    #     execution_timeout=timedelta(minutes=2))
+
+    merge_transaction_types = PostgresOperator(
+        task_id='merge-cccom-trans_types',
+        postgres_conn_id=redshift_conn,
+        sql='/sql/merge/cccom/merge_trans_types.sql'
+    )
 
     extract_keywords = PythonOperator(
         task_id='extract-cccom-keywords',
@@ -171,11 +179,12 @@ with DAG('cccom-dw-sales-and-clicks',
     #     task_id='load-cccom-keywords',
     #     python_callable=dh.execute_pipeline,
     #     execution_timeout=timedelta(minutes=3))
-    #
-    # merge_keywords = PythonOperator(
-    #     task_id='merge-cccom-keywords',
-    #     python_callable=dh.execute_pipeline,
-    #     execution_timeout=timedelta(minutes=2))
+
+    merge_keywords = PostgresOperator(
+        task_id='merge-cccom-keywords',
+        postgres_conn_id=redshift_conn,
+        sql='/sql/merge/cccom/merge_keywords.sql'
+    )
 
     extract_websites = PythonOperator(
         task_id='extract-cccom-websites',
@@ -188,11 +197,12 @@ with DAG('cccom-dw-sales-and-clicks',
     #     task_id='load-cccom-websites',
     #     python_callable=dh.execute_pipeline,
     #     execution_timeout=timedelta(minutes=4))
-    #
-    # merge_websites = PythonOperator(
-    #     task_id='merge-cccom-websites',
-    #     python_callable=dh.execute_pipeline,
-    #     execution_timeout=timedelta(minutes=3))
+
+    merge_websites = PostgresOperator(
+        task_id='merge-cccom-websites',
+        postgres_conn_id=redshift_conn,
+        sql='/sql/merge/cccom/merge_websites.sql'
+    )
 
 
 # extract_sale_transactions >> load_sale_transactions >> merge_sale_transactions

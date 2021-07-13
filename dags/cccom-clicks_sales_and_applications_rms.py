@@ -1,10 +1,12 @@
 from airflow import DAG
 from datetime import datetime, timedelta
 from operators.extract_operator import PostgresExtractOperator
+from airflow.operators.postgres_operator import PostgresOperator
 from rvairflow import slack_hook as sh
 from airflow.models import Variable
 
 PREFIX = 'example_dags/extract_examples/'
+redshift_conn = 'cards-redshift-cluster'
 # Default settings applied to all tasks
 default_args = {
     'owner': 'airflow',
@@ -40,12 +42,12 @@ with DAG('cccom-dw-clicks_sales_and_applications_rms',
 #             python_callable=dh.execute_pipeline,
 #             execution_timeout=timedelta(minutes=10),
 #     )
-#
-#     merge_applications_rms_task = PythonOperator(
-#             task_id='merge-cccom-applications_rms',
-#             python_callable=dh.execute_pipeline,
-#             execution_timeout=timedelta(minutes=2),
-#     )
+
+    merge_applications_rms_task = PostgresOperator(
+        task_id='merge-cccom-applications_rms',
+        postgres_conn_id=redshift_conn,
+        sql='/sql/merge/cccom/merge_applications_rms_test.sql'
+    )
 
     extract_sales_rms_task = PostgresExtractOperator(
                             task_id='extract-cccom-sales_rms',
@@ -61,18 +63,18 @@ with DAG('cccom-dw-clicks_sales_and_applications_rms',
 #         python_callable=dh.execute_pipeline,
 #         execution_timeout=timedelta(minutes=10),
 #     )
-#
-#     merge_sales_rms_task = PythonOperator(
-#         task_id='merge-cccom-sales_rms',
-#         python_callable=dh.execute_pipeline,
-#         execution_timeout=timedelta(minutes=2)
-#     )
-#
-#     merge_clicks_sales_applications_rms = PythonOperator(
-#         task_id = 'merge-clicks-sales-applications_rms',
-#         python_callable=dh.execute_pipeline,
-#         execution_timeout=timedelta(minutes=4)
-#     )
-#
+
+    merge_sales_rms_task = PostgresOperator(
+        task_id='merge-cccom-sales_rms',
+        postgres_conn_id=redshift_conn,
+        sql='/sql/merge/cccom/merge_sales_rms_test.sql'
+    )
+
+    merge_clicks_sales_applications_rms = PostgresOperator(
+        task_id='merge-clicks-sales-applications_rms',
+        postgres_conn_id=redshift_conn,
+        sql='/sql/merge/cccom/merge_clicks_sales_applications_rms_test.sql'
+    )
+
 # extract_applications_rms_task >> load_applications_rms_task >> merge_applications_rms_task >> merge_clicks_sales_applications_rms
 # extract_sales_rms_task >> load_sales_rms_task >> merge_sales_rms_task >> merge_clicks_sales_applications_rms

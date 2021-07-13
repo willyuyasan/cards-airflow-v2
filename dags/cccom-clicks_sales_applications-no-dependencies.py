@@ -1,17 +1,14 @@
 from airflow import DAG
-from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
-from airflow.hooks.base_hook import BaseHook
-from airflow.hooks.mysql_hook import MySqlHook
-from airflow.models import Variable
 from operators.extract_operator import mysql_table_to_s3, make_request
 
-S3_BUCKET = Variable.get('EXTRACT-EXAMPLE-BUCKET')
+PREFIX = 'example_dags/extract_examples/'
 
 # Default settings applied to all tasks
 default_args = {
     'owner': 'airflow',
+    'start_date': datetime(2019, 11, 1),
     'depends_on_past': False,
     'email_on_failure': False,
     'email_on_retry': False,

@@ -9,6 +9,7 @@ PREFIX = 'example_dags/extract_examples/'
 # Default settings applied to all tasks
 default_args = {
     'owner': 'airflow',
+    'start_date': datetime(2019, 11, 1),
     'depends_on_past': False,
     'email_on_failure': False,
     'email_on_retry': False,

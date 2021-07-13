@@ -78,3 +78,6 @@ with DAG('appsflyer-dw-tpg_appsflyer',
         copy_options=['csv', "IGNOREHEADER 1", "region 'us-east-1'", "timeformat 'auto'"],
         task_id='transfer_s3_to_redshift',
     )
+
+# Dependencies
+extract_appsflyer_data >> task_transfer_s3_to_redshift

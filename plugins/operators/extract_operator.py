@@ -116,6 +116,14 @@ class PostgresExtractOperator(BaseOperator):
         self.file_format = file_format
         self.header = header
 
+    def file_to_S3(self, outfile, s3_file_path):
+        print('Loading file into S3')
+        with open(outfile, 'rb') as f:
+            response = s3.upload_fileobj(f, S3_BUCKET, s3_file_path)
+        print(response)
+        if os.path.exists(outfile):
+            os.remove(outfile)
+
     def execute(self, context):
         execution_date = context['execution_date']
         ts = execution_date.strftime('%Y/%m/%d')
@@ -123,7 +131,7 @@ class PostgresExtractOperator(BaseOperator):
                                                                  execution_date.month, execution_date.day)
         s3_file_path = self.s3_key + ts + "/" + s3_file_name + "." + self.file_format + ".gz"
         hook = PostgresHook(postgres_conn_id=self.postgres_conn_id)
-        s3 = S3Hook(s3_conn_id=self.s3_conn_id)
+        # s3 = S3Hook(s3_conn_id=self.s3_conn_id)
         logging.info("Executing the sql")
 
         # ToDo: explore the cur.copy_to module along with iter_size
@@ -145,4 +153,5 @@ class PostgresExtractOperator(BaseOperator):
                             except Exception as e:
                                 print("Exception while writing in the file: " + str(e))
                                 print(row)
-                    s3.load_file(temp_file.name, s3_file_path, replace=True, bucket_name=self.s3_bucket)
+                    self.file_to_S3(temp_file.name, s3_file_path)
+                    # s3.load_file(temp_file.name, s3_file_path, replace=True, bucket_name=self.s3_bucket)

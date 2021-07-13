@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import time
 from airflow.hooks.base_hook import BaseHook
 from airflow.hooks.mysql_hook import MySqlHook
 from airflow.models import Variable
@@ -21,7 +22,8 @@ def make_request(**kwargs):
     }
     response = requests.get(BASE_URI, params=params)
     export_string = response.text
-    outfile = '/home/airflow/appsflyer.csv'
+    ts = str(time.time()).replace('.', '_')
+    outfile = f'/home/airflow/appsflyer_{ts}.csv'
     with open(outfile, 'w') as f:
         f.write(export_string)
     outfile_to_S3(outfile, kwargs)
@@ -40,7 +42,8 @@ def mysql_table_to_s3(**kwargs):
     conn = mysql.get_conn()
     cursor = conn.cursor()
     cursor.execute(query)
-    outfile = '/home/airflow/mysql.csv'
+    ts = str(time.time()).replace('.', '_')
+    outfile = f'/home/airflow/mysql_{ts}.csv'
     with open(outfile, 'w', newline='') as f:
         csv_writer = csv.writer(f)
         csv_writer.writerows(cursor)

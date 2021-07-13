@@ -1,19 +1,23 @@
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
-from operators.extract_operator import mysql_table_to_s3, make_request
+from operators.extract_operator import mysql_table_to_s3, make_request, PostgresExtractOperator
+from rvairflow import slack_hook as sh
+from airflow.models import Variable
 
 PREFIX = 'example_dags/extract_examples/'
-
 # Default settings applied to all tasks
 default_args = {
     'owner': 'airflow',
-    'start_date': datetime(2019, 11, 1),
     'depends_on_past': False,
+    'start_date': datetime(2021, 5, 19),
+    'email': ['mdey@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
+    'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
     'retries': 0,
-    'retry_delay': timedelta(minutes=5)
+    'retry_delay': timedelta(minutes=5),
+    'provide_context': True
 }
 
 # Using a DAG context manager, you don't have to specify the dag property of each task
@@ -114,21 +118,17 @@ with DAG('cccom-dw-sales-and-clicks',
     #     python_callable=dh.execute_pipeline,
     #     execution_timeout=timedelta(minutes=2))
 
-    # """Adding new tasks for sale trans from RMS"""
-    # extract_sale_rms_with_cutover_date = PostgresExtractOperator(
-    #     task_id='extract-cccom-sales_rms-with-cutover-date',
-    #     sql='sql/extract/cccom/extract_rms_transactions.sql',
-    #     s3_bucket=Variable.get("CCCOM-BUCKET"),
-    #     s3_key="/stage/cccom/rms_transactions/",
-    #     s3_file_name='rms_transactions',
-    #     s3_conn_id="my_s3_conn",
-    #     postgres_conn_id='postgres_user_rms',
-    #     delimiter="\t",
-    #     file_format="tsv",
-    #     header=None,
-    #     execution_timeout=timedelta(minutes=90),
-    #     priority_weight=5
-    # )
+    """Adding new tasks for sale trans from RMS"""
+    extract_sale_rms_with_cutover_date = PostgresExtractOperator(
+        task_id='extract-cccom-sales_rms-with-cutover-date',
+        sql='sql/extract/cccom/extract_rms_transactions.sql',
+        s3_file_name='rms_transactions',
+        s3_conn_id='my_s3_conn',
+        postgres_conn_id='postgres_user_rms',
+        header=None,
+        execution_timeout=timedelta(minutes=90),
+        priority_weight=5
+    )
 
     # load_sale_rms_with_cutover_date = PythonOperator(
     #     task_id='load-cccom-sales_rms-with-cutover-date',

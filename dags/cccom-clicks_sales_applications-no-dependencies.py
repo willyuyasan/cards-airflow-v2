@@ -1,25 +1,24 @@
 from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
-from operators.extract_operator import mysql_table_to_s3, make_request
+from airflow.operators.postgres_operator import PostgresOperator
+from rvairflow import slack_hook as sh
+from airflow.models import Variable
 
-PREFIX = 'example_dags/extract_examples/'
-
+redshift_conn = 'card_poc_redshift'
 # Default settings applied to all tasks
-default_args = {
+default_args = {  # 'op_kwargs': cfg_dict,
     'owner': 'airflow',
-    'start_date': datetime(2019, 11, 1),
     'depends_on_past': False,
+    'start_date': datetime(2021, 5, 19),
+    'email': ['mdey@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
+    'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
     'retries': 0,
-    'retry_delay': timedelta(minutes=5)
+    'retry_delay': timedelta(minutes=5),
+    'provide_context': True,
+    'cluster_permissions': Variable.get("DE_DBX_CLUSTER_PERMISSIONS")
 }
-
-
-def tbd(**kwargs):
-    print('Placeholder')
-
 
 # Using a DAG context manager, you don't have to specify the dag property of each task
 with DAG('cccom-dw-clicks_sales_applications-no-dependencies',
@@ -28,20 +27,16 @@ with DAG('cccom-dw-clicks_sales_applications-no-dependencies',
          catchup=False,
          default_args=default_args) as dag:
 
-    merge_csa = PythonOperator(
+    merge_csa = PostgresOperator(
         task_id='merge-clicks_sales_applications',
-        python_callable=tbd,
-        op_kwargs={'extract_script': 'cccom/merge_clicks_sales_applications.sql', 'key': PREFIX + 'click_transactions.csv'},
-        provide_context=True,
-        execution_timeout=timedelta(minutes=4)
+        postgres_conn_id=redshift_conn,
+        sql='/scripts/sql/merge/cccom/merge_clicks_sales_applications.sql'
     )
 
-    merge_clicks_sales_applications_with_cutover_date = PythonOperator(
+    merge_clicks_sales_applications_with_cutover_date = PostgresOperator(
         task_id='merge-clicks-sales-applications_rms-with-cutover-date',
-        python_callable=tbd,
-        op_kwargs={'extract_script': 'cccom/extract_click_transactions.sql', 'key': PREFIX + 'click_transactions.csv'},
-        provide_context=True,
-        execution_timeout=timedelta(minutes=4)
+        postgres_conn_id=redshift_conn,
+        sql='/scripts/sql/merge/cccom/merge_clicks_sales_applications_rms.sql'
     )
 
 merge_csa >> merge_clicks_sales_applications_with_cutover_date

@@ -1,10 +1,12 @@
 from airflow import DAG
 from datetime import datetime, timedelta
-from airflow.operators.postgres_operator import PostgresOperator
 from rvairflow import slack_hook as sh
 from airflow.models import Variable
+from airflow.hooks.postgres_hook import PostgresHook
+from airflow.operators.postgres_operator import PostgresOperator
+from airflow.utils.decorators import apply_defaults
 
-redshift_conn = 'card_poc_redshift'
+redshift_conn = 'cards-redshift-cluster'
 # Default settings applied to all tasks
 default_args = {  # 'op_kwargs': cfg_dict,
     'owner': 'airflow',

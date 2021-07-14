@@ -149,7 +149,7 @@ avant_model_training_notebook_task = {
 boa_model_training_notebook_task = {
     'base_parameters': {
         "issuer": "Bank of America",
-        "card_ids": "220612356, 22079418, 22069416, 220610109"
+        "card_ids": "220612356, 22079418, 22069416, 220610109, 7880"
     },
     'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train',
 }

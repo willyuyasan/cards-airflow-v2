@@ -81,7 +81,7 @@ with DAG('data-lake-dw-tpg_appsflyer_installs',
         schema=Variable.get("APPSFLYER_SCHEMA"),
         table=Variable.get("APPSFLYER_TABLE"),
         copy_options=['csv', "IGNOREHEADER 1", "region 'us-east-1'", "timeformat 'auto'"],
-        task_id='transfer_s3_to_redshift',
+        task_id='load_s3_to_redshift',
     )
 
 # Dependencies

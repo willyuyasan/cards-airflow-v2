@@ -271,7 +271,7 @@ with DAG('cccom-dw-sales-and-clicks',
 
 extract_sale_transactions >> load_sale_transactions >> merge_sale_transactions
 
-extract_sale_rms_with_cutover_date >> load_sale_rms_with_cutover_date  >> merge_sales_rms_with_cutover_date
+extract_sale_rms_with_cutover_date >> load_sale_rms_with_cutover_date >> merge_sales_rms_with_cutover_date
 
 merge_sale_transactions >> merge_sales_rms_with_cutover_date
 

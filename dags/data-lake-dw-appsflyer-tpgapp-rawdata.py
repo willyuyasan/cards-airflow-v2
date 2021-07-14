@@ -57,7 +57,7 @@ def make_request(**kwargs):
     filename = 'installs_report_' + params['to']
 
     with open(out_file, "rb") as f:
-        response = s3.upload_fileobj(f, S3_BUCKET, '%s/%s' % (location, filename))
+        response = s3.upload_fileobj(f, S3_BUCKET, '%s%s' % (location, filename))
     print(response)
 
     if os.path.exists(out_file):

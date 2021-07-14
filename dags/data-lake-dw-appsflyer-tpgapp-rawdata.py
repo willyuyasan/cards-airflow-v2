@@ -16,7 +16,7 @@ default_args = {
     'email_on_failure': False,
     'email_on_retry': False,
     'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
-    'retries': 3,
+    'retries': 1,
     'retry_delay': timedelta(minutes=5),
     'provide_context': True,
     'catchup': False,
@@ -42,7 +42,6 @@ def make_request(**kwargs):
     response = requests.get(BASE_URI, params=params)
     export_string = response.text
     out_file = Variable.get("APPSFLYER_OUTFILE")
-    # print(export_string)
 
     if os.path.exists(out_file):
         os.remove(out_file)
@@ -74,7 +73,7 @@ with DAG('data-lake-dw-tpg_appsflyer_installs',
         task_id="extract_appsflyer_data",
         python_callable=make_request)
 
-    task_transfer_s3_to_redshift = S3ToRedshiftOperator(
+    load_s3_to_redshift = S3ToRedshiftOperator(
         s3_bucket=S3_BUCKET,
         s3_key=S3_KEY,
         redshift_conn_id='appsflyer_redshift_connection',
@@ -82,8 +81,8 @@ with DAG('data-lake-dw-tpg_appsflyer_installs',
         schema=Variable.get("APPSFLYER_SCHEMA"),
         table=Variable.get("APPSFLYER_TABLE"),
         copy_options=['csv', "IGNOREHEADER 1", "region 'us-east-1'", "timeformat 'auto'"],
-        task_id='transfer_s3_to_redshift',
+        task_id='load_s3_to_redshift',
     )
 
 # Dependencies
-extract_appsflyer_data >> task_transfer_s3_to_redshift
+extract_appsflyer_data >> load_s3_to_redshift

@@ -2,7 +2,6 @@ from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
 from airflow.models import Variable
-from airflow.hooks.base_hook import BaseHook
 from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
 import requests
 import os
@@ -24,8 +23,7 @@ default_args = {
     'cluster_permissions': Variable.get("DE_DBX_CLUSTER_PERMISSIONS")
 }
 
-conn = BaseHook.get_connection("appsflyer")
-BASE_URI = conn.host
+BASE_URI = Variable.get("APPSFLYER_API_URI")
 api_key = Variable.get("APPSFLYER_API_TOKEN_V1")
 cur_date = datetime.now().strftime("%Y-%m-%d")
 location = "{}TenantId={}/Date={}/".format(Variable.get("APPSFLYER_INSTALLS_LOCATION"), Variable.get("DBX_TPG_APP_Tenant_Id"), cur_date)

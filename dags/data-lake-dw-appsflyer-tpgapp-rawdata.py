@@ -44,7 +44,7 @@ def make_request(**kwargs):
     response = requests.get(BASE_URI, params=params)
     export_string = response.text
     out_file = Variable.get("APPSFLYER_OUTFILE")
-    print(export_string)
+    #print(export_string)
 
     if os.path.exists(out_file):
         os.remove(out_file)

@@ -1,0 +1,8 @@
+Begin Transaction;
+ANALYZE affiliated_reporting.fact_transaction_clicks_load;
+ALTER TABLE affiliated_reporting.fact_transaction_clicks RENAME TO fact_transaction_clicks_temphold;
+ALTER TABLE affiliated_reporting.fact_transaction_clicks_load RENAME TO fact_transaction_clicks;
+ALTER TABLE affiliated_reporting.fact_transaction_clicks_temphold RENAME TO fact_transaction_clicks_load;
+
+COMMIT;
+

@@ -19,7 +19,7 @@ from tempfile import NamedTemporaryFile
 
 conn = BaseHook.get_connection('appsflyer')
 BASE_URI = conn.host
-S3_BUCKET = Variable.get('EXTRACT-EXAMPLE-BUCKET')
+S3_BUCKET = Variable.get('DBX_CARDS_Bucket')
 s3 = boto3.client('s3')
 
 

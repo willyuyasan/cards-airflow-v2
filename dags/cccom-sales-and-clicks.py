@@ -51,7 +51,7 @@ with DAG('cccom-dw-sales-and-clicks',
         copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
-    merge_csa = PostgresOperator(
+    merge_affiliates = PostgresOperator(
         task_id='merge-cccom-affiliates',
         postgres_conn_id=redshift_conn,
         sql='/sql/merge/cccom/merge_affiliates.sql'

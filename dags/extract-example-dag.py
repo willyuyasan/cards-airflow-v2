@@ -7,7 +7,7 @@ from airflow.hooks.mysql_hook import MySqlHook
 from airflow.models import Variable
 from operators.extract_operator import mysql_table_to_s3, make_request
 
-S3_BUCKET = Variable.get('EXTRACT-EXAMPLE-BUCKET')
+S3_BUCKET = Variable.get('DBX_CARDS_Bucket')
 
 # Default settings applied to all tasks
 default_args = {

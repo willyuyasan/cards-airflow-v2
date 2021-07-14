@@ -96,7 +96,7 @@ with DAG('cccom-dw-sales-and-clicks',
     load_device_types = S3ToRedshiftOperator(
         task_id='load-cccom-device_types',
         s3_bucket=S3_BUCKET,
-        s3_key=PREFIX+'click_transactions.csv',
+        s3_key=PREFIX+'device_types.csv',
         redshift_conn_id=redshift_conn,
         aws_conn_id=aws_conn,
         schema='cccom_dw',

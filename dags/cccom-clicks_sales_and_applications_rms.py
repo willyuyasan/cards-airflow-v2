@@ -49,7 +49,7 @@ with DAG('cccom-dw-clicks_sales_and_applications_rms',
         aws_conn_id=aws_conn,
         schema='cccom_dw',
         table='stg_applications_rms_test',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-west-2'", "timeformat 'auto'"],
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_applications_rms_task = PostgresOperator(
@@ -76,7 +76,7 @@ with DAG('cccom-dw-clicks_sales_and_applications_rms',
         aws_conn_id=aws_conn,
         schema='cccom_dw',
         table='stg_rms_transactions_test',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-west-2'", "timeformat 'auto'"],
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_sales_rms_task = PostgresOperator(

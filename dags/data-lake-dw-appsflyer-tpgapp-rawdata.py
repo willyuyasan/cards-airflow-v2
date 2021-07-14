@@ -44,7 +44,7 @@ def make_request(**kwargs):
     response = requests.get(BASE_URI, params=params)
     export_string = response.text
     out_file = Variable.get("APPSFLYER_OUTFILE")
-    print(export_string)
+    # print(export_string)
 
     if os.path.exists(out_file):
         os.remove(out_file)
@@ -57,7 +57,7 @@ def make_request(**kwargs):
     filename = 'installs_report_' + params['to']
 
     with open(out_file, "rb") as f:
-        response = s3.upload_fileobj(f, S3_BUCKET, '%s/%s' % (location, filename))
+        response = s3.upload_fileobj(f, S3_BUCKET, '%s%s' % (location, filename))
     print(response)
 
     if os.path.exists(out_file):

@@ -48,7 +48,7 @@ with DAG('cccom-dw-sales-and-clicks',
         aws_conn_id=aws_conn,
         schema='cccom_dw',
         table='stg_affiliates',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-west-2'", "timeformat 'auto'"],
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_affiliates = PostgresOperator(
@@ -76,7 +76,7 @@ with DAG('cccom-dw-sales-and-clicks',
         aws_conn_id=aws_conn,
         schema='cccom_dw',
         table='stg_click_trans',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-west-2'", "timeformat 'auto'"],
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_click_transactions = PostgresOperator(
@@ -101,7 +101,7 @@ with DAG('cccom-dw-sales-and-clicks',
         aws_conn_id=aws_conn,
         schema='cccom_dw',
         table='stg_device_types',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-west-2'", "timeformat 'auto'"],
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_device_types = PostgresOperator(
@@ -126,7 +126,7 @@ with DAG('cccom-dw-sales-and-clicks',
         aws_conn_id=aws_conn,
         schema='cccom_dw',
         table='stg_pages',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-west-2'", "timeformat 'auto'"],
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_pages = PostgresOperator(
@@ -154,7 +154,7 @@ with DAG('cccom-dw-sales-and-clicks',
         aws_conn_id=aws_conn,
         schema='cccom_dw',
         table='stg_sale_trans',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-west-2'", "timeformat 'auto'"],
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_sale_transactions = PostgresOperator(
@@ -184,7 +184,7 @@ with DAG('cccom-dw-sales-and-clicks',
         aws_conn_id=aws_conn,
         schema='cccom_dw',
         table='stg_rms_transactions',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-west-2'", "timeformat 'auto'"],
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_sales_rms_with_cutover_date = PostgresOperator(
@@ -210,7 +210,7 @@ with DAG('cccom-dw-sales-and-clicks',
         aws_conn_id=aws_conn,
         schema='cccom_dw',
         table='stg_trans_types',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-west-2'", "timeformat 'auto'"],
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_transaction_types = PostgresOperator(
@@ -235,7 +235,7 @@ with DAG('cccom-dw-sales-and-clicks',
         aws_conn_id=aws_conn,
         schema='cccom_dw',
         table='stg_keywords',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-west-2'", "timeformat 'auto'"],
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_keywords = PostgresOperator(
@@ -260,7 +260,7 @@ with DAG('cccom-dw-sales-and-clicks',
         aws_conn_id=aws_conn,
         schema='cccom_dw',
         table='stg_websites',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-west-2'", "timeformat 'auto'"],
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_websites = PostgresOperator(

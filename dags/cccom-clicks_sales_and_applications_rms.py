@@ -9,7 +9,7 @@ from airflow.models import Variable
 PREFIX = 'example_dags/extract_examples/'
 redshift_conn = 'cards-redshift-cluster'
 aws_conn = 'appsflyer_aws_s3_connection_id'
-S3_BUCKET = Variable.get('EXTRACT-EXAMPLE-BUCKET')
+S3_BUCKET = Variable.get('DBX_CARDS_Bucket')
 # Default settings applied to all tasks
 default_args = {
     'owner': 'airflow',

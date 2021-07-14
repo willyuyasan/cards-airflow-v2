@@ -2,11 +2,14 @@ from airflow import DAG
 from datetime import datetime, timedelta
 from operators.extract_operator import PostgresExtractOperator
 from airflow.operators.postgres_operator import PostgresOperator
+from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
 from rvairflow import slack_hook as sh
 from airflow.models import Variable
 
 PREFIX = 'example_dags/extract_examples/'
 redshift_conn = 'cards-redshift-cluster'
+aws_conn = 'appsflyer_aws_s3_connection_id'
+S3_BUCKET = Variable.get('EXTRACT-EXAMPLE-BUCKET')
 # Default settings applied to all tasks
 default_args = {
     'owner': 'airflow',
@@ -32,16 +35,22 @@ with DAG('cccom-dw-clicks_sales_and_applications_rms',
                             task_id='extract-cccom-applications_rms',
                             sql='sql/extract/cccom/extract_applications_rms_test.sql',
                             s3_file_name='applications_rms_test',
-                            postgres_conn_id='postgres_user_rms',
+                            postgres_cnn_id=redshift_conn,
+                            file_format='csv',
                             header=None,
                             execution_timeout=timedelta(minutes=90),
     )
 
-#     load_applications_rms_task = PythonOperator(
-#             task_id='load-cccom-applications_rms',
-#             python_callable=dh.execute_pipeline,
-#             execution_timeout=timedelta(minutes=10),
-#     )
+    load_applications_rms_task = S3ToRedshiftOperator(
+        task_id='load-cccom-applications_rms',
+        s3_bucket=S3_BUCKET,
+        s3_key=PREFIX+'applications_rms_test.csv',
+        redshift_conn_id=redshift_conn,
+        aws_conn_id=aws_conn,
+        schema='cccom_dw',
+        table='stg_applications_rms_test',
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
+    )
 
     merge_applications_rms_task = PostgresOperator(
         task_id='merge-cccom-applications_rms',
@@ -53,16 +62,22 @@ with DAG('cccom-dw-clicks_sales_and_applications_rms',
                             task_id='extract-cccom-sales_rms',
                             sql='sql/extract/cccom/extract_rms_transactions_test.sql',
                             s3_file_name='rms_transactions_test',
-                            postgres_conn_id='postgres_user_rms',
+                            postgres_conn_id=redshift_conn,
+                            file_format='csv',
                             header=None,
                             execution_timeout=timedelta(minutes=90),
     )
-#
-#     load_sales_rms_task = PythonOperator(
-#         task_id='load-cccom-sales_rms',
-#         python_callable=dh.execute_pipeline,
-#         execution_timeout=timedelta(minutes=10),
-#     )
+
+    load_sales_rms_task = S3ToRedshiftOperator(
+        task_id='load-cccom-sales_rms',
+        s3_bucket=S3_BUCKET,
+        s3_key=PREFIX+'rms_transactions_test.csv',
+        redshift_conn_id=redshift_conn,
+        aws_conn_id=aws_conn,
+        schema='cccom_dw',
+        table='stg_rms_transactions_test',
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
+    )
 
     merge_sales_rms_task = PostgresOperator(
         task_id='merge-cccom-sales_rms',
@@ -76,5 +91,5 @@ with DAG('cccom-dw-clicks_sales_and_applications_rms',
         sql='/sql/merge/cccom/merge_clicks_sales_applications_rms_test.sql'
     )
 
-# extract_applications_rms_task >> load_applications_rms_task >> merge_applications_rms_task >> merge_clicks_sales_applications_rms
-# extract_sales_rms_task >> load_sales_rms_task >> merge_sales_rms_task >> merge_clicks_sales_applications_rms
+extract_applications_rms_task >> load_applications_rms_task >> merge_applications_rms_task >> merge_clicks_sales_applications_rms
+extract_sales_rms_task >> load_sales_rms_task >> merge_sales_rms_task >> merge_clicks_sales_applications_rms

@@ -30,7 +30,7 @@ api_key = Variable.get("APPSFLYER_API_TOKEN_V1")
 cur_date = datetime.now().strftime("%Y-%m-%d")
 location = "{}TenantId={}/Date={}/".format(Variable.get("APPSFLYER_INSTALLS_LOCATION"), Variable.get("DBX_TPG_APP_Tenant_Id"), cur_date)
 S3_BUCKET = Variable.get("DBX_CARDS_Bucket")
-S3_KEY = "{}installs_report_{}".format(location,cur_date)
+S3_KEY = "{}installs_report_{}".format(location, cur_date)
 
 
 def make_request(**kwargs):

@@ -19,7 +19,7 @@ default_args = {
     'email': ['mdey@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
+    # 'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
     'retries': 0,
     'retry_delay': timedelta(minutes=5),
     'provide_context': True

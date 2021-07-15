@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 from airflow.operators.mysql_operator import MySqlOperator
 from airflow.operators.latest_only_operator import LatestOnlyOperator
 
-PREFIX = 'example_dags/extract_examples/'
 mysql_rw_conn = 'mysql_rw_conn'
 
 # Default settings applied to all tasks

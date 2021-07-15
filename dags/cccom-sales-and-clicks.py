@@ -7,7 +7,7 @@ from airflow.operators.postgres_operator import PostgresOperator
 from rvairflow import slack_hook as sh
 from airflow.models import Variable
 
-PREFIX = 'example_dags/extract_examples/'
+PREFIX = Variable.get('CCCOM_MYSQL_TO_S3_PREFIX')
 redshift_conn = 'cards-redshift-cluster'
 aws_conn = 'appsflyer_aws_s3_connection_id'
 S3_BUCKET = Variable.get('DBX_CARDS_Bucket')

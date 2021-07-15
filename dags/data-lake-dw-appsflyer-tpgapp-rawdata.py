@@ -2,7 +2,6 @@ from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
 from airflow.models import Variable
-from airflow.hooks.base_hook import BaseHook
 from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
 import requests
 import os
@@ -17,15 +16,14 @@ default_args = {
     'email_on_failure': False,
     'email_on_retry': False,
     'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
-    'retries': 3,
+    'retries': 1,
     'retry_delay': timedelta(minutes=5),
     'provide_context': True,
     'catchup': False,
     'cluster_permissions': Variable.get("DE_DBX_CLUSTER_PERMISSIONS")
 }
 
-conn = BaseHook.get_connection("appsflyer")
-BASE_URI = conn.host
+BASE_URI = Variable.get("APPSFLYER_API_URI")
 api_key = Variable.get("APPSFLYER_API_TOKEN_V1")
 cur_date = datetime.now().strftime("%Y-%m-%d")
 location = "{}TenantId={}/Date={}/".format(Variable.get("APPSFLYER_INSTALLS_LOCATION"), Variable.get("DBX_TPG_APP_Tenant_Id"), cur_date)
@@ -44,7 +42,6 @@ def make_request(**kwargs):
     response = requests.get(BASE_URI, params=params)
     export_string = response.text
     out_file = Variable.get("APPSFLYER_OUTFILE")
-    print(export_string)
 
     if os.path.exists(out_file):
         os.remove(out_file)
@@ -57,7 +54,7 @@ def make_request(**kwargs):
     filename = 'installs_report_' + params['to']
 
     with open(out_file, "rb") as f:
-        response = s3.upload_fileobj(f, S3_BUCKET, '%s/%s' % (location, filename))
+        response = s3.upload_fileobj(f, S3_BUCKET, '%s%s' % (location, filename))
     print(response)
 
     if os.path.exists(out_file):
@@ -76,7 +73,7 @@ with DAG('data-lake-dw-tpg_appsflyer_installs',
         task_id="extract_appsflyer_data",
         python_callable=make_request)
 
-    task_transfer_s3_to_redshift = S3ToRedshiftOperator(
+    load_s3_to_redshift = S3ToRedshiftOperator(
         s3_bucket=S3_BUCKET,
         s3_key=S3_KEY,
         redshift_conn_id='appsflyer_redshift_connection',
@@ -84,8 +81,8 @@ with DAG('data-lake-dw-tpg_appsflyer_installs',
         schema=Variable.get("APPSFLYER_SCHEMA"),
         table=Variable.get("APPSFLYER_TABLE"),
         copy_options=['csv', "IGNOREHEADER 1", "region 'us-east-1'", "timeformat 'auto'"],
-        task_id='transfer_s3_to_redshift',
+        task_id='load_s3_to_redshift',
     )
 
 # Dependencies
-extract_appsflyer_data >> task_transfer_s3_to_redshift
+extract_appsflyer_data >> load_s3_to_redshift

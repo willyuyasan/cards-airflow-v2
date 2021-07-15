@@ -1095,7 +1095,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
         libraries=staging_libraries,
         timeout_seconds=2400,
         databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=240
+        polling_period_seconds=60
     )
 
     amex_ot_summary_staging = FinServDatabricksSubmitRunOperator(
@@ -1105,7 +1105,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
         libraries=staging_libraries,
         timeout_seconds=2400,
         databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=240
+        polling_period_seconds=60
     )
 
     content_meta_data_tracked_staging = FinServDatabricksSubmitRunOperator(

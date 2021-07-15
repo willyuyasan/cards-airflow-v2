@@ -7,7 +7,7 @@ from airflow.operators.postgres_operator import PostgresOperator
 from rvairflow import slack_hook as sh
 from airflow.models import Variable
 
-PREFIX = 'example_dags/extract_examples/'
+PREFIX = Variable.get('CCCOM_MYSQL_TO_S3_PREFIX')
 redshift_conn = 'cards-redshift-cluster'
 aws_conn = 'appsflyer_aws_s3_connection_id'
 S3_BUCKET = Variable.get('DBX_CARDS_Bucket')
@@ -96,7 +96,7 @@ with DAG('cccom-dw-sales-and-clicks',
     load_device_types = S3ToRedshiftOperator(
         task_id='load-cccom-device_types',
         s3_bucket=S3_BUCKET,
-        s3_key=PREFIX+'click_transactions.csv',
+        s3_key=PREFIX+'device_types.csv',
         redshift_conn_id=redshift_conn,
         aws_conn_id=aws_conn,
         schema='cccom_dw',
@@ -170,7 +170,7 @@ with DAG('cccom-dw-sales-and-clicks',
         s3_file_name='rms_transactions',
         file_format='csv',
         s3_conn_id=aws_conn,
-        postgres_conn_id='postgres_user_rms',
+        postgres_conn_id='postgres_ro_conn',
         header=None,
         execution_timeout=timedelta(minutes=90),
         priority_weight=5

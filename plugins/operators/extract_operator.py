@@ -43,6 +43,8 @@ def mysql_table_to_s3(**kwargs):
     if kwargs.get('extract_script'):
         with open(f'/usr/local/airflow/dags/sql/extract/{kwargs["extract_script"]}', 'r') as f:
             query = f.read()
+    elif kwargs.get('query'):
+        query = kwargs.get('query')
     else:
         print('Query file not found')
         return

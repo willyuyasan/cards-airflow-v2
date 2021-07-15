@@ -13,16 +13,16 @@ start_date = "'" + str(date(s.year, s.month, 1)) + "'"
 end_date = "'" + str(datetime.now()) + "'"
 
 summarized_clicks_query = f"""
-    SELECT max(date_inserted) 
-    FROM cccomus.transactions_click_external 
+    SELECT max(date_inserted)
+    FROM cccomus.transactions_click_external
     WHERE date_inserted < {end_date}"""
 summarized_sales_query = f"""
-    SELECT max(created_date) 
-    FROM cccomus.transactions_sale_external 
+    SELECT max(created_date)
+    FROM cccomus.transactions_sale_external
     WHERE created_date < {end_date}"""
 summarized_applications_query = f"""
-    SELECT max(created_date) 
-    FROM cccomus.applications 
+    SELECT max(created_date)
+    FROM cccomus.applications
     WHERE created_date < {end_date}"""
 
 default_args = {
@@ -53,7 +53,7 @@ def update_summarized_dates(**kwargs):
       VALUES ('{trans_type}_stage', '{date_string}');
     """
 
-    #### TBD ####
+    # TBD ####
     # prod_57.run(update_query)
     # This will put date_string into XCom
     return date_string
@@ -122,7 +122,7 @@ with DAG('cccom-db-summarized_transactions_dp',
     )
 
 
-############ S3 To RDS LOAD ###############
+# S3 To RDS LOAD ###############
 #
 #     summarized_clicks_stage_load_task = PythonOperator(
 #             task_id='load-cccom-summarized-clicks',

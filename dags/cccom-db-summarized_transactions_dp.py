@@ -5,6 +5,7 @@ from airflow.operators.mysql_operator import MySqlOperator
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.latest_only_operator import LatestOnlyOperator
 from operators.extract_operator import mysql_table_to_s3
+from airflow.models import Variable
 
 PREFIX = Variable.get('CCCOM_MYSQL_TO_S3_PREFIX')
 

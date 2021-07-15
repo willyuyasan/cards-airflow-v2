@@ -170,7 +170,7 @@ with DAG('cccom-dw-sales-and-clicks',
         s3_file_name='rms_transactions',
         file_format='csv',
         s3_conn_id=aws_conn,
-        postgres_conn_id='postgres_user_rms',
+        postgres_conn_id='postgres_ro_conn',
         header=None,
         execution_timeout=timedelta(minutes=90),
         priority_weight=5

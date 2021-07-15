@@ -5,6 +5,7 @@ from airflow.operators.latest_only_operator import LatestOnlyOperator
 from operators.extract_operator import mysql_table_to_s3, make_request, PostgresExtractOperator
 from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
 from airflow.operators.postgres_operator import PostgresOperator
+from airflow.models import Variable
 
 PREFIX = 'example_dags/extract_examples/'
 redshift_conn = 'cards-redshift-cluster'

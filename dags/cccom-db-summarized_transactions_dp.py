@@ -6,7 +6,7 @@ from airflow.operators.python_operator import PythonOperator
 from airflow.operators.latest_only_operator import LatestOnlyOperator
 from operators.extract_operator import mysql_table_to_s3
 
-PREFIX = 'example_dags/extract_examples/'
+PREFIX = Variable.get('CCCOM_MYSQL_TO_S3_PREFIX')
 
 s = date.today() - timedelta(days=90)
 start_date = "'" + str(date(s.year, s.month, 1)) + "'"

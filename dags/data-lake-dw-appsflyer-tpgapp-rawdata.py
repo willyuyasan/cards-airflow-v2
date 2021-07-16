@@ -76,7 +76,7 @@ with DAG('data-lake-dw-tpg_appsflyer_installs',
     load_s3_to_redshift = S3ToRedshiftOperator(
         s3_bucket=S3_BUCKET,
         s3_key=S3_KEY,
-        redshift_conn_id='appsflyer_redshift_connection',
+        redshift_conn_id='cards-redshift-cluster',
         aws_conn_id='appsflyer_aws_s3_connection_id',
         schema=Variable.get("APPSFLYER_SCHEMA"),
         table=Variable.get("APPSFLYER_TABLE"),

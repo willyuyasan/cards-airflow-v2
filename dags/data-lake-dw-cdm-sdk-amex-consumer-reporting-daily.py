@@ -138,7 +138,7 @@ medium_task_cluster = {
 
 large_task_cluster = {
     'spark_version': '7.3.x-scala2.12',
-    'node_type_id': Variable.get("DBX_LARGE_CLUSTER"),
+    'node_type_id': 'm5a.4xlarge',
     'driver_node_type_id': Variable.get("DBX_LARGE_CLUSTER"),
     'num_workers': Variable.get("DBX_LARGE_CLUSTER_NUM_NODES"),
     'auto_termination_minutes': 0,

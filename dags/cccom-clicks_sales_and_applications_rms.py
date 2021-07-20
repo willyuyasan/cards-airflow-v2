@@ -33,12 +33,14 @@ with DAG('cccom-dw-clicks_sales_and_applications_rms',
          dagrun_timeout=timedelta(hours=1),
          default_args=default_args) as dag:
 
+
     extract_applications_rms_task = PythonOperator(
         task_id='extract-cccom-applications_rms',
         python_callable=pgsql_table_to_s3,
         op_kwargs={'extract_script': 'cccom/extract_applications_rms_test.sql',
                    'key': pg_PREFIX + 'applications_rms_test.csv'},
         provide_context=True
+
     )
 
     load_applications_rms_task = S3ToRedshiftOperator(
@@ -58,6 +60,7 @@ with DAG('cccom-dw-clicks_sales_and_applications_rms',
         sql='/sql/merge/cccom/merge_applications_rms_test.sql'
     )
 
+
     extract_sales_rms_task = PythonOperator(
         task_id='extract-cccom-sales_rms',
         python_callable=pgsql_table_to_s3,
@@ -75,6 +78,7 @@ with DAG('cccom-dw-clicks_sales_and_applications_rms',
         schema='cccom_dw',
         table='stg_rms_transactions_test',
         copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
+
     )
 
     merge_sales_rms_task = PostgresOperator(

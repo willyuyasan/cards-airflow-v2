@@ -8,7 +8,7 @@ mysql_rw_conn = 'mysql_rw_conn'
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2021, 5, 19),
+    'start_date': datetime(2021, 7, 19),
     'email': ['mdey@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,

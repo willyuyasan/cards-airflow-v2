@@ -24,20 +24,20 @@ with DAG('cccom-db-trans-ledger-archive',
          default_args=default_args) as dag:
 
     latest_only_task = LatestOnlyOperator(
-            task_id='latest_only',
-            dag=dag)
+        task_id='latest_only',
+        dag=dag)
 
     move_to_archive = MySqlOperator(
-            task_id='archive_trans_ledger',
-            mysql_conn_id=mysql_rw_conn,
-            sql='sql/cron/cccom-db-trans_ledger/move_trans_ledger_to_archive.sql',
-            dag=dag)
+        task_id='archive_trans_ledger',
+        mysql_conn_id=mysql_rw_conn,
+        sql='sql/cron/cccom-db-trans_ledger/move_trans_ledger_to_archive.sql',
+        dag=dag)
 
     delete_archived = MySqlOperator(
-            task_id='delete_archived_trans_ledger',
-            mysql_conn_id=mysql_rw_conn,
-            sql='sql/cron/cccom-db-trans_ledger/delete_archived_trans_ledger.sql',
-            dag=dag)
+        task_id='delete_archived_trans_ledger',
+        mysql_conn_id=mysql_rw_conn,
+        sql='sql/cron/cccom-db-trans_ledger/delete_archived_trans_ledger.sql',
+        dag=dag)
 
 latest_only_task >> move_to_archive
 move_to_archive >> delete_archived

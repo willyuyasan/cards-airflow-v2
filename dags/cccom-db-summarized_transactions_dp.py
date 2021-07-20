@@ -68,34 +68,34 @@ with DAG('cccom-db-summarized_transactions_dp',
          default_args=default_args) as dag:
 
     latest_only_task = LatestOnlyOperator(
-             task_id='latest_only_tasks',
-             dag=dag)
+        task_id='latest_only_tasks',
+        dag=dag)
 
     summarized_dates_clicks_task = PythonOperator(
-          task_id='summarized_dates_clicks_task',
-          python_callable=update_summarized_dates,
-          op_kwargs={'summarize_query': summarized_clicks_query,
-                     'transaction_type': 'clicks'},
-          dag=dag,
-          execution_timeout=timedelta(minutes=2)
+        task_id='summarized_dates_clicks_task',
+        python_callable=update_summarized_dates,
+        op_kwargs={'summarize_query': summarized_clicks_query,
+                   'transaction_type': 'clicks'},
+        dag=dag,
+        execution_timeout=timedelta(minutes=2)
     )
 
     summarized_dates_sales_task = PythonOperator(
-          task_id='summarized_dates_sales_task',
-          python_callable=update_summarized_dates,
-          op_kwargs={'summarize_query': summarized_sales_query,
-                     'transaction_type': 'sales'},
-          dag=dag,
-          execution_timeout=timedelta(minutes=10)
+        task_id='summarized_dates_sales_task',
+        python_callable=update_summarized_dates,
+        op_kwargs={'summarize_query': summarized_sales_query,
+                   'transaction_type': 'sales'},
+        dag=dag,
+        execution_timeout=timedelta(minutes=10)
     )
 
     summarized_dates_applications_task = PythonOperator(
-          task_id='summarized_dates_applications_task',
-          python_callable=update_summarized_dates,
-          op_kwargs={'summarize_query': summarized_applications_query,
-                     'transaction_type': 'applications'},
-          dag=dag,
-          execution_timeout=timedelta(minutes=2)
+        task_id='summarized_dates_applications_task',
+        python_callable=update_summarized_dates,
+        op_kwargs={'summarize_query': summarized_applications_query,
+                   'transaction_type': 'applications'},
+        dag=dag,
+        execution_timeout=timedelta(minutes=2)
     )
 
     summarized_clicks_extract_task = PythonOperator(

@@ -43,7 +43,7 @@ with DAG('cccom-dw-est-slotting-trans',
     load_commission_rates_log = S3ToRedshiftOperator(
         task_id='load-cccom-rev_slotting_transactions',
         s3_bucket=S3_BUCKET,
-        s3_key=PREFIX+'rev_slotting_transactions.csv',
+        s3_key=PREFIX + 'rev_slotting_transactions.csv',
         redshift_conn_id=redshift_conn,
         aws_conn_id=aws_conn,
         schema='cccom_dw',

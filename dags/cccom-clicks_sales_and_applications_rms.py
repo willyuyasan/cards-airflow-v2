@@ -33,7 +33,6 @@ with DAG('cccom-dw-clicks_sales_and_applications_rms',
          dagrun_timeout=timedelta(hours=1),
          default_args=default_args) as dag:
 
-
     extract_applications_rms_task = PythonOperator(
         task_id='extract-cccom-applications_rms',
         python_callable=pgsql_table_to_s3,
@@ -46,7 +45,7 @@ with DAG('cccom-dw-clicks_sales_and_applications_rms',
     load_applications_rms_task = S3ToRedshiftOperator(
         task_id='load-cccom-applications_rms',
         s3_bucket=S3_BUCKET,
-        s3_key=pg_PREFIX+'applications_rms_test.csv',
+        s3_key=pg_PREFIX + 'applications_rms_test.csv',
         redshift_conn_id=redshift_conn,
         aws_conn_id=aws_conn,
         schema='cccom_dw',
@@ -60,7 +59,6 @@ with DAG('cccom-dw-clicks_sales_and_applications_rms',
         sql='/sql/merge/cccom/merge_applications_rms_test.sql'
     )
 
-
     extract_sales_rms_task = PythonOperator(
         task_id='extract-cccom-sales_rms',
         python_callable=pgsql_table_to_s3,
@@ -72,7 +70,7 @@ with DAG('cccom-dw-clicks_sales_and_applications_rms',
     load_sales_rms_task = S3ToRedshiftOperator(
         task_id='load-cccom-sales_rms',
         s3_bucket=S3_BUCKET,
-        s3_key=PREFIX+'rms_transactions_test.csv',
+        s3_key=PREFIX + 'rms_transactions_test.csv',
         redshift_conn_id=redshift_conn,
         aws_conn_id=aws_conn,
         schema='cccom_dw',

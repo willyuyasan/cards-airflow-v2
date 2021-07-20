@@ -53,12 +53,14 @@ load_commission_rates_log = S3ToRedshiftOperator(
     schema='cccom_dw',
     table='partner_commission_rates_log',
     copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
+    dag=dag
 )
 
 merge_commission_rates_log = PostgresOperator(
     task_id='merge-partner-commission-rates-log',
     postgres_conn_id=redshift_conn,
-    sql='/sql/merge/cccom/merge_commission_rates.sql'
+    sql='/sql/merge/cccom/merge_commission_rates.sql',
+    dag=dag
 )
 
 extract_commission_rates_log.set_upstream(latest_only_task)

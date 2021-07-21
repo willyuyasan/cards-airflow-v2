@@ -26,15 +26,15 @@ with DAG('cccom-db-summarized_issuer_performance',
          default_args=default_args) as dag:
 
     select_load = MySqlOperator(
-            task_id='select_load_issuer_summary',
-            mysql_conn_id=mysql_rw_conn,
-            sql='sql/cron/cccom-db-summarized_issuer_performance/insert.sql',
-            dag=dag)
+        task_id='select_load_issuer_summary',
+        mysql_conn_id=mysql_rw_conn,
+        sql='sql/cron/cccom-db-summarized_issuer_performance/insert.sql',
+        dag=dag)
 
     delete_summary = MySqlOperator(
-            task_id='delete_archived_issuer_summary_performance',
-            mysql_conn_id=mysql_rw_conn,
-            sql='sql/cron/cccom-db-summarized_issuer_performance/delete.sql',
-            dag=dag)
+        task_id='delete_archived_issuer_summary_performance',
+        mysql_conn_id=mysql_rw_conn,
+        sql='sql/cron/cccom-db-summarized_issuer_performance/delete.sql',
+        dag=dag)
 
 delete_summary >> select_load

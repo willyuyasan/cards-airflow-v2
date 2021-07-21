@@ -12,6 +12,7 @@ PREFIX = Variable.get('CCCOM_MYSQL_TO_S3_PREFIX')
 s = date.today() - timedelta(days=90)
 start_date = "'" + str(date(s.year, s.month, 1)) + "'"
 end_date = "'" + str(datetime.now()) + "'"
+mysql_rw_conn = 'mysql_rw_conn'
 
 summarized_clicks_query = f"""
     SELECT max(date_inserted)
@@ -42,7 +43,7 @@ default_args = {
 
 def update_summarized_dates(**kwargs):
     prod_ro = MySqlHook(mysql_conn_id='mysql_ro_conn')
-    prod_57 = MySqlHook(mysql_conn_id='core-prod-57-rw-user')
+    prod_57 = MySqlHook(mysql_conn_id='mysql_rw_conn')
 
     dt = prod_ro.get_first(kwargs["summarize_query"])
     date_string = dt[0].isoformat()
@@ -54,8 +55,7 @@ def update_summarized_dates(**kwargs):
       VALUES ('{trans_type}_stage', '{date_string}');
     """
 
-    # TBD ####
-    # prod_57.run(update_query)
+    prod_57.run(update_query)
     # This will put date_string into XCom
     return date_string
 
@@ -68,34 +68,34 @@ with DAG('cccom-db-summarized_transactions_dp',
          default_args=default_args) as dag:
 
     latest_only_task = LatestOnlyOperator(
-             task_id='latest_only_tasks',
-             dag=dag)
+        task_id='latest_only_tasks',
+        dag=dag)
 
     summarized_dates_clicks_task = PythonOperator(
-          task_id='summarized_dates_clicks_task',
-          python_callable=update_summarized_dates,
-          op_kwargs={'summarize_query': summarized_clicks_query,
-                     'transaction_type': 'clicks'},
-          dag=dag,
-          execution_timeout=timedelta(minutes=2)
+        task_id='summarized_dates_clicks_task',
+        python_callable=update_summarized_dates,
+        op_kwargs={'summarize_query': summarized_clicks_query,
+                   'transaction_type': 'clicks'},
+        dag=dag,
+        execution_timeout=timedelta(minutes=2)
     )
 
     summarized_dates_sales_task = PythonOperator(
-          task_id='summarized_dates_sales_task',
-          python_callable=update_summarized_dates,
-          op_kwargs={'summarize_query': summarized_sales_query,
-                     'transaction_type': 'sales'},
-          dag=dag,
-          execution_timeout=timedelta(minutes=10)
+        task_id='summarized_dates_sales_task',
+        python_callable=update_summarized_dates,
+        op_kwargs={'summarize_query': summarized_sales_query,
+                   'transaction_type': 'sales'},
+        dag=dag,
+        execution_timeout=timedelta(minutes=10)
     )
 
     summarized_dates_applications_task = PythonOperator(
-          task_id='summarized_dates_applications_task',
-          python_callable=update_summarized_dates,
-          op_kwargs={'summarize_query': summarized_applications_query,
-                     'transaction_type': 'applications'},
-          dag=dag,
-          execution_timeout=timedelta(minutes=2)
+        task_id='summarized_dates_applications_task',
+        python_callable=update_summarized_dates,
+        op_kwargs={'summarize_query': summarized_applications_query,
+                   'transaction_type': 'applications'},
+        dag=dag,
+        execution_timeout=timedelta(minutes=2)
     )
 
     summarized_clicks_extract_task = PythonOperator(

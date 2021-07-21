@@ -104,7 +104,7 @@ with DAG('data-lake-dw-tpg-content-daily-workflow',
         new_cluster=small_task_cluster,
         notebook_task=content_roi_notebook_task,
         libraries=notebook_libraries,
-        timeout_seconds=3000,
+        timeout_seconds=6000,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )

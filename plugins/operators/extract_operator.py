@@ -92,13 +92,23 @@ def pgsql_table_to_s3(**kwargs):
 
 def outfile_to_S3(outfile, kwargs):
     print('Loading file into S3')
-    key = kwargs.get('key')
-    name = key.split('.')[0]
-    ts = datetime.now()
-    prefix = f'/cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
-    S3_KEY = prefix + (key if key else 'no_name.csv')
+    S3_KEY = kwargs.get('key') if kwargs.get('key') else 'example_dags/extract_examples/no_name.csv'
     with open(outfile, 'rb') as f:
         response = s3.upload_fileobj(f, S3_BUCKET, S3_KEY)
     print(response)
     if os.path.exists(outfile):
         os.remove(outfile)
+
+
+# def outfile_to_S3(outfile, kwargs):
+#     print('Loading file into S3')
+#     key = kwargs.get('key')
+#     name = key.split('.')[0]
+#     ts = datetime.now()
+#     prefix = f'/cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
+#     S3_KEY = prefix + (key if key else 'no_name.csv')
+#     with open(outfile, 'rb') as f:
+#         response = s3.upload_fileobj(f, S3_BUCKET, S3_KEY)
+#     print(response)
+#     if os.path.exists(outfile):
+#         os.remove(outfile)

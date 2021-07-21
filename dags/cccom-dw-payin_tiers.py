@@ -64,6 +64,7 @@ load_payin_tiers = S3ToRedshiftOperator(
     schema='cccom_dw',
     table='stg_payin_tiers',
     copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
+    dag=dag
 )
 
 load_card_assignments = S3ToRedshiftOperator(
@@ -75,6 +76,7 @@ load_card_assignments = S3ToRedshiftOperator(
     schema='cccom_dw',
     table='stg_payin_tier_card_assignments',
     copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
+    dag=dag
 )
 
 load_website_assignments = S3ToRedshiftOperator(
@@ -86,6 +88,7 @@ load_website_assignments = S3ToRedshiftOperator(
     schema='cccom_dw',
     table='stg_payin_tier_website_assignments',
     copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
+    dag=dag
 )
 
 merge_product_payin_tiers = PostgresOperator(

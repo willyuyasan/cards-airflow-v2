@@ -32,7 +32,6 @@ with DAG('cccom-dw-partner-payouts',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
          default_args=default_args) as dag:
-
     extract_partner_payouts_task = PythonOperator(
         task_id='extract-cccom-partner-payouts',
         python_callable=mysql_table_to_s3,
@@ -43,14 +42,14 @@ with DAG('cccom-dw-partner-payouts',
     extract_partner_payouts_rms = PythonOperator(
         task_id='eextract-cccom-partner_payouts_rms',
         python_callable=pgsql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/eextract_partner_payouts_rms.sql', 'key': pg_PREFIX + 'partner_payouts_rms.tsv'},
+        op_kwargs={'extract_script': 'cccom/extract_partner_payouts_rms.sql', 'key': pg_PREFIX + 'partner_payouts_rms.tsv'},
         provide_context=True
     )
 
     extract_partner_payout_trans_map_task = PythonOperator(
         task_id='extract-cccom-partner-payout-trans-map',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/eextract_partner_payout_transaction_map.sql', 'key': PREFIX + 'partner_payout_transaction_map.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_partner_payout_transaction_map.sql', 'key': PREFIX + 'partner_payout_transaction_map.csv'},
         provide_context=True,
         dag=dag)
 
@@ -80,7 +79,8 @@ with DAG('cccom-dw-partner-payouts',
         aws_conn_id=aws_conn,
         schema='cccom_dw',
         table='stg_partner_payouts_rms',
-        copy_options=['tsv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
+
     )
 
     load_partner_payout_trans_map_task = S3ToRedshiftOperator(
@@ -102,7 +102,8 @@ with DAG('cccom-dw-partner-payouts',
         aws_conn_id=aws_conn,
         schema='cccom_dw',
         table='stg_partner_payout_transaction_map_rms',
-        copy_options=['tsv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
+
     )
 
     sql_payouts_task = PostgresOperator(
@@ -111,21 +112,18 @@ with DAG('cccom-dw-partner-payouts',
         sql='/sql/merge/cccom/merge_payouts.sql',
         dag=dag
     )
-
     sql_payouts_rms = PostgresOperator(
         task_id='merge-cccom-payouts_rms',
         postgres_conn_id=redshift_conn,
         sql='/sql/merge/cccom/merge_payouts_rms.sql',
         dag=dag
     )
-
     sql_payout_trans_map_task = PostgresOperator(
         task_id='merge-cccom-payout-trans-map',
         postgres_conn_id=redshift_conn,
         sql='/sql/merge/cccom/merge_trans_payout.sql',
         dag=dag
     )
-
     sql_payout_trans_map_task_rms = PostgresOperator(
         task_id='merge-cccom-payout-trans-map_rms',
         postgres_conn_id=redshift_conn,

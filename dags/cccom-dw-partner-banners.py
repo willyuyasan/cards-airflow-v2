@@ -30,7 +30,10 @@ default_args = {
 }
 
 with DAG('cccom-dw-partner-banners',
-         schedule_interval='45 6,10,14,18,22 * * *',
+
+         # schedule_interval='45 6,10,14,18,22 * * *',
+         schedule_interval='None',
+
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
          default_args=default_args) as dag:

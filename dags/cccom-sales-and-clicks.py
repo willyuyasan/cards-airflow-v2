@@ -7,8 +7,6 @@ from airflow.operators.postgres_operator import PostgresOperator
 from rvairflow import slack_hook as sh
 from airflow.models import Variable
 
-PREFIX = Variable.get('CCCOM_MYSQL_TO_S3_PREFIX')
-pg_PREFIX = Variable.get('CCCOM_PGSQL_TO_S3_PREFIX')
 redshift_conn = 'cards-redshift-cluster'
 aws_conn = 'appsflyer_aws_s3_connection_id'
 S3_BUCKET = Variable.get('DBX_CARDS_Bucket')
@@ -168,14 +166,14 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_sale_rms_with_cutover_date = PythonOperator(
         task_id='extract-cccom-sales_rms-with-cutover-date',
         python_callable=pgsql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_rms_transactions.sql', 'key': pg_'rms_transactions.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_rms_transactions.sql', 'key': 'rms_transactions.csv'},
         provide_context=True
     )
 
     load_sale_rms_with_cutover_date = S3ToRedshiftOperator(
         task_id='load-cccom-sales_rms-with-cutover-date',
         s3_bucket=S3_BUCKET,
-        s3_key=pg_'rms_transactions.csv',
+        s3_key='rms_transactions.csv',
         redshift_conn_id=redshift_conn,
         aws_conn_id=aws_conn,
         schema='cccom_dw',

@@ -26,7 +26,6 @@ default_args = {
     'provide_context': True
 }
 
-
 with DAG('cccom-dw-applications',
          schedule_interval='0 * * * *',
          dagrun_timeout=timedelta(minutes=90),
@@ -41,20 +40,6 @@ with DAG('cccom-dw-applications',
         provide_context=True,
         dag=dag)
 
-    extract_applications_rms_cutover_logic = PythonOperator(
-        task_id='extract-cccom-applications_rms-cutover-logic',
-        python_callable=pgsql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_applications_rms.sql', 'key': pg_PREFIX + 'applications_rms.tsv'},
-        provide_context=True
-    )
-
-    extract_declined_applications_task = PythonOperator(
-        task_id='extract-cccom-declined-applications',
-        python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_declined_applications.sql', 'key': PREFIX + 'declined_applications.csv'},
-        provide_context=True,
-        dag=dag)
-
     load_task = S3ToRedshiftOperator(
         task_id='load-cccom-applications',
         s3_bucket=S3_BUCKET,
@@ -62,9 +47,17 @@ with DAG('cccom-dw-applications',
         redshift_conn_id=redshift_conn,
         aws_conn_id=aws_conn,
         schema='cccom_dw',
-        table='applications',
+        table='stg_applications',
         copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
+
+    extract_declined_applications_task = PythonOperator(
+        task_id='extract-cccom-declined-applications',
+        python_callable=mysql_table_to_s3,
+        op_kwargs={'extract_script': 'cccom/extract_declined_applications.sql',
+                   'key': PREFIX + 'declined_applications.csv'},
+        provide_context=True,
+        dag=dag)
 
     load_declined_applications_task = S3ToRedshiftOperator(
         task_id='load-cccom-declined-applications',
@@ -73,8 +66,15 @@ with DAG('cccom-dw-applications',
         redshift_conn_id=redshift_conn,
         aws_conn_id=aws_conn,
         schema='cccom_dw',
-        table='declined_applications',
+        table='stg_declined_applications',
         copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
+    )
+
+    extract_applications_rms_cutover_logic = PythonOperator(
+        task_id='extract-cccom-applications_rms-cutover-logic',
+        python_callable=pgsql_table_to_s3,
+        op_kwargs={'extract_script': 'cccom/extract_applications_rms.sql', 'key': pg_PREFIX + 'applications_rms.tsv'},
+        provide_context=True
     )
 
     load_applications_rms_cutover_logic = S3ToRedshiftOperator(
@@ -84,7 +84,7 @@ with DAG('cccom-dw-applications',
         redshift_conn_id=redshift_conn,
         aws_conn_id=aws_conn,
         schema='cccom_dw',
-        table='merge_applications_rms',
+        table='stg_applications_rms',
         copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 

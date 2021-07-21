@@ -22,7 +22,6 @@ default_args = {
     'email_on_failure': False,
     'email_on_retry': False,
     'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
-
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
     # 'op_kwargs': cfg_dict,
@@ -33,7 +32,6 @@ with DAG('cccom-dw-partner-banners',
 
          # schedule_interval='45 6,10,14,18,22 * * *',
          schedule_interval='None',
-
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
          default_args=default_args) as dag:

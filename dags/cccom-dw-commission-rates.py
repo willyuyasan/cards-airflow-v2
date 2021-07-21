@@ -51,9 +51,7 @@ load_commission_rates_log = S3ToRedshiftOperator(
     redshift_conn_id=redshift_conn,
     aws_conn_id=aws_conn,
     schema='cccom_dw',
-
     table='stg_partner_commission_rates_log',
-
     copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     dag=dag
 )

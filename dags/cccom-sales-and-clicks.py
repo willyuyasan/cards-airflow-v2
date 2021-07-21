@@ -37,14 +37,14 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_affiliates = PythonOperator(
         task_id=f'extract-cccom-affiliates',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_affiliates.sql', 'key': PREFIX + 'affiliates.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_affiliates.sql', 'key': 'affiliates.csv'},
         provide_context=True
     )
 
     load_affiliates = S3ToRedshiftOperator(
         task_id='load-cccom-affiliates',
         s3_bucket=S3_BUCKET,
-        s3_key=PREFIX + 'affiliates.csv',
+        s3_key='affiliates.csv',
         redshift_conn_id=redshift_conn,
         aws_conn_id=aws_conn,
         schema='cccom_dw',
@@ -63,7 +63,7 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_click_transactions = PythonOperator(
         task_id='extract-cccom-click_transactions',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_click_transactions.sql', 'key': PREFIX + 'click_transactions.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_click_transactions.sql', 'key': 'click_transactions.csv'},
         provide_context=True,
         priority_weight=5,
         execution_timeout=timedelta(minutes=40)
@@ -72,7 +72,7 @@ with DAG('cccom-dw-sales-and-clicks',
     load_click_transactions = S3ToRedshiftOperator(
         task_id='load-cccom-click_trans',
         s3_bucket=S3_BUCKET,
-        s3_key=PREFIX + 'click_transactions.csv',
+        s3_key='click_transactions.csv',
         redshift_conn_id=redshift_conn,
         aws_conn_id=aws_conn,
         schema='cccom_dw',
@@ -89,7 +89,7 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_device_types = PythonOperator(
         task_id='extract-cccom-device_types',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_device_types.sql', 'key': PREFIX + 'device_types.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_device_types.sql', 'key': 'device_types.csv'},
         provide_context=True,
         execution_timeout=timedelta(minutes=3)
     )
@@ -97,7 +97,7 @@ with DAG('cccom-dw-sales-and-clicks',
     load_device_types = S3ToRedshiftOperator(
         task_id='load-cccom-device_types',
         s3_bucket=S3_BUCKET,
-        s3_key=PREFIX + 'device_types.csv',
+        s3_key='device_types.csv',
         redshift_conn_id=redshift_conn,
         aws_conn_id=aws_conn,
         schema='cccom_dw',
@@ -114,7 +114,7 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_pages = PythonOperator(
         task_id='extract-cccom-pages',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_pages.sql', 'key': PREFIX + 'pages.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_pages.sql', 'key': 'pages.csv'},
         provide_context=True,
         execution_timeout=timedelta(minutes=2)
     )
@@ -122,7 +122,7 @@ with DAG('cccom-dw-sales-and-clicks',
     load_pages = S3ToRedshiftOperator(
         task_id='load-cccom-pages',
         s3_bucket=S3_BUCKET,
-        s3_key=PREFIX + 'pages.csv',
+        s3_key='pages.csv',
         redshift_conn_id=redshift_conn,
         aws_conn_id=aws_conn,
         schema='cccom_dw',
@@ -141,7 +141,7 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_sale_transactions = PythonOperator(
         task_id='extract-cccom-sale_transactions',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_sale_trans.sql', 'key': PREFIX + 'sale_trans.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_sale_trans.sql', 'key': 'sale_trans.csv'},
         provide_context=True,
         execution_timeout=timedelta(minutes=20),
         priority_weight=5
@@ -150,7 +150,7 @@ with DAG('cccom-dw-sales-and-clicks',
     load_sale_transactions = S3ToRedshiftOperator(
         task_id='load-cccom-sale_trans',
         s3_bucket=S3_BUCKET,
-        s3_key=PREFIX + 'sale_trans.csv',
+        s3_key='sale_trans.csv',
         redshift_conn_id=redshift_conn,
         aws_conn_id=aws_conn,
         schema='cccom_dw',
@@ -168,14 +168,14 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_sale_rms_with_cutover_date = PythonOperator(
         task_id='extract-cccom-sales_rms-with-cutover-date',
         python_callable=pgsql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_rms_transactions.sql', 'key': pg_PREFIX + 'rms_transactions.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_rms_transactions.sql', 'key': pg_'rms_transactions.csv'},
         provide_context=True
     )
 
     load_sale_rms_with_cutover_date = S3ToRedshiftOperator(
         task_id='load-cccom-sales_rms-with-cutover-date',
         s3_bucket=S3_BUCKET,
-        s3_key=pg_PREFIX + 'rms_transactions.csv',
+        s3_key=pg_'rms_transactions.csv',
         redshift_conn_id=redshift_conn,
         aws_conn_id=aws_conn,
         schema='cccom_dw',
@@ -193,7 +193,7 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_transaction_types = PythonOperator(
         task_id='extract-cccom-transaction_types',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_transaction_types.sql', 'key': PREFIX + 'transaction_types.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_transaction_types.sql', 'key': 'transaction_types.csv'},
         provide_context=True,
         execution_timeout=timedelta(minutes=3)
     )
@@ -201,7 +201,7 @@ with DAG('cccom-dw-sales-and-clicks',
     load_transaction_types = S3ToRedshiftOperator(
         task_id='load-cccom-trans_types',
         s3_bucket=S3_BUCKET,
-        s3_key=PREFIX + 'transaction_types.csv',
+        s3_key='transaction_types.csv',
         redshift_conn_id=redshift_conn,
         aws_conn_id=aws_conn,
         schema='cccom_dw',
@@ -218,7 +218,7 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_keywords = PythonOperator(
         task_id='extract-cccom-keywords',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_keywords.sql', 'key': PREFIX + 'keywords.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_keywords.sql', 'key': 'keywords.csv'},
         provide_context=True,
         execution_timeout=timedelta(minutes=3)
     )
@@ -226,7 +226,7 @@ with DAG('cccom-dw-sales-and-clicks',
     load_keywords = S3ToRedshiftOperator(
         task_id='load-cccom-keywords',
         s3_bucket=S3_BUCKET,
-        s3_key=PREFIX + 'keywords.csv',
+        s3_key='keywords.csv',
         redshift_conn_id=redshift_conn,
         aws_conn_id=aws_conn,
         schema='cccom_dw',
@@ -243,7 +243,7 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_websites = PythonOperator(
         task_id='extract-cccom-websites',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_websites.sql', 'key': PREFIX + 'websites.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_websites.sql', 'key': 'websites.csv'},
         provide_context=True,
         execution_timeout=timedelta(minutes=3)
     )
@@ -251,7 +251,7 @@ with DAG('cccom-dw-sales-and-clicks',
     load_websites = S3ToRedshiftOperator(
         task_id='load-cccom-websites',
         s3_bucket=S3_BUCKET,
-        s3_key=PREFIX + 'websites.csv',
+        s3_key='websites.csv',
         redshift_conn_id=redshift_conn,
         aws_conn_id=aws_conn,
         schema='cccom_dw',

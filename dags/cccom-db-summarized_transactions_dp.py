@@ -34,7 +34,7 @@ default_args = {
     'email': ['mdey@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    # 'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
+    'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
     'retries': 0,
     'retry_delay': timedelta(minutes=5),
     'provide_context': True
@@ -102,7 +102,8 @@ with DAG('cccom-db-summarized_transactions_dp',
         task_id=f'extract-cccom-summarized-clicks',
         python_callable=mysql_table_to_s3,
         op_kwargs={'extract_script': 'cccom/extract_summarized_clicks.sql',
-                   'key': PREFIX + 'summarized_clicks.csv'},
+                   'key': 'summarized_clicks.csv',
+                   'compress': True},
         provide_context=True
     )
 
@@ -110,7 +111,8 @@ with DAG('cccom-db-summarized_transactions_dp',
         task_id=f'extract-cccom-summarized-sales',
         python_callable=mysql_table_to_s3,
         op_kwargs={'extract_script': 'cccom/extract_summarized_sales.sql',
-                   'key': PREFIX + 'summarized_sales.csv'},
+                   'key': 'summarized_sales.csv',
+                   'compress': True},
         provide_context=True
     )
 
@@ -118,7 +120,8 @@ with DAG('cccom-db-summarized_transactions_dp',
         task_id=f'extract-cccom-summarized-applications',
         python_callable=mysql_table_to_s3,
         op_kwargs={'extract_script': 'cccom/extract_summarized_applications.sql',
-                   'key': PREFIX + 'summarized_applications.csv'},
+                   'key': 'summarized_applications.csv',
+                   'compress': True},
         provide_context=True
     )
 

@@ -105,7 +105,7 @@ def s3_to_redshift(**kwargs):
     ts = datetime.now()
     prefix = f'/cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
     S3_KEY = prefix + (key if key else 'no_name.csv')
-    return S3ToRedshiftOperator(
+    rs_op = S3ToRedshiftOperator(
         task_id='load-cccom-affiliates',
         s3_bucket=S3_BUCKET,
         s3_key=S3_KEY,
@@ -115,6 +115,7 @@ def s3_to_redshift(**kwargs):
         table=table,
         copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
+    rs_op.execute()
 
 
 # def outfile_to_S3(outfile, kwargs):
@@ -142,7 +143,7 @@ def outfile_to_S3(outfile, kwargs):
     key = kwargs.get('key')
     name = key.split('.')[0]
     ts = datetime.now()
-    prefix = f'/cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
+    prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
     S3_KEY = prefix + (key if key else 'no_name.csv')
     with open(outfile, 'rb') as f:
         response = s3.upload_fileobj(f, S3_BUCKET, S3_KEY)

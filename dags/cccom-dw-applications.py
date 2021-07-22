@@ -1,14 +1,12 @@
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
-from operators.extract_operator import mysql_table_to_s3, make_request, pgsql_table_to_s3
-from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
+from airflow.operators.latest_only_operator import LatestOnlyOperator
+from operators.extract_operator import mysql_table_to_s3, pgsql_table_to_s3, s3_to_redshift
 from airflow.operators.postgres_operator import PostgresOperator
 from rvairflow import slack_hook as sh
 from airflow.models import Variable
 
-PREFIX = Variable.get('CCCOM_MYSQL_TO_S3_PREFIX')
-pg_PREFIX = Variable.get('CCCOM_PGSQL_TO_S3_PREFIX')
 redshift_conn = 'cards-redshift-cluster'
 aws_conn = 'appsflyer_aws_s3_connection_id'
 S3_BUCKET = Variable.get('DBX_CARDS_Bucket')
@@ -36,57 +34,44 @@ with DAG('cccom-dw-applications',
     extract_task = PythonOperator(
         task_id='extract-cccom-applications',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_applications.sql', 'key': PREFIX + 'applications.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_applications.sql', 'key': 'applications.csv'},
         provide_context=True,
         dag=dag)
 
-    load_task = S3ToRedshiftOperator(
+    load_task = PythonOperator(
         task_id='load-cccom-applications',
-        s3_bucket=S3_BUCKET,
-        s3_key=PREFIX + 'applications.csv',
-        redshift_conn_id=redshift_conn,
-        aws_conn_id=aws_conn,
-        schema='cccom_dw',
-        table='stg_applications',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
-    )
+        python_callable=s3_to_redshift,
+        op_kwargs={'table': 'cccom_dw.stg_applications', 'key': 'applications.csv', 'compress': True},
+        provide_context=True,
+        dag=dag)
 
     extract_declined_applications_task = PythonOperator(
         task_id='extract-cccom-declined-applications',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_declined_applications.sql',
-                   'key': PREFIX + 'declined_applications.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_declined_applications.sql', 'key': 'declined_applications.csv'},
         provide_context=True,
         dag=dag)
 
-    load_declined_applications_task = S3ToRedshiftOperator(
+    load_declined_applications_task = PythonOperator(
         task_id='load-cccom-declined-applications',
-        s3_bucket=S3_BUCKET,
-        s3_key=PREFIX + 'declined_applications.csv',
-        redshift_conn_id=redshift_conn,
-        aws_conn_id=aws_conn,
-        schema='cccom_dw',
-        table='stg_declined_applications',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
-    )
+        python_callable=s3_to_redshift,
+        op_kwargs={'table': 'cccom_dw.stg_declined_applications', 'key': 'declined_applications.csv', 'compress': True},
+        provide_context=True,
+        dag=dag)
 
     extract_applications_rms_cutover_logic = PythonOperator(
         task_id='extract-cccom-applications_rms-cutover-logic',
         python_callable=pgsql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_applications_rms.sql', 'key': pg_PREFIX + 'applications_rms.tsv'},
+        op_kwargs={'extract_script': 'cccom/extract_applications_rms.sql', 'key': 'applications_rms.tsv'},
         provide_context=True
     )
 
-    load_applications_rms_cutover_logic = S3ToRedshiftOperator(
+    load_applications_rms_cutover_logic = PythonOperator(
         task_id='load-cccom-applications_rms-cutover-logic',
-        s3_bucket=S3_BUCKET,
-        s3_key=pg_PREFIX + 'applications_rms.tsv',
-        redshift_conn_id=redshift_conn,
-        aws_conn_id=aws_conn,
-        schema='cccom_dw',
-        table='stg_applications_rms',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
-    )
+        python_callable=s3_to_redshift,
+        op_kwargs={'table': 'cccom_dw.stg_applications_rms', 'key': 'applications_rms.tsv', 'compress': True},
+        provide_context=True,
+        dag=dag)
 
     sql_task = PostgresOperator(
         task_id='merge-cccom-applications',

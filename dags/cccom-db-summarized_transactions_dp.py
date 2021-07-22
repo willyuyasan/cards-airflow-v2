@@ -29,11 +29,11 @@ summarized_applications_query = f"""
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2021, 5, 19),
+    'start_date': datetime(2021, 7, 19),
     'email': ['mdey@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
+    # 'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
     'retries': 0,
     'retry_delay': timedelta(minutes=5),
     'provide_context': True
@@ -45,7 +45,10 @@ def update_summarized_dates(**kwargs):
     prod_57 = MySqlHook(mysql_conn_id='mysql_rw_conn')
 
     dt = prod_ro.get_first(kwargs["summarize_query"])
-    date_string = dt[0].isoformat()
+    if dt[0]:
+        date_string = dt[0].isoformat()
+    else:
+        date_string = '1970-01-01T00:00:00'
     trans_type = kwargs["transaction_type"]
 
     update_query = f"""

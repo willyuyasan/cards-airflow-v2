@@ -36,7 +36,6 @@ with DAG('cccom-dw-product-groups',
     extract_partner_card_groups = PythonOperator(
         task_id='extract-cccom-partner_card_groups',
         python_callable=mysql_table_to_s3,
-
         op_kwargs={'extract_script': 'cccom/extract_partner_card_groups.sql', 'key': 'partner_card_groups.csv', 'compress': True},
         provide_context=True,
         dag=dag)

@@ -33,25 +33,25 @@ with DAG('cccom-dw-partner-payouts',
     extract_partner_payouts_task = PythonOperator(
         task_id='extract-cccom-partner-payouts',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_partner_payouts.sql', 'key': 'partner_payouts.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_partner_payouts.sql', 'key': 'partner_payouts.csv', 'compress': True},
         provide_context=True,
         dag=dag)
     extract_partner_payouts_rms = PythonOperator(
         task_id='eextract-cccom-partner_payouts_rms',
         python_callable=pgsql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_partner_payouts_rms.sql', 'key': 'partner_payouts_rms.tsv'},
+        op_kwargs={'extract_script': 'cccom/extract_partner_payouts_rms.sql', 'key': 'partner_payouts_rms.tsv', 'compress': True},
         provide_context=True
     )
     extract_partner_payout_trans_map_task = PythonOperator(
         task_id='extract-cccom-partner-payout-trans-map',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_partner_payout_transaction_map.sql', 'key': 'partner_payout_transaction_map.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_partner_payout_transaction_map.sql', 'key': 'partner_payout_transaction_map.csv', 'compress': True},
         provide_context=True,
         dag=dag)
     extract_partner_payout_trans_map_rms = PythonOperator(
         task_id='extract-cccom-partner_payouts_trans_map_rms',
         python_callable=pgsql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_partner_payout_transaction_map_rms.sql', 'key': 'partner_payout_trans_map_rms.tsv'},
+        op_kwargs={'extract_script': 'cccom/extract_partner_payout_transaction_map_rms.sql', 'key': 'partner_payout_trans_map_rms.tsv', 'compress': True},
         provide_context=True
     )
 

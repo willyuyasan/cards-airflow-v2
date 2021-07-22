@@ -33,7 +33,7 @@ with DAG('cccom-dw-products',
     extract_product_types = PythonOperator(
         task_id='extract-cccom-product_types',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_product_types.sql', 'key': 'product_types.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_product_types.sql', 'key': 'product_types.csv', 'compress': True},
         provide_context=True,
         dag=dag)
     load_product_types = PythonOperator(
@@ -52,7 +52,7 @@ with DAG('cccom-dw-products',
     extract_products = PythonOperator(
         task_id='extract-cccom-products',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_products.sql', 'key': 'products.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_products.sql', 'key': 'products.csv', 'compress': True},
         provide_context=True,
         dag=dag)
     load_products = PythonOperator(
@@ -71,7 +71,7 @@ with DAG('cccom-dw-products',
     extract_programs = PythonOperator(
         task_id='extract-cccom-programs',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_programs.sql', 'key': 'programs.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_programs.sql', 'key': 'programs.csv', 'compress': True},
         provide_context=True,
         dag=dag)
     load_programs = PythonOperator(
@@ -90,7 +90,7 @@ with DAG('cccom-dw-products',
     extract_merchants = PythonOperator(
         task_id='extract-cccom-merchant',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_merchants.sql', 'key': 'merchants.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_merchants.sql', 'key': 'merchants.csv', 'compress': True},
         provide_context=True,
         dag=dag)
     load_merchants = PythonOperator(

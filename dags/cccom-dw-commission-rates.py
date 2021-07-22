@@ -36,7 +36,7 @@ latest_only_task = LatestOnlyOperator(
 extract_commission_rates_log = PythonOperator(
     task_id='extract-cccom-partner_commission_rates_log',
     python_callable=mysql_table_to_s3,
-    op_kwargs={'extract_script': 'cccom/extract_partner_commission_rates_log.sql', 'key': 'partner_commission_rates_log.csv'},
+    op_kwargs={'extract_script': 'cccom/extract_partner_commission_rates_log.sql', 'key': 'partner_commission_rates_log.csv', 'compress': True},
     provide_context=True,
     dag=dag)
 

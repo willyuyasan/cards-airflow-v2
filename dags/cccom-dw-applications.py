@@ -34,7 +34,7 @@ with DAG('cccom-dw-applications',
     extract_task = PythonOperator(
         task_id='extract-cccom-applications',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_applications.sql', 'key': 'applications.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_applications.sql', 'key': 'applications.csv', 'compress': True},
         provide_context=True,
         dag=dag)
 
@@ -48,7 +48,7 @@ with DAG('cccom-dw-applications',
     extract_declined_applications_task = PythonOperator(
         task_id='extract-cccom-declined-applications',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_declined_applications.sql', 'key': 'declined_applications.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_declined_applications.sql', 'key': 'declined_applications.csv', 'compress': True},
         provide_context=True,
         dag=dag)
 
@@ -61,8 +61,7 @@ with DAG('cccom-dw-applications',
 
     extract_applications_rms_cutover_logic = PythonOperator(
         task_id='extract-cccom-applications_rms-cutover-logic',
-        python_callable=pgsql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_applications_rms.sql', 'key': 'applications_rms.tsv'},
+        op_kwargs={'extract_script': 'cccom/extract_applications_rms.sql', 'key': 'applications_rms.tsv', 'compress': True},
         provide_context=True
     )
 

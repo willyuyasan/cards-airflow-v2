@@ -115,7 +115,7 @@ def s3_to_redshift(**kwargs):
         table=table,
         copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
-    rs_op.execute()
+    rs_op.execute('')
 
 
 # def outfile_to_S3(outfile, kwargs):

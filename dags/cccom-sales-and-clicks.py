@@ -278,7 +278,7 @@ with DAG('cccom-dw-sales-and-clicks',
 #
 # extract_transaction_types >> load_transaction_types >> merge_transaction_types
 #
-# extract_affiliates >> load_affiliates >> merge_affiliates
+extract_affiliates >> load_affiliates >> merge_affiliates
 #
 # extract_keywords >> load_keywords >> merge_keywords
 #

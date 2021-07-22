@@ -6,10 +6,7 @@ from airflow.operators.postgres_operator import PostgresOperator
 from airflow.models import Variable
 from rvairflow import slack_hook as sh
 
-PREFIX = Variable.get('CCCOM_MYSQL_TO_S3_PREFIX')
 redshift_conn = 'cards-redshift-cluster'
-aws_conn = 'appsflyer_aws_s3_connection_id'
-S3_BUCKET = Variable.get('DBX_CARDS_Bucket')
 # Default settings applied to all tasks
 default_args = {
     'owner': 'airflow',
@@ -35,7 +32,7 @@ with DAG('cccom-dw-est-slotting-trans',
         task_id='extract-cccom-rev_slotting_transactions',
         python_callable=mysql_table_to_s3,
         op_kwargs={'extract_script': 'cccom/extract_rev_slotting_transactions.sql',
-                   'key': PREFIX + 'rev_slotting_transactions.csv',
+                   'key': 'rev_slotting_transactions.csv',
                    'compress': True},
         provide_context=True
     )

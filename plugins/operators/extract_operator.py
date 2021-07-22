@@ -7,6 +7,7 @@ import logging
 import gzip
 import csv
 import io
+import json
 
 
 from airflow.hooks.base_hook import BaseHook
@@ -15,6 +16,7 @@ from airflow.hooks.S3_hook import S3Hook
 from airflow.models import BaseOperator
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
+from airflow.providers.mysql.transfers.s3_to_mysql import S3ToMySqlOperator
 from airflow.models import Variable
 from airflow.utils.decorators import apply_defaults
 from contextlib import closing
@@ -26,6 +28,7 @@ S3_BUCKET = Variable.get('DBX_CARDS_Bucket')
 s3 = boto3.client('s3')
 redshift_conn = 'cards-redshift-cluster'
 aws_conn = 'appsflyer_aws_s3_connection_id'
+mysql_rw_conn = 'mysql_rw_conn'
 
 
 def make_request(**kwargs):
@@ -159,6 +162,37 @@ def s3_to_redshift(**kwargs):
         copy_options=copy_options
     )
     rs_op.execute('')
+
+
+def s3_to_mysql(**kwargs):
+    print('Loading file into RDS MySQL')
+    sch_tbl = kwargs.get('table')
+    if not sch_tbl:
+        print('Table not found')
+        return
+    schema, table = sch_tbl.split('.')
+    key = kwargs.get('key')
+    if '/' in key:
+        S3_KEY = key
+    else:
+        name = key.split('.')[0]
+        ts = datetime.now()
+        prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
+        S3_KEY = prefix + (key if key else 'no_name.csv')
+    if kwargs.get('field_format'):
+        with open(f'/usr/local/airflow/dags/json/field_format/{kwargs["field_format"]}', 'r') as f:
+            field_format = json.loads(f.read())
+    mysql_op = S3ToMySqlOperator(
+        task_id='mysql-load-task',
+        s3_bucket=S3_BUCKET,
+        s3_key=S3_KEY,
+        mysql_conn_id=mysql_rw_conn,
+        s3_conn_id=aws_conn,
+        database=schema,
+        field_schema=field_format,
+        table=table
+    )
+    mysql_op.execute('')
 
 
 def outfile_to_S3(outfile, kwargs):

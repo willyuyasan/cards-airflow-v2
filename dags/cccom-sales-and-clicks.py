@@ -35,7 +35,7 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_affiliates = PythonOperator(
         task_id=f'extract-cccom-affiliates',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_affiliates.sql', 'key': 'affiliates.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_affiliates.sql', 'key': 'affiliates.csv', 'compress': True},
         provide_context=True
     )
 
@@ -53,7 +53,7 @@ with DAG('cccom-dw-sales-and-clicks',
     load_affiliates = PythonOperator(
         task_id=f'load-cccom-affiliates',
         python_callable=s3_to_redshift,
-        op_kwargs={'table': 'cccom_dw.stg_affiliates', 'key': 'affiliates.csv'},
+        op_kwargs={'table': 'cccom_dw.stg_affiliates', 'key': 'affiliates.csv', 'compress': True},
         provide_context=True
     )
 

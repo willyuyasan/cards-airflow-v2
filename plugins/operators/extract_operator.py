@@ -149,7 +149,7 @@ def s3_to_redshift(**kwargs):
         S3_KEY += '.gz'
         copy_options.append('GZIP')
     rs_op = S3ToRedshiftOperator(
-        task_id='load-cccom-affiliates',
+        task_id='redshift-copy-task',
         s3_bucket=S3_BUCKET,
         s3_key=S3_KEY,
         redshift_conn_id=redshift_conn,

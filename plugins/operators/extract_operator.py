@@ -6,6 +6,8 @@ import os
 import logging
 import gzip
 import csv
+import io
+
 
 from airflow.hooks.base_hook import BaseHook
 from airflow.hooks.mysql_hook import MySqlHook
@@ -41,6 +43,30 @@ def make_request(**kwargs):
     outfile_to_S3(outfile, kwargs)
 
 
+def compressed_file(cursor, kwargs):
+    mem_file = io.BytesIO()
+    with gzip.GzipFile(fileobj=mem_file, mode='w') as gz:
+        buff = io.StringIO()
+        writer = csv.writer(buff)
+        writer.writerows(cursor)
+        print('Writing data to gzipped file.')
+        gz.write(buff.getvalue().encode())
+        print('Data written')
+        gz.close()
+        mem_file.seek(0)
+    print('Sending to S3')
+    key = kwargs.get('key')
+    if '/' in key:
+        S3_KEY = key + '.gz'
+    else:
+        name = key.split('.')[0]
+        ts = datetime.now()
+        prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
+        S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
+    s3.upload_fileobj(Fileobj=mem_file, Bucket=S3_BUCKET, Key=S3_KEY)
+    print('Sent')
+
+
 def mysql_table_to_s3(**kwargs):
     print('Retrieving query from .sql file')
     if kwargs.get('extract_script'):
@@ -56,15 +82,20 @@ def mysql_table_to_s3(**kwargs):
     conn = mysql.get_conn()
     cursor = conn.cursor()
     cursor.execute(query)
-    ts = str(time.time()).replace('.', '_')
-    outfile = f'/home/airflow/mysql_{ts}.csv'
-    with open(outfile, 'w', newline='') as f:
-        csv_writer = csv.writer(f)
-        csv_writer.writerows(cursor)
-        f.flush()
+    if kwargs.get('compress'):
+        compressed_file(cursor, kwargs)
         cursor.close()
         conn.close()
-    outfile_to_S3(outfile, kwargs)
+    else:
+        ts = str(time.time()).replace('.', '_')
+        outfile = f'/home/airflow/mysql_{ts}.csv'
+        with open(outfile, 'w', newline='') as f:
+            csv_writer = csv.writer(f)
+            csv_writer.writerows(cursor)
+            f.flush()
+            cursor.close()
+            conn.close()
+        outfile_to_S3(outfile, kwargs)
 
 
 def pgsql_table_to_s3(**kwargs):
@@ -82,15 +113,20 @@ def pgsql_table_to_s3(**kwargs):
     conn = pgsql.get_conn()
     cursor = conn.cursor()
     cursor.execute(query)
-    ts = str(time.time()).replace('.', '_')
-    outfile = f'/home/airflow/pgsql_{ts}.csv'
-    with open(outfile, 'w', newline='') as f:
-        csv_writer = csv.writer(f)
-        csv_writer.writerows(cursor)
-        f.flush()
+    if kwargs.get('compress'):
+        compressed_file(cursor, kwargs)
         cursor.close()
         conn.close()
-    outfile_to_S3(outfile, kwargs)
+    else:
+        ts = str(time.time()).replace('.', '_')
+        outfile = f'/home/airflow/pgsql_{ts}.csv'
+        with open(outfile, 'w', newline='') as f:
+            csv_writer = csv.writer(f)
+            csv_writer.writerows(cursor)
+            f.flush()
+            cursor.close()
+            conn.close()
+        outfile_to_S3(outfile, kwargs)
 
 
 def s3_to_redshift(**kwargs):
@@ -101,10 +137,17 @@ def s3_to_redshift(**kwargs):
         return
     schema, table = sch_tbl.split('.')
     key = kwargs.get('key')
-    name = key.split('.')[0]
-    ts = datetime.now()
-    prefix = f'/cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
-    S3_KEY = prefix + (key if key else 'no_name.csv')
+    if '/' in key:
+        S3_KEY = key
+    else:
+        name = key.split('.')[0]
+        ts = datetime.now()
+        prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
+        S3_KEY = prefix + (key if key else 'no_name.csv')
+    copy_options = ['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"]
+    if kwargs.get('compress'):
+        S3_KEY += '.gz'
+        copy_options.append('GZIP')
     rs_op = S3ToRedshiftOperator(
         task_id='load-cccom-affiliates',
         s3_bucket=S3_BUCKET,
@@ -113,38 +156,21 @@ def s3_to_redshift(**kwargs):
         aws_conn_id=aws_conn,
         schema=schema,
         table=table,
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
+        copy_options=copy_options
     )
     rs_op.execute('')
-
-
-# def outfile_to_S3(outfile, kwargs):
-#     print('Loading file into S3')
-#     S3_KEY = kwargs.get('key') if kwargs.get('key') else 'example_dags/extract_examples/no_name.csv'
-#     with open(outfile, 'rb') as f:
-#         response = s3.upload_fileobj(f, S3_BUCKET, S3_KEY)
-#     print(response)
-#     if os.path.exists(outfile):
-#         os.remove(outfile)
-
-
-# def outfile_to_S3(outfile, kwargs):
-#     print('Loading file into S3')
-#     S3_KEY = kwargs.get('key') if kwargs.get('key') else 'example_dags/extract_examples/no_name.csv'
-#     with open(outfile, 'rb') as f:
-#         response = s3.upload_fileobj(f, S3_BUCKET, S3_KEY)
-#     print(response)
-#     if os.path.exists(outfile):
-#         os.remove(outfile)
 
 
 def outfile_to_S3(outfile, kwargs):
     print('Loading file into S3')
     key = kwargs.get('key')
-    name = key.split('.')[0]
-    ts = datetime.now()
-    prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
-    S3_KEY = prefix + (key if key else 'no_name.csv')
+    if '/' in key:
+        S3_KEY = key
+    else:
+        name = key.split('.')[0]
+        ts = datetime.now()
+        prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
+        S3_KEY = prefix + (key if key else 'no_name.csv')
     with open(outfile, 'rb') as f:
         response = s3.upload_fileobj(f, S3_BUCKET, S3_KEY)
     print(response)

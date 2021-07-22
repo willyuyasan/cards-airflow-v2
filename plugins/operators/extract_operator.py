@@ -25,6 +25,7 @@ s3 = boto3.client('s3')
 redshift_conn = 'cards-redshift-cluster'
 aws_conn = 'appsflyer_aws_s3_connection_id'
 
+
 def make_request(**kwargs):
     params = {
         'api_token': Variable.get('APPSFLYER_API_TOKEN_V1'),

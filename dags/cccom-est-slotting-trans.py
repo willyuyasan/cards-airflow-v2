@@ -4,6 +4,7 @@ from airflow.operators.python_operator import PythonOperator
 from operators.extract_operator import mysql_table_to_s3, s3_to_redshift
 from airflow.operators.postgres_operator import PostgresOperator
 from airflow.models import Variable
+from rvairflow import slack_hook as sh
 
 PREFIX = Variable.get('CCCOM_MYSQL_TO_S3_PREFIX')
 redshift_conn = 'cards-redshift-cluster'

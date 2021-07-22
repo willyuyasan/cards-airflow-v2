@@ -2,6 +2,7 @@ from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.operators.mysql_operator import MySqlOperator
 from airflow.models import Variable
+from rvairflow import slack_hook as sh
 
 mysql_rw_conn = 'mysql_rw_conn'
 # Default settings applied to all tasks

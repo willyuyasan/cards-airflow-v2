@@ -1,7 +1,7 @@
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
-from operators.extract_operator import mysql_table_to_s3, make_request, pgsql_table_to_s3
+from operators.extract_operator import mysql_table_to_s3, pgsql_table_to_s3, s3_to_redshift
 from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
 from airflow.operators.postgres_operator import PostgresOperator
 from rvairflow import slack_hook as sh
@@ -39,15 +39,22 @@ with DAG('cccom-dw-sales-and-clicks',
         provide_context=True
     )
 
-    load_affiliates = S3ToRedshiftOperator(
-        task_id='load-cccom-affiliates',
-        s3_bucket=S3_BUCKET,
-        s3_key='affiliates.csv',
-        redshift_conn_id=redshift_conn,
-        aws_conn_id=aws_conn,
-        schema='cccom_dw',
-        table='stg_affiliates',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
+    # load_affiliates = S3ToRedshiftOperator(
+    #     task_id='load-cccom-affiliates',
+    #     s3_bucket=S3_BUCKET,
+    #     s3_key='affiliates.csv',
+    #     redshift_conn_id=redshift_conn,
+    #     aws_conn_id=aws_conn,
+    #     schema='cccom_dw',
+    #     table='stg_affiliates',
+    #     copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
+    # )
+
+    load_affiliates = PythonOperator(
+        task_id=f'load-cccom-affiliates',
+        python_callable=s3_to_redshift,
+        op_kwargs={'table': 'cccom_dw.stg_affiliates', 'key': 'affiliates.csv'},
+        provide_context=True
     )
 
     merge_affiliates = PostgresOperator(

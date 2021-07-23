@@ -183,7 +183,7 @@ def s3_to_mysql(**kwargs):
         with open(f'/usr/local/airflow/dags/json/field_format/{kwargs["field_format"]}', 'r') as f:
             field_format = json.loads(f.read())
     mysql_op = S3ToMySqlOperator(
-        s3_source_key=S3_KEY,
+        s3_source_key=f's3://{S3_BUCKET}/{S3_KEY}',
         mysql_table=sch_tbl,
         mysql_duplicate_key_handling='IGNORE',
         mysql_extra_options="""

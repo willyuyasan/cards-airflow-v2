@@ -61,8 +61,10 @@ with DAG('cccom-dw-applications',
 
     extract_applications_rms_cutover_logic = PythonOperator(
         task_id='extract-cccom-applications_rms-cutover-logic',
+        python_callable=pgsql_table_to_s3,
         op_kwargs={'extract_script': 'cccom/extract_applications_rms.sql', 'key': 'applications_rms.tsv', 'compress': True},
-        provide_context=True
+        provide_context=True,
+        dag=dag
     )
 
     load_applications_rms_cutover_logic = PythonOperator(

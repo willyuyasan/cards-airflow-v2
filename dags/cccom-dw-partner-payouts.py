@@ -61,22 +61,25 @@ with DAG('cccom-dw-partner-payouts',
         op_kwargs={'table': 'cccom_dw.stg_partner_payouts', 'key': 'partner_payouts.csv', 'compress': True},
         provide_context=True,
         dag=dag)
+
     load_partner_payouts_rms = PythonOperator(
         task_id='load-cccom-partner-payouts_rms',
         python_callable=s3_to_redshift,
         op_kwargs={'table': 'cccom_dw.stg_partner_payouts_rms', 'key': 'partner_payouts_rms.tsv', 'compress': True},
         provide_context=True,
         dag=dag)
+
     load_partner_payout_trans_map_task = PythonOperator(
         task_id='load-cccom-partner-payout-trans-map',
         python_callable=s3_to_redshift,
         op_kwargs={'table': 'cccom_dw.stg_partner_payout_transaction_map', 'key': 'partner_payout_transaction_map.csv', 'compress': True},
         provide_context=True,
         dag=dag)
+
     load_partner_payout_trans_map_rms = PythonOperator(
         task_id='load-cccom-partner-payout-trans-map_rms',
         python_callable=s3_to_redshift,
-        op_kwargs={'table': 'cccom_dw.stg_partner_payout_transaction_map_rms', 'key': 'partner_payout_trans_map_rms.csv', 'compress': True},
+        op_kwargs={'table': 'cccom_dw.stg_partner_payout_transaction_map_rms', 'key': 'partner_payout_trans_map_rms.tsv', 'compress': True},
         provide_context=True,
         dag=dag)
 

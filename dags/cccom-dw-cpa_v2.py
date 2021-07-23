@@ -47,7 +47,7 @@ with DAG('cccom-dw-cpa_v2',
         dag=dag)
 
     merge_cccom_cpa_v2 = PostgresOperator(
-        task_id='?',
+        task_id='merge-cccom-cpa_v2',
         postgres_conn_id=redshift_conn,
         sql='/sql/merge/cccom/merge_cpa_v2.sql',
         dag=dag

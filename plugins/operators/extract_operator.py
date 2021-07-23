@@ -185,10 +185,11 @@ def s3_to_mysql(**kwargs):
     mysql_op = S3ToMySqlOperator(
         task_id='mysql-load-task',
         s3_bucket=S3_BUCKET,
-        s3_key=S3_KEY,
+        s3_source_key=S3_KEY,
         mysql_conn_id=mysql_rw_conn,
         s3_conn_id=aws_conn,
         database=schema,
+        mysql_table=table,
         field_schema=field_format,
         table=table
     )

@@ -62,6 +62,21 @@ def update_summarized_dates(**kwargs):
     return date_string
 
 
+def execute_pipeline(**kwargs):
+    ti = kwargs['ti']
+    xcom_upstream_task = ti.task.upstream_task_ids[0]
+    xcom_value = kwargs['ti'].xcom_pull(task_ids=xcom_upstream_task)
+    kwargs[ti.task_id]['misc_params'] = {'mySummarizedDates': xcom_value, 'mySummarizedStartDate': start_date}
+    dh.execute_pipeline(**kwargs)
+
+
+def extract_sql(extract_script):
+    with open(f'/usr/local/airflow/dags/sql/extract/{extract_script}', 'r') as f:
+        query = f.read()
+    query = query.replace('#{mySummarizedStartDate}', start_date)
+    return query
+
+
 with DAG('cccom-db-summarized_transactions_dp',
          schedule_interval='15 * * * *',
          catchup=False,
@@ -85,7 +100,7 @@ with DAG('cccom-db-summarized_transactions_dp',
     summarized_clicks_extract_task = PythonOperator(
         task_id='extract-cccom-summarized-clicks',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_summarized_clicks.sql',
+        op_kwargs={'query': extract_sql('cccom/extract_summarized_clicks.sql'),
                    'key': 'summarized_clicks.csv'},
         provide_context=True
     )
@@ -112,7 +127,7 @@ with DAG('cccom-db-summarized_transactions_dp',
     summarized_sales_extract_task = PythonOperator(
         task_id='extract-cccom-summarized-sales',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_summarized_sales.sql',
+        op_kwargs={'query': extract_sql('cccom/extract_summarized_sales.sql'),
                    'key': 'summarized_sales.csv'},
         provide_context=True
     )
@@ -139,9 +154,8 @@ with DAG('cccom-db-summarized_transactions_dp',
     summarized_applications_extract_task = PythonOperator(
         task_id='extract-cccom-summarized-applications',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_summarized_applications.sql',
-                   'key': 'summarized_applications.csv',
-                   'compress': True},
+        op_kwargs={'query': extract_sql('cccom/extract_summarized_applications.sql'),
+                   'key': 'summarized_applications.csv'},
         provide_context=True
     )
 

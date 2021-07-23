@@ -11,7 +11,7 @@ COUNT(1) AS click_count
 FROM
 cccomus.transactions_click_external
 WHERE
-date_inserted BETWEEN #{mySummarizedStartDate} AND '#{mySummarizedDates}'
+date_inserted BETWEEN #{mySummarizedStartDate} AND NOW()
 GROUP BY
 transaction_date,
 product_id,

@@ -62,14 +62,6 @@ def update_summarized_dates(**kwargs):
     return date_string
 
 
-def execute_pipeline(**kwargs):
-    ti = kwargs['ti']
-    xcom_upstream_task = ti.task.upstream_task_ids[0]
-    xcom_value = kwargs['ti'].xcom_pull(task_ids=xcom_upstream_task)
-    kwargs[ti.task_id]['misc_params'] = {'mySummarizedDates': xcom_value, 'mySummarizedStartDate': start_date}
-    dh.execute_pipeline(**kwargs)
-
-
 def extract_sql(extract_script):
     with open(f'/usr/local/airflow/dags/sql/extract/{extract_script}', 'r') as f:
         query = f.read()

@@ -27,7 +27,7 @@ BASE_URI = conn.host
 S3_BUCKET = Variable.get('DBX_CARDS_Bucket')
 s3 = boto3.client('s3')
 redshift_conn = 'cards-redshift-cluster'
-aws_conn = 'my_s3_conn'
+aws_conn = 'appsflyer_aws_s3_connection_id'
 mysql_rw_conn = 'mysql_rw_conn'
 
 

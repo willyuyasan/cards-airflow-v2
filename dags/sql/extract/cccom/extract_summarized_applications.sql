@@ -21,8 +21,8 @@ t.exit_page_id AS category_fid,
 t.user_variable,
 1 AS application_count_cd,
 0 AS application_count_pd
-FROM (SELECT transaction_id FROM cccomus.applications WHERE state = 'COMMITTED' AND created_date <= '#{mySummarizedDates}') a
-JOIN cccomus.transactions_click_external t ON (t.tracking_id = a.transaction_id AND t.date_inserted BETWEEN #{mySummarizedStartDate} AND '#{mySummarizedDates}')
+FROM (SELECT transaction_id FROM cccomus.applications WHERE state = 'COMMITTED' AND created_date <= NOW()) a
+JOIN cccomus.transactions_click_external t ON (t.tracking_id = a.transaction_id AND t.date_inserted BETWEEN #{mySummarizedStartDate} AND NOW())
 UNION ALL
 SELECT
 DATE(a.submission_date) AS transaction_date,
@@ -36,7 +36,7 @@ t.user_variable,
 0 AS application_count_cd,
 1 AS application_count_pd
 FROM (SELECT transaction_id, submission_date FROM cccomus.applications
-WHERE state = 'COMMITTED' AND submission_date BETWEEN #{mySummarizedStartDate} AND '#{mySummarizedDates}') a
+WHERE state = 'COMMITTED' AND submission_date BETWEEN #{mySummarizedStartDate} AND NOW()) a
 JOIN cccomus.transactions_click_external t ON (t.tracking_id = a.transaction_id)
 ) a
 GROUP BY

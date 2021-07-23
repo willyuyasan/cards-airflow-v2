@@ -31,7 +31,7 @@ commission AS sale_amount_cd,
 adjustments AS adjustment_amount_cd,
 0 AS adjustment_amount_pd
 FROM cccomus.transactions_sale_external
-WHERE click_date BETWEEN #{mySummarizedStartDate} AND '#{mySummarizedDates}'
+WHERE click_date BETWEEN #{mySummarizedStartDate} AND NOW()
 UNION ALL
 SELECT
 DATE(process_date) AS transaction_date,
@@ -49,7 +49,7 @@ commission AS sale_amount_pd,
 0 AS adjustment_amount_cd,
 adjustments AS adjustment_amount_pd
 FROM cccomus.transactions_sale_external
-WHERE process_date BETWEEN #{mySummarizedStartDate} AND '#{mySummarizedDates}'
+WHERE process_date BETWEEN #{mySummarizedStartDate} AND NOW()
 ) t
 GROUP BY
 transaction_date,

@@ -183,15 +183,16 @@ def s3_to_mysql(**kwargs):
         with open(f'/usr/local/airflow/dags/json/field_format/{kwargs["field_format"]}', 'r') as f:
             field_format = json.loads(f.read())
     mysql_op = S3ToMySqlOperator(
-        task_id='mysql-load-task',
-        s3_bucket=S3_BUCKET,
         s3_source_key=S3_KEY,
-        mysql_conn_id=mysql_rw_conn,
-        s3_conn_id=aws_conn,
-        database=schema,
-        mysql_table=table,
-        field_schema=field_format,
-        table=table
+        mysql_table=sch_tbl,
+        mysql_duplicate_key_handling='IGNORE',
+        mysql_extra_options="""
+            FIELDS TERMINATED BY ','
+            IGNORE 1 LINES
+            """,
+        task_id='transfer_task',
+        aws_conn_id=aws_conn,
+        mysql_conn_id=mysql_rw_conn
     )
     mysql_op.execute('')
 

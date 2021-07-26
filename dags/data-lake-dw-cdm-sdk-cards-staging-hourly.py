@@ -136,8 +136,8 @@ medium_task_custom_cluster = {
 
 large_task_custom_cluster = {
     'spark_version': '7.3.x-scala2.12',
-    'node_type_id': 'm5a.4xlarge',
-    'driver_node_type_id': 'm5a.4xlarge',
+    'node_type_id': 'm5a.8xlarge',
+    'driver_node_type_id': 'm5a.8xlarge',
     'num_workers': 8,
     'auto_termination_minutes': 0,
     'cluster_log_conf': LOG_PATH,

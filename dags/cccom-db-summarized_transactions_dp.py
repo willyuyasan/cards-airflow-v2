@@ -4,10 +4,9 @@ from airflow.hooks import MySqlHook
 from airflow.operators.mysql_operator import MySqlOperator
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.latest_only_operator import LatestOnlyOperator
-from operators.extract_operator import mysql_table_to_s3
+from operators.extract_operator import mysql_table_to_s3, s3_to_mysql
 from airflow.models import Variable
-
-PREFIX = Variable.get('CCCOM_MYSQL_TO_S3_PREFIX')
+from rvairflow import slack_hook as sh
 
 s = date.today() - timedelta(days=90)
 start_date = "'" + str(date(s.year, s.month, 1)) + "'"
@@ -30,7 +29,7 @@ summarized_applications_query = f"""
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2021, 5, 19),
+    'start_date': datetime(2021, 7, 19),
     'email': ['mdey@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
@@ -46,7 +45,10 @@ def update_summarized_dates(**kwargs):
     prod_57 = MySqlHook(mysql_conn_id='mysql_rw_conn')
 
     dt = prod_ro.get_first(kwargs["summarize_query"])
-    date_string = dt[0].isoformat()
+    if dt[0]:
+        date_string = dt[0].isoformat()
+    else:
+        date_string = '1970-01-01T00:00:00'
     trans_type = kwargs["transaction_type"]
 
     update_query = f"""
@@ -58,6 +60,13 @@ def update_summarized_dates(**kwargs):
     prod_57.run(update_query)
     # This will put date_string into XCom
     return date_string
+
+
+def extract_sql(extract_script):
+    with open(f'/usr/local/airflow/dags/sql/extract/{extract_script}', 'r') as f:
+        query = f.read()
+    query = query.replace('#{mySummarizedStartDate}', start_date)
+    return query
 
 
 with DAG('cccom-db-summarized_transactions_dp',
@@ -80,6 +89,24 @@ with DAG('cccom-db-summarized_transactions_dp',
         execution_timeout=timedelta(minutes=2)
     )
 
+    summarized_clicks_extract_task = PythonOperator(
+        task_id='extract-cccom-summarized-clicks',
+        python_callable=mysql_table_to_s3,
+        op_kwargs={'query': extract_sql('cccom/extract_summarized_clicks.sql'),
+                   'key': 'summarized_clicks.csv'},
+        provide_context=True
+    )
+
+    summarized_clicks_stage_load_task = PythonOperator(
+        task_id='load-cccom-summarized-clicks',
+        python_callable=s3_to_mysql,
+        op_kwargs={'table': 'cccomus.summarized_clicks_stage',
+                   'key': 'summarized_clicks.csv',
+                   'field_format': 'cccom/field_format_summarized_clicks.json'},
+        provide_context=True,
+        execution_timeout=timedelta(minutes=2)
+    )
+
     summarized_dates_sales_task = PythonOperator(
         task_id='summarized_dates_sales_task',
         python_callable=update_summarized_dates,
@@ -87,6 +114,24 @@ with DAG('cccom-db-summarized_transactions_dp',
                    'transaction_type': 'sales'},
         dag=dag,
         execution_timeout=timedelta(minutes=10)
+    )
+
+    summarized_sales_extract_task = PythonOperator(
+        task_id='extract-cccom-summarized-sales',
+        python_callable=mysql_table_to_s3,
+        op_kwargs={'query': extract_sql('cccom/extract_summarized_sales.sql'),
+                   'key': 'summarized_sales.csv'},
+        provide_context=True
+    )
+
+    summarized_sales_stage_load_task = PythonOperator(
+        task_id='load-cccom-summarized-sales',
+        python_callable=s3_to_mysql,
+        op_kwargs={'table': 'cccomus.summarized_sales_stage',
+                   'key': 'summarized_sales.csv',
+                   'field_format': 'cccom/field_format_summarized_sales.json'},
+        provide_context=True,
+        execution_timeout=timedelta(minutes=2)
     )
 
     summarized_dates_applications_task = PythonOperator(
@@ -98,72 +143,46 @@ with DAG('cccom-db-summarized_transactions_dp',
         execution_timeout=timedelta(minutes=2)
     )
 
-    summarized_clicks_extract_task = PythonOperator(
-        task_id=f'extract-cccom-summarized-clicks',
-        python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_summarized_clicks.sql',
-                   'key': PREFIX + 'summarized_clicks.csv'},
-        provide_context=True
-    )
-
-    summarized_sales_extract_task = PythonOperator(
-        task_id=f'extract-cccom-summarized-sales',
-        python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_summarized_sales.sql',
-                   'key': PREFIX + 'summarized_sales.csv'},
-        provide_context=True
-    )
-
     summarized_applications_extract_task = PythonOperator(
-        task_id=f'extract-cccom-summarized-applications',
+        task_id='extract-cccom-summarized-applications',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_summarized_applications.sql',
-                   'key': PREFIX + 'summarized_applications.csv'},
+        op_kwargs={'query': extract_sql('cccom/extract_summarized_applications.sql'),
+                   'key': 'summarized_applications.csv'},
         provide_context=True
     )
 
+    summarized_applications_stage_load_task = PythonOperator(
+        task_id='load-cccom-summarized-applications',
+        python_callable=s3_to_mysql,
+        op_kwargs={'table': 'cccomus.summarized_applications_stage',
+                   'key': 'summarized_applications.csv',
+                   'field_format': 'cccom/field_format_summarized_applications.json'},
+        provide_context=True,
+        execution_timeout=timedelta(minutes=2)
+    )
 
-# S3 To RDS LOAD ###############
-#
-#     summarized_clicks_stage_load_task = PythonOperator(
-#             task_id='load-cccom-summarized-clicks',
-#             python_callable=dh.execute_pipeline,
-#             execution_timeout=timedelta(minutes=2),
-#             dag=dag)
-#
-#     summarized_sales_stage_load_task = PythonOperator(
-#             task_id='load-cccom-summarized-sales',
-#             python_callable=dh.execute_pipeline,
-#             execution_timeout=timedelta(minutes=2),
-#             dag=dag)
-#
-#     summarized_applications_stage_load_task = PythonOperator(
-#             task_id='load-cccom-summarized-applications',
-#             python_callable=dh.execute_pipeline,
-#             execution_timeout=timedelta(minutes=2),
-#             dag=dag)
+    summarized_transactions_stage_task = MySqlOperator(
+        task_id='summarized_transactions_stage',
+        mysql_conn_id=mysql_rw_conn,
+        sql='sql/summarized_transactions/summarized_transactions_stage.sql',
+        dag=dag,
+        params={'START_DATE': start_date,
+                'END_DATE': end_date},
+        retries=0,
+        execution_timeout=timedelta(minutes=15)
+    )
 
-#
-#     summarized_transactions_stage_task = MySqlOperator(
-#              task_id='summarized_transactions_stage',
-#              mysql_conn_id='core-prod-57-tbl-admin',
-#              sql='sql/summarized_transactions/summarized_transactions_stage.sql',
-#              dag=dag,
-#              params={'START_DATE': start_date,
-#                      'END_DATE': end_date},
-#              retries=0,
-#              execution_timeout=timedelta(minutes=15))
-#
-#     summarized_transactions_task = MySqlOperator(
-#           task_id='summarized_transactions',
-#           mysql_conn_id='core-prod-57-rw-user',
-#           sql='sql/summarized_transactions/summarized_transactions.sql',
-#           dag=dag,
-#           params={'START_DATE': start_date,
-#                   'END_DATE': end_date},
-#           retries=0,
-#           execution_timeout=timedelta(minutes=35))
-#
+    summarized_transactions_task = MySqlOperator(
+        task_id='summarized_transactions',
+        mysql_conn_id=mysql_rw_conn,
+        sql='sql/summarized_transactions/summarized_transactions.sql',
+        dag=dag,
+        params={'START_DATE': start_date,
+                'END_DATE': end_date},
+        retries=0,
+        execution_timeout=timedelta(minutes=35)
+    )
+
 latest_only_task >> summarized_dates_clicks_task
 latest_only_task >> summarized_dates_sales_task
 latest_only_task >> summarized_dates_applications_task
@@ -171,12 +190,11 @@ summarized_dates_clicks_task >> summarized_clicks_extract_task
 summarized_dates_sales_task >> summarized_sales_extract_task
 summarized_dates_applications_task >> summarized_applications_extract_task
 
+summarized_clicks_stage_load_task.set_upstream(summarized_clicks_extract_task)
+summarized_sales_stage_load_task.set_upstream(summarized_sales_extract_task)
+summarized_applications_stage_load_task.set_upstream(summarized_applications_extract_task)
 
-# summarized_clicks_stage_load_task.set_upstream(summarized_clicks_extract_task)
-# summarized_sales_stage_load_task.set_upstream(summarized_sales_extract_task)
-# summarized_applications_stage_load_task.set_upstream(summarized_applications_extract_task)
-#
-# summarized_transactions_stage_task.set_upstream(summarized_clicks_stage_load_task)
-# summarized_transactions_stage_task.set_upstream(summarized_sales_stage_load_task)
-# summarized_transactions_stage_task.set_upstream(summarized_applications_stage_load_task)
-# summarized_transactions_task.set_upstream(summarized_transactions_stage_task)
+summarized_transactions_stage_task.set_upstream(summarized_clicks_stage_load_task)
+summarized_transactions_stage_task.set_upstream(summarized_sales_stage_load_task)
+summarized_transactions_stage_task.set_upstream(summarized_applications_stage_load_task)
+summarized_transactions_task.set_upstream(summarized_transactions_stage_task)

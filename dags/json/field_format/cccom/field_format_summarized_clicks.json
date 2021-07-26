@@ -1,0 +1,42 @@
+[
+  {
+    "name": "transaction_date",
+    "type": "date"
+  },
+  {
+    "name": "product_id",
+    "type": "varchar(20)"
+  },
+  {
+    "name": "program_id",
+    "type": "int(11)"
+  },
+  {
+    "name": "product_type_id",
+    "type": "int(11)"
+  },
+  {
+    "name": "website_id",
+    "type": "int(11)"
+  },
+  {
+    "name": "affiliate_id",
+    "type": "varchar(36)"
+  },
+  {
+    "name": "category_fid",
+    "type": "int(11)"
+  },
+  {
+    "name": "user_variable",
+    "type": "varchar(200)"
+  },
+  {
+    "name": "click_count",
+    "type": "int(11)"
+  },
+  {
+    "name": "created_date",
+    "type": "timestamp"
+  }
+]

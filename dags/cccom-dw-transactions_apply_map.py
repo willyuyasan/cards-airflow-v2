@@ -14,7 +14,7 @@ S3_BUCKET = Variable.get('DBX_CARDS_Bucket')
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime.now() - timedelta(hours=4),
+    'start_date': datetime.now() - timedelta(hours=1),
     'email': ['rzagade@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
@@ -24,36 +24,37 @@ default_args = {
     'provide_context': True
 }
 
-dag = DAG('cccom-dw-commission-rates',
-          schedule_interval='45 0,8,12,16,20 * * *',
+dag = DAG('cccom-dw-transactions_apply_map',
+          schedule_interval='45 0,5-23 * * *',
           dagrun_timeout=timedelta(hours=1),
           default_args=default_args)
 
-latest_only_task = LatestOnlyOperator(
+latest_only = LatestOnlyOperator(
     task_id='latest_only',
     dag=dag)
 
-extract_commission_rates_log = PythonOperator(
-    task_id='extract-cccom-partner_commission_rates_log',
+extract = PythonOperator(
+    task_id='extract-transactions_apply_map',
     python_callable=mysql_table_to_s3,
-    op_kwargs={'extract_script': 'cccom/extract_partner_commission_rates_log.sql', 'key': 'partner_commission_rates_log.csv', 'compress': True},
+    op_kwargs={'extract_script': 'cccom/extract_transactions_apply_map.sql', 'key': 'trans_apply_map.csv', 'compress': True},
     provide_context=True,
     dag=dag)
 
-load_commission_rates_log = PythonOperator(
-    task_id='load-cccom-partner_commission_rates_log',
+
+load = PythonOperator(
+    task_id='load-cccom-trans_apply_map',
     python_callable=s3_to_redshift,
-    op_kwargs={'table': 'cccom_dw.stg_partner_commission_rates_log', 'key': 'partner_commission_rates_log.csv', 'compress': True},
+    op_kwargs={'table': 'cccom_dw.stg_trans_apply_map', 'key': 'trans_apply_map.csv', 'compress': True},
     provide_context=True,
     dag=dag)
 
-merge_commission_rates_log = PostgresOperator(
-    task_id='merge-partner-commission-rates-log',
+sql_task = PostgresOperator(
+    task_id='merge-cccom-trans_apply_map',
     postgres_conn_id=redshift_conn,
-    sql='/sql/merge/cccom/merge_commission_rates.sql',
+    sql='/sql/merge/cccom/merge_trans_apply.sql',
     dag=dag
 )
 
-extract_commission_rates_log.set_upstream(latest_only_task)
-load_commission_rates_log.set_upstream(extract_commission_rates_log)
-merge_commission_rates_log.set_upstream(load_commission_rates_log)
+latest_only.set_downstream(extract)
+extract.set_downstream(load)
+load.set_downstream(sql_task)

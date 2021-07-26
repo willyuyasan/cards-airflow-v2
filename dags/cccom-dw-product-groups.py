@@ -2,14 +2,13 @@ from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
 from airflow.operators.latest_only_operator import LatestOnlyOperator
-from operators.extract_operator import mysql_table_to_s3, make_request, pgsql_table_to_s3
-from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
+from operators.extract_operator import mysql_table_to_s3, pgsql_table_to_s3, s3_to_redshift
 from airflow.operators.postgres_operator import PostgresOperator
 from rvairflow import slack_hook as sh
 from airflow.models import Variable
 
-PREFIX = Variable.get('CCCOM_MYSQL_TO_S3_PREFIX')
-pg_PREFIX = Variable.get('CCCOM_PGSQL_TO_S3_PREFIX')
+# PREFIX = Variable.get('CCCOM_MYSQL_TO_S3_PREFIX')
+# pg_PREFIX = Variable.get('CCCOM_PGSQL_TO_S3_PREFIX')
 redshift_conn = 'cards-redshift-cluster'
 aws_conn = 'appsflyer_aws_s3_connection_id'
 S3_BUCKET = Variable.get('DBX_CARDS_Bucket')
@@ -37,21 +36,16 @@ with DAG('cccom-dw-product-groups',
     extract_partner_card_groups = PythonOperator(
         task_id='extract-cccom-partner_card_groups',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_partner_card_groups.sql', 'key': PREFIX + 'partner_card_groups.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_partner_card_groups.sql', 'key': 'partner_card_groups.csv', 'compress': True},
         provide_context=True,
         dag=dag)
 
-    load_partner_card_groups = S3ToRedshiftOperator(
+    load_partner_card_groups = PythonOperator(
         task_id='load-cccom-partner_card_groups',
-        s3_bucket=S3_BUCKET,
-        s3_key=PREFIX + 'partner_card_groups.csv',
-        redshift_conn_id=redshift_conn,
-        aws_conn_id=aws_conn,
-        schema='cccom_dw',
-        table='stg_partner_card_groups',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
-        dag=dag
-    )
+        python_callable=s3_to_redshift,
+        op_kwargs={'table': 'cccom_dw.stg_partner_card_groups', 'key': 'partner_card_groups.csv', 'compress': True},
+        provide_context=True,
+        dag=dag)
 
     merge_partner_card_groups = PostgresOperator(
         task_id='merge-cccom-partner_card_groups-map',
@@ -59,30 +53,29 @@ with DAG('cccom-dw-product-groups',
         sql='/sql/merge/cccom/merge_product_groups.sql',
         dag=dag
     )
+
     extract_partner_card_group_card_map = PythonOperator(
-        task_id='xtract-cccom-partner_card_group_card-map',
+        task_id='extract-cccom-partner_card_group_card-map',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_partner_card_group_card_map.sql', 'key': PREFIX + 'partner_card_group_card_map.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_partner_card_group_card_map.sql',
+                   'key': 'partner_card_group_card_map.csv', 'compress': True},
         provide_context=True,
         dag=dag)
-    load_partner_card_group_card_map = S3ToRedshiftOperator(
+
+    load_partner_card_group_card_map = PythonOperator(
         task_id='load-cccom-partner_card_group_card-map',
-        s3_bucket=S3_BUCKET,
-        s3_key=PREFIX + 'partner_card_group_card_map.csv',
-        redshift_conn_id=redshift_conn,
-        aws_conn_id=aws_conn,
-        schema='cccom_dw',
-        table='stg_partner_card_group_card_map',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
-        dag=dag
-    )
+        python_callable=s3_to_redshift,
+        op_kwargs={'table': 'cccom_dw.stg_partner_card_group_card_map', 'key': 'partner_card_group_card_map.csv',
+                   'compress': True},
+        provide_context=True,
+        dag=dag)
+
     merge_partner_card_group_card_map = PostgresOperator(
         task_id='merge-cccom-partner_card_group_card-map',
         postgres_conn_id=redshift_conn,
         sql='/sql/merge/cccom/merge_product_product_groups.sql',
         dag=dag
     )
-
 
 extract_partner_card_groups >> load_partner_card_groups >> merge_partner_card_groups
 

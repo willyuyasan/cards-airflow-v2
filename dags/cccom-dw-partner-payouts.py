@@ -2,14 +2,11 @@ from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
 from airflow.operators.latest_only_operator import LatestOnlyOperator
-from operators.extract_operator import mysql_table_to_s3, make_request, pgsql_table_to_s3
-from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
+from operators.extract_operator import mysql_table_to_s3, pgsql_table_to_s3, s3_to_redshift
 from airflow.operators.postgres_operator import PostgresOperator
 from rvairflow import slack_hook as sh
 from airflow.models import Variable
 
-PREFIX = Variable.get('CCCOM_MYSQL_TO_S3_PREFIX')
-pg_PREFIX = Variable.get('CCCOM_PGSQL_TO_S3_PREFIX')
 redshift_conn = 'cards-redshift-cluster'
 aws_conn = 'appsflyer_aws_s3_connection_id'
 S3_BUCKET = Variable.get('DBX_CARDS_Bucket')
@@ -32,79 +29,59 @@ with DAG('cccom-dw-partner-payouts',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
          default_args=default_args) as dag:
+
     extract_partner_payouts_task = PythonOperator(
         task_id='extract-cccom-partner-payouts',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_partner_payouts.sql', 'key': PREFIX + 'partner_payouts.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_partner_payouts.sql', 'key': 'partner_payouts.csv', 'compress': True},
         provide_context=True,
         dag=dag)
-
     extract_partner_payouts_rms = PythonOperator(
         task_id='eextract-cccom-partner_payouts_rms',
         python_callable=pgsql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_partner_payouts_rms.sql', 'key': pg_PREFIX + 'partner_payouts_rms.tsv'},
+        op_kwargs={'extract_script': 'cccom/extract_partner_payouts_rms.sql', 'key': 'partner_payouts_rms.tsv', 'compress': True},
         provide_context=True
     )
-
     extract_partner_payout_trans_map_task = PythonOperator(
         task_id='extract-cccom-partner-payout-trans-map',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_partner_payout_transaction_map.sql', 'key': PREFIX + 'partner_payout_transaction_map.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_partner_payout_transaction_map.sql', 'key': 'partner_payout_transaction_map.csv', 'compress': True},
         provide_context=True,
         dag=dag)
-
     extract_partner_payout_trans_map_rms = PythonOperator(
         task_id='extract-cccom-partner_payouts_trans_map_rms',
         python_callable=pgsql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_partner_payout_transaction_map_rms.sql', 'key': pg_PREFIX + 'partner_payout_trans_map_rms.tsv'},
+        op_kwargs={'extract_script': 'cccom/extract_partner_payout_transaction_map_rms.sql', 'key': 'partner_payout_trans_map_rms.tsv', 'compress': True},
         provide_context=True
     )
 
-    load_partner_payouts_task = S3ToRedshiftOperator(
+    load_partner_payouts_task = PythonOperator(
         task_id='load-cccom-partner-payouts',
-        s3_bucket=S3_BUCKET,
-        s3_key=PREFIX + 'partner_payouts.csv',
-        redshift_conn_id=redshift_conn,
-        aws_conn_id=aws_conn,
-        schema='cccom_dw',
-        table='stg_partner_payouts',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
-    )
+        python_callable=s3_to_redshift,
+        op_kwargs={'table': 'cccom_dw.stg_partner_payouts', 'key': 'partner_payouts.csv', 'compress': True},
+        provide_context=True,
+        dag=dag)
 
-    load_partner_payouts_rms = S3ToRedshiftOperator(
+    load_partner_payouts_rms = PythonOperator(
         task_id='load-cccom-partner-payouts_rms',
-        s3_bucket=S3_BUCKET,
-        s3_key=pg_PREFIX + 'partner_payouts_rms.tsv',
-        redshift_conn_id=redshift_conn,
-        aws_conn_id=aws_conn,
-        schema='cccom_dw',
-        table='stg_partner_payouts_rms',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
+        python_callable=s3_to_redshift,
+        op_kwargs={'table': 'cccom_dw.stg_partner_payouts_rms', 'key': 'partner_payouts_rms.tsv', 'compress': True},
+        provide_context=True,
+        dag=dag)
 
-    )
-
-    load_partner_payout_trans_map_task = S3ToRedshiftOperator(
+    load_partner_payout_trans_map_task = PythonOperator(
         task_id='load-cccom-partner-payout-trans-map',
-        s3_bucket=S3_BUCKET,
-        s3_key=PREFIX + 'partner_payout_transaction_map.csv',
-        redshift_conn_id=redshift_conn,
-        aws_conn_id=aws_conn,
-        schema='cccom_dw',
-        table='stg_partner_payout_transaction_map',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
-    )
+        python_callable=s3_to_redshift,
+        op_kwargs={'table': 'cccom_dw.stg_partner_payout_transaction_map', 'key': 'partner_payout_transaction_map.csv', 'compress': True},
+        provide_context=True,
+        dag=dag)
 
-    load_partner_payout_trans_map_rms = S3ToRedshiftOperator(
+    load_partner_payout_trans_map_rms = PythonOperator(
         task_id='load-cccom-partner-payout-trans-map_rms',
-        s3_bucket=S3_BUCKET,
-        s3_key=pg_PREFIX + 'partner_payout_trans_map_rms.tsv',
-        redshift_conn_id=redshift_conn,
-        aws_conn_id=aws_conn,
-        schema='cccom_dw',
-        table='stg_partner_payout_transaction_map_rms',
-        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
-
-    )
+        python_callable=s3_to_redshift,
+        op_kwargs={'table': 'cccom_dw.stg_partner_payout_transaction_map_rms', 'key': 'partner_payout_trans_map_rms.tsv', 'compress': True},
+        provide_context=True,
+        dag=dag)
 
     sql_payouts_task = PostgresOperator(
         task_id='merge-cccom-payouts',
@@ -130,7 +107,6 @@ with DAG('cccom-dw-partner-payouts',
         sql='/sql/merge/cccom/merge_trans_payout_rms.sql',
         dag=dag
     )
-
 extract_partner_payouts_task >> load_partner_payouts_task >> sql_payouts_task
 
 extract_partner_payouts_rms >> load_partner_payouts_rms >> sql_payouts_rms

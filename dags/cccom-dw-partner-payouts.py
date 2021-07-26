@@ -107,7 +107,6 @@ with DAG('cccom-dw-partner-payouts',
         sql='/sql/merge/cccom/merge_trans_payout_rms.sql',
         dag=dag
     )
-
 extract_partner_payouts_task >> load_partner_payouts_task >> sql_payouts_task
 
 extract_partner_payouts_rms >> load_partner_payouts_rms >> sql_payouts_rms

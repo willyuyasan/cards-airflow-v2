@@ -229,7 +229,6 @@ with DAG('cccom-dw-sales-and-clicks',
         postgres_conn_id=redshift_conn,
         sql='/sql/merge/cccom/merge_websites.sql'
     )
-
 extract_sale_transactions >> load_sale_transactions >> merge_sale_transactions
 
 extract_sale_rms_with_cutover_date >> load_sale_rms_with_cutover_date >> merge_sales_rms_with_cutover_date

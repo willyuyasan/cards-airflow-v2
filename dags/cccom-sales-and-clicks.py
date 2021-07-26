@@ -1,12 +1,15 @@
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
-from operators.extract_operator import mysql_table_to_s3, pgsql_table_to_s3, s3_to_redshift
+from operators.extract_operator import mysql_table_to_s3, make_request, pgsql_table_to_s3
+from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
 from airflow.operators.postgres_operator import PostgresOperator
 from rvairflow import slack_hook as sh
 from airflow.models import Variable
 
 redshift_conn = 'cards-redshift-cluster'
+aws_conn = 'appsflyer_aws_s3_connection_id'
+S3_BUCKET = Variable.get('DBX_CARDS_Bucket')
 # Default settings applied to all tasks
 default_args = {
     'owner': 'airflow',
@@ -15,7 +18,7 @@ default_args = {
     'email': ['mdey@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
+    # 'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
     'retries': 0,
     'retry_delay': timedelta(minutes=5),
     'provide_context': True
@@ -32,15 +35,19 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_affiliates = PythonOperator(
         task_id=f'extract-cccom-affiliates',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_affiliates.sql', 'key': 'affiliates.csv', 'compress': True},
+        op_kwargs={'extract_script': 'cccom/extract_affiliates.sql', 'key': 'affiliates.csv'},
         provide_context=True
     )
 
-    load_affiliates = PythonOperator(
-        task_id=f'load-cccom-affiliates',
-        python_callable=s3_to_redshift,
-        op_kwargs={'table': 'cccom_dw.stg_affiliates', 'key': 'affiliates.csv', 'compress': True},
-        provide_context=True
+    load_affiliates = S3ToRedshiftOperator(
+        task_id='load-cccom-affiliates',
+        s3_bucket=S3_BUCKET,
+        s3_key='affiliates.csv',
+        redshift_conn_id=redshift_conn,
+        aws_conn_id=aws_conn,
+        schema='cccom_dw',
+        table='stg_affiliates',
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_affiliates = PostgresOperator(
@@ -54,19 +61,21 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_click_transactions = PythonOperator(
         task_id='extract-cccom-click_transactions',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_click_transactions.sql',
-                   'key': 'click_transactions.csv',
-                   'compress': True},
+        op_kwargs={'extract_script': 'cccom/extract_click_transactions.sql', 'key': 'click_transactions.csv'},
         provide_context=True,
         priority_weight=5,
         execution_timeout=timedelta(minutes=40)
     )
 
-    load_click_transactions = PythonOperator(
-        task_id=f'load-cccom-click_trans',
-        python_callable=s3_to_redshift,
-        op_kwargs={'table': 'cccom_dw.stg_click_trans', 'key': 'click_transactions.csv', 'compress': True},
-        provide_context=True
+    load_click_transactions = S3ToRedshiftOperator(
+        task_id='load-cccom-click_trans',
+        s3_bucket=S3_BUCKET,
+        s3_key='click_transactions.csv',
+        redshift_conn_id=redshift_conn,
+        aws_conn_id=aws_conn,
+        schema='cccom_dw',
+        table='stg_click_trans',
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_click_transactions = PostgresOperator(
@@ -78,16 +87,20 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_device_types = PythonOperator(
         task_id='extract-cccom-device_types',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_device_types.sql', 'key': 'device_types.csv', 'compress': True},
+        op_kwargs={'extract_script': 'cccom/extract_device_types.sql', 'key': 'device_types.csv'},
         provide_context=True,
         execution_timeout=timedelta(minutes=3)
     )
 
-    load_device_types = PythonOperator(
-        task_id=f'load-cccom-device_types',
-        python_callable=s3_to_redshift,
-        op_kwargs={'table': 'cccom_dw.stg_device_types', 'key': 'device_types.csv', 'compress': True},
-        provide_context=True
+    load_device_types = S3ToRedshiftOperator(
+        task_id='load-cccom-device_types',
+        s3_bucket=S3_BUCKET,
+        s3_key='device_types.csv',
+        redshift_conn_id=redshift_conn,
+        aws_conn_id=aws_conn,
+        schema='cccom_dw',
+        table='stg_device_types',
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_device_types = PostgresOperator(
@@ -99,16 +112,20 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_pages = PythonOperator(
         task_id='extract-cccom-pages',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_pages.sql', 'key': 'pages.csv', 'compress': True},
+        op_kwargs={'extract_script': 'cccom/extract_pages.sql', 'key': 'pages.csv'},
         provide_context=True,
         execution_timeout=timedelta(minutes=2)
     )
 
-    load_pages = PythonOperator(
-        task_id=f'load-cccom-pages',
-        python_callable=s3_to_redshift,
-        op_kwargs={'table': 'cccom_dw.stg_pages', 'key': 'pages.csv', 'compress': True},
-        provide_context=True
+    load_pages = S3ToRedshiftOperator(
+        task_id='load-cccom-pages',
+        s3_bucket=S3_BUCKET,
+        s3_key='pages.csv',
+        redshift_conn_id=redshift_conn,
+        aws_conn_id=aws_conn,
+        schema='cccom_dw',
+        table='stg_pages',
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_pages = PostgresOperator(
@@ -122,17 +139,21 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_sale_transactions = PythonOperator(
         task_id='extract-cccom-sale_transactions',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_sale_trans.sql', 'key': 'sale_trans.csv', 'compress': True},
+        op_kwargs={'extract_script': 'cccom/extract_sale_trans.sql', 'key': 'sale_trans.csv'},
         provide_context=True,
         execution_timeout=timedelta(minutes=20),
         priority_weight=5
     )
 
-    load_sale_transactions = PythonOperator(
-        task_id=f'load-cccom-sale_trans',
-        python_callable=s3_to_redshift,
-        op_kwargs={'table': 'cccom_dw.stg_sale_trans', 'key': 'sale_trans.csv', 'compress': True},
-        provide_context=True
+    load_sale_transactions = S3ToRedshiftOperator(
+        task_id='load-cccom-sale_trans',
+        s3_bucket=S3_BUCKET,
+        s3_key='sale_trans.csv',
+        redshift_conn_id=redshift_conn,
+        aws_conn_id=aws_conn,
+        schema='cccom_dw',
+        table='stg_sale_trans',
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_sale_transactions = PostgresOperator(
@@ -145,17 +166,19 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_sale_rms_with_cutover_date = PythonOperator(
         task_id='extract-cccom-sales_rms-with-cutover-date',
         python_callable=pgsql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_rms_transactions.sql',
-                   'key': 'rms_transactions.csv',
-                   'compress': True},
+        op_kwargs={'extract_script': 'cccom/extract_rms_transactions.sql', 'key': 'rms_transactions.csv'},
         provide_context=True
     )
 
-    load_sale_rms_with_cutover_date = PythonOperator(
-        task_id=f'load-cccom-sales_rms-with-cutover-date',
-        python_callable=s3_to_redshift,
-        op_kwargs={'table': 'cccom_dw.stg_rms_transactions', 'key': 'rms_transactions.csv', 'compress': True},
-        provide_context=True
+    load_sale_rms_with_cutover_date = S3ToRedshiftOperator(
+        task_id='load-cccom-sales_rms-with-cutover-date',
+        s3_bucket=S3_BUCKET,
+        s3_key='rms_transactions.csv',
+        redshift_conn_id=redshift_conn,
+        aws_conn_id=aws_conn,
+        schema='cccom_dw',
+        table='stg_rms_transactions',
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_sales_rms_with_cutover_date = PostgresOperator(
@@ -168,18 +191,20 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_transaction_types = PythonOperator(
         task_id='extract-cccom-transaction_types',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_transaction_types.sql',
-                   'key': 'transaction_types.csv',
-                   'compress': True},
+        op_kwargs={'extract_script': 'cccom/extract_transaction_types.sql', 'key': 'transaction_types.csv'},
         provide_context=True,
         execution_timeout=timedelta(minutes=3)
     )
 
-    load_transaction_types = PythonOperator(
-        task_id=f'load-cccom-trans_types',
-        python_callable=s3_to_redshift,
-        op_kwargs={'table': 'cccom_dw.stg_trans_types', 'key': 'transaction_types.csv', 'compress': True},
-        provide_context=True
+    load_transaction_types = S3ToRedshiftOperator(
+        task_id='load-cccom-trans_types',
+        s3_bucket=S3_BUCKET,
+        s3_key='transaction_types.csv',
+        redshift_conn_id=redshift_conn,
+        aws_conn_id=aws_conn,
+        schema='cccom_dw',
+        table='stg_trans_types',
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_transaction_types = PostgresOperator(
@@ -191,16 +216,20 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_keywords = PythonOperator(
         task_id='extract-cccom-keywords',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_keywords.sql', 'key': 'keywords.csv', 'compress': True},
+        op_kwargs={'extract_script': 'cccom/extract_keywords.sql', 'key': 'keywords.csv'},
         provide_context=True,
         execution_timeout=timedelta(minutes=3)
     )
 
-    load_keywords = PythonOperator(
-        task_id=f'load-cccom-keywords',
-        python_callable=s3_to_redshift,
-        op_kwargs={'table': 'cccom_dw.stg_keywords', 'key': 'keywords.csv', 'compress': True},
-        provide_context=True
+    load_keywords = S3ToRedshiftOperator(
+        task_id='load-cccom-keywords',
+        s3_bucket=S3_BUCKET,
+        s3_key='keywords.csv',
+        redshift_conn_id=redshift_conn,
+        aws_conn_id=aws_conn,
+        schema='cccom_dw',
+        table='stg_keywords',
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_keywords = PostgresOperator(
@@ -212,16 +241,20 @@ with DAG('cccom-dw-sales-and-clicks',
     extract_websites = PythonOperator(
         task_id='extract-cccom-websites',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/extract_websites.sql', 'key': 'websites.csv', 'compress': True},
+        op_kwargs={'extract_script': 'cccom/extract_websites.sql', 'key': 'websites.csv'},
         provide_context=True,
         execution_timeout=timedelta(minutes=3)
     )
 
-    load_websites = PythonOperator(
-        task_id=f'load-cccom-websites',
-        python_callable=s3_to_redshift,
-        op_kwargs={'table': 'cccom_dw.stg_websites', 'key': 'websites.csv', 'compress': True},
-        provide_context=True
+    load_websites = S3ToRedshiftOperator(
+        task_id='load-cccom-websites',
+        s3_bucket=S3_BUCKET,
+        s3_key='websites.csv',
+        redshift_conn_id=redshift_conn,
+        aws_conn_id=aws_conn,
+        schema='cccom_dw',
+        table='stg_websites',
+        copy_options=['csv', 'IGNOREHEADER 1', "region 'us-east-1'", "timeformat 'auto'"],
     )
 
     merge_websites = PostgresOperator(
@@ -229,6 +262,7 @@ with DAG('cccom-dw-sales-and-clicks',
         postgres_conn_id=redshift_conn,
         sql='/sql/merge/cccom/merge_websites.sql'
     )
+
 extract_sale_transactions >> load_sale_transactions >> merge_sale_transactions
 
 extract_sale_rms_with_cutover_date >> load_sale_rms_with_cutover_date >> merge_sales_rms_with_cutover_date

@@ -49,10 +49,9 @@ def make_request(**kwargs):
 def compressed_file(cursor, kwargs):
     with NamedTemporaryFile('w') as temp_file:
         with gzip.GzipFile(temp_file.name, mode='w') as gz:
-            csvwriter = csv.writer(gz)
+            csvwriter = csv.writer(gz, encoding='utf-8')
             print('Writing data to gzipped file.')
-            for row in cursor:
-                csvwriter.writerow(row.encode('utf-8'))
+            csvwriter.writerows(cursor)
         print('Sending to S3')
         outfile_to_S3(temp_file.name, kwargs)
 

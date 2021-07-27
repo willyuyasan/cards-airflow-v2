@@ -53,7 +53,20 @@ def compressed_file(cursor, kwargs):
             print('Writing data to gzipped file.')
             csvwriter.writerows(cursor)
         print('Sending to S3')
-        outfile_to_S3(temp_file.name, kwargs)
+        print('Loading file into S3')
+        key = kwargs.get('key')
+        comp = '.gz' if kwargs.get('compress') else ''
+        if '/' in key:
+            S3_KEY = key + comp
+        else:
+            name = key.split('.')[0]
+            ts = datetime.now()
+            prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
+            S3_KEY = prefix + (key if key else 'no_name.csv') + comp
+        response = s3.upload_fileobj(temp_file, S3_BUCKET, S3_KEY)
+        print(response)
+        if os.path.exists(temp_file):
+            os.remove(temp_file)
 
 
 def mysql_table_to_s3(**kwargs):
@@ -182,14 +195,13 @@ def s3_to_mysql(**kwargs):
 def outfile_to_S3(outfile, kwargs):
     print('Loading file into S3')
     key = kwargs.get('key')
-    comp = '.gz' if kwargs.get('compress') else ''
     if '/' in key:
-        S3_KEY = key + comp
+        S3_KEY = key
     else:
         name = key.split('.')[0]
         ts = datetime.now()
         prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
-        S3_KEY = prefix + (key if key else 'no_name.csv') + comp
+        S3_KEY = prefix + (key if key else 'no_name.csv')
     with open(outfile, 'rb') as f:
         response = s3.upload_fileobj(f, S3_BUCKET, S3_KEY)
     print(response)

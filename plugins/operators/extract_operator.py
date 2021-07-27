@@ -47,27 +47,51 @@ def make_request(**kwargs):
 
 
 def compressed_file(cursor, kwargs):
-    with NamedTemporaryFile('w') as temp_file:
-        with gzip.GzipFile(temp_file.name, mode='w') as gz:
-            csvwriter = csv.writer(gz)
-            print('Writing data to gzipped file.')
-            csvwriter.writerows(cursor)
-        print('Sending to S3')
-        print('Loading file into S3')
-    with open('/home/airflow' + temp_file.name, 'rb') as temp_file:
-        key = kwargs.get('key')
-        comp = '.gz'
-        if '/' in key:
-            S3_KEY = key + comp
-        else:
-            name = key.split('.')[0]
-            ts = datetime.now()
-            prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
-            S3_KEY = prefix + (key if key else 'no_name.csv') + comp
-        response = s3.upload_fileobj(temp_file, S3_BUCKET, S3_KEY)
-        print(response)
-        if os.path.exists(temp_file):
-            os.remove(temp_file)
+    mem_file = io.BytesIO()
+    with gzip.GzipFile(fileobj=mem_file, mode='w') as gz:
+        buff = io.StringIO()
+        writer = csv.writer(buff)
+        writer.writerows(cursor)
+        print('Writing data to gzipped file.')
+        gz.write(buff.getvalue().encode())
+        print('Data written')
+        gz.close()
+        mem_file.seek(0)
+    print('Sending to S3')
+    key = kwargs.get('key')
+    if '/' in key:
+        S3_KEY = key + '.gz'
+    else:
+        name = key.split('.')[0]
+        ts = datetime.now()
+        prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
+        S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
+    s3.upload_fileobj(Fileobj=mem_file, Bucket=S3_BUCKET, Key=S3_KEY)
+    print('Sent')
+
+
+# def compressed_file(cursor, kwargs):
+#     with NamedTemporaryFile('w') as temp_file:
+#         with gzip.GzipFile(temp_file.name, mode='w') as gz:
+#             csvwriter = csv.writer(gz)
+#             print('Writing data to gzipped file.')
+#             csvwriter.writerows(cursor)
+#         print('Sending to S3')
+#         print('Loading file into S3')
+#     with open('/home/airflow' + temp_file.name, 'rb') as temp_file:
+#         key = kwargs.get('key')
+#         comp = '.gz'
+#         if '/' in key:
+#             S3_KEY = key + comp
+#         else:
+#             name = key.split('.')[0]
+#             ts = datetime.now()
+#             prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
+#             S3_KEY = prefix + (key if key else 'no_name.csv') + comp
+#         response = s3.upload_fileobj(temp_file, S3_BUCKET, S3_KEY)
+#         print(response)
+#         if os.path.exists(temp_file):
+#             os.remove(temp_file)
 
 
 def mysql_table_to_s3(**kwargs):

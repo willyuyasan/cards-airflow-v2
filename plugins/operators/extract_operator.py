@@ -52,11 +52,7 @@ def compressed_file(cursor, kwargs):
             csvwriter = csv.writer(gz)
             print('Writing data to gzipped file.')
             for row in cursor:
-                try:
-                    csvwriter.writerow(row)
-                except Exception as e:
-                    print("Exception while writing in the file: " + str(e))
-                    print(row)
+                csvwriter.writerow(row.encode('utf-8'))
         print('Sending to S3')
         outfile_to_S3(temp_file.name, kwargs)
 

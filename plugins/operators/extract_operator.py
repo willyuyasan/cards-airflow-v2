@@ -54,8 +54,9 @@ def compressed_file(cursor, kwargs):
             csvwriter.writerows(cursor)
         print('Sending to S3')
         print('Loading file into S3')
+    with open('/home/airflow' + temp_file.name, 'rb') as temp_file:
         key = kwargs.get('key')
-        comp = '.gz' if kwargs.get('compress') else ''
+        comp = '.gz'
         if '/' in key:
             S3_KEY = key + comp
         else:

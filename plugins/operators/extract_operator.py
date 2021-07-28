@@ -21,6 +21,7 @@ from airflow.models import Variable
 from airflow.utils.decorators import apply_defaults
 from contextlib import closing
 from tempfile import NamedTemporaryFile
+from contextlib import closing
 
 conn = BaseHook.get_connection('appsflyer')
 BASE_URI = conn.host
@@ -72,7 +73,7 @@ def make_request(**kwargs):
 
 def compressed_file(cursor, kwargs):
     with NamedTemporaryFile('w+') as temp_file:
-        with gzip.GzipFile(temp_file.name, mode='w') as gz:
+        with gzip.open(temp_file.name, mode='wt') as gz:
             csvwriter = csv.writer(gz)
             print('Writing data to gzipped file.')
             for row in cursor:

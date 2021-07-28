@@ -75,7 +75,12 @@ def compressed_file(cursor, kwargs):
         with gzip.GzipFile(temp_file.name, mode='w') as gz:
             csvwriter = csv.writer(gz)
             print('Writing data to gzipped file.')
-            csvwriter.writerows(cursor)
+            for row in cursor:
+                try:
+                    csvwriter.writerow(row)
+                except Exception as e:
+                    print(row)
+                    raise e
         print('Sending to S3')
         print('Loading file into S3')
         temp_file.seek()
@@ -88,7 +93,7 @@ def compressed_file(cursor, kwargs):
             prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
             S3_KEY = prefix + (key if key else 'no_name.csv') + '.gz'
         response = s3.upload_fileobj(temp_file, S3_BUCKET, S3_KEY)
-        print(response)
+        print('Written to', S3_BUCKET, S3_KEY)
 
 
 def mysql_table_to_s3(**kwargs):

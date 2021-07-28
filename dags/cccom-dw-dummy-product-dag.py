@@ -38,5 +38,4 @@ with DAG('cccom-dw-dummy-product-dag',
         sql='/sql/merge/cccom/mege_dummy_products.sql',
         dag=dag
     )
-
-merge_cccom_cpa_v2
+cccom-dw-dummy-product-dag

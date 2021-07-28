@@ -72,29 +72,54 @@ def make_request(**kwargs):
 
 
 def compressed_file(cursor, kwargs):
-    with NamedTemporaryFile('w+') as temp_file:
-        with gzip.open(temp_file.name, mode='wt') as gz:
-            csvwriter = csv.writer(gz)
-            print('Writing data to gzipped file.')
-            for row in cursor:
-                try:
-                    csvwriter.writerow(row)
-                except Exception as e:
-                    print(row)
-                    raise e
-        print('Loading file into S3')
-        temp_file.seek(0)
-        key = kwargs.get('key')
-        if '/' in key:
-            S3_KEY = key + '.gz'
-        else:
-            name = key.split('.')[0]
-            ts = datetime.now()
-            prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
-            S3_KEY = prefix + (key if key else 'no_name.csv') + '.gz'
-        response = s3.upload_fileobj(temp_file, S3_BUCKET, S3_KEY,
-                                     {'ContentType': 'text/plain', 'ContentEncoding': 'gzip'})
-        print('Written to', S3_BUCKET, S3_KEY)
+    mem_file = io.BytesIO()
+    with gzip.GzipFile(fileobj=mem_file, mode='a') as gz:
+        print('Writing data to gzipped file.')
+        for row in cursor:
+            buff = io.StringIO()
+            writer = csv.writer(buff)
+            writer.writerow(row)
+            gz.write(buff.getvalue().encode())
+        print('Data written')
+        gz.close()
+        mem_file.seek(0)
+    print('Sending to S3')
+    key = kwargs.get('key')
+    if '/' in key:
+        S3_KEY = key + '.gz'
+    else:
+        name = key.split('.')[0]
+        ts = datetime.now()
+        prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
+        S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
+    s3.upload_fileobj(Fileobj=mem_file, Bucket=S3_BUCKET, Key=S3_KEY)
+    print('Sent')
+
+
+# def compressed_file(cursor, kwargs):
+#     with NamedTemporaryFile('w+') as temp_file:
+#         with gzip.open(temp_file.name, mode='wt') as gz:
+#             csvwriter = csv.writer(gz)
+#             print('Writing data to gzipped file.')
+#             for row in cursor:
+#                 try:
+#                     csvwriter.writerow(row)
+#                 except Exception as e:
+#                     print(row)
+#                     raise e
+#         print('Loading file into S3')
+#         temp_file.seek(0)
+#         key = kwargs.get('key')
+#         if '/' in key:
+#             S3_KEY = key + '.gz'
+#         else:
+#             name = key.split('.')[0]
+#             ts = datetime.now()
+#             prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
+#             S3_KEY = prefix + (key if key else 'no_name.csv') + '.gz'
+#         response = s3.upload_fileobj(temp_file, S3_BUCKET, S3_KEY,
+#                                      {'ContentType': 'text/plain', 'ContentEncoding': 'gzip'})
+#         print('Written to', S3_BUCKET, S3_KEY)
 
 
 def mysql_table_to_s3(**kwargs):

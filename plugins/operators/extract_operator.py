@@ -84,7 +84,7 @@ def compressed_file(cursor, kwargs):
                     raise e
         print('Sending to S3')
         print('Loading file into S3')
-        temp_file.seek()
+        temp_file.seek(0)
         key = kwargs.get('key')
         if '/' in key:
             S3_KEY = key + '.gz'

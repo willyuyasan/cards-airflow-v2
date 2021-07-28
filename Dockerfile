@@ -2,7 +2,7 @@
 FROM redventures-cdm-docker.jfrog.io/rvairflow:1.10.14
 
 # Create a new entrypoint_wrapper to manage DB init and upgrades for Airflow
-COPY bin/entrypoint_wrapper.sh /entrypoint_wrapper
+# COPY bin/entrypoint_wrapper.sh /entrypoint_wrapper
 
 # Install a specific version of tini regardless of the parent build (https://github.com/krallin/tini)
 USER root

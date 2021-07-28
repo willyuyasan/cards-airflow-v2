@@ -82,7 +82,6 @@ def compressed_file(cursor, kwargs):
                 except Exception as e:
                     print(row)
                     raise e
-        print('Sending to S3')
         print('Loading file into S3')
         temp_file.seek(0)
         key = kwargs.get('key')
@@ -93,7 +92,8 @@ def compressed_file(cursor, kwargs):
             ts = datetime.now()
             prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
             S3_KEY = prefix + (key if key else 'no_name.csv') + '.gz'
-        response = s3.upload_fileobj(temp_file, S3_BUCKET, S3_KEY)
+        response = s3.upload_fileobj(temp_file, S3_BUCKET, S3_KEY,
+                                     {'ContentType': 'text/plain', 'ContentEncoding': 'gzip'})
         print('Written to', S3_BUCKET, S3_KEY)
 
 

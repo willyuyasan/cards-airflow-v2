@@ -14,7 +14,7 @@ S3_BUCKET = Variable.get('DBX_CARDS_Bucket')
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime.now() - timedelta(hours=4),
+    'start_date': datetime(2021, 5, 19),
     'email': ['rzagade@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
@@ -28,6 +28,7 @@ with DAG('cccom-dw-partner-banners',
          schedule_interval='45 6,10,14,18,22 * * *',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
+         max_active_runs=1,
          default_args=default_args) as dag:
 
     extract_partner_banners = PythonOperator(

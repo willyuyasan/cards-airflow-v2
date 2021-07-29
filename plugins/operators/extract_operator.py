@@ -19,7 +19,6 @@ from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOp
 from airflow.providers.mysql.transfers.s3_to_mysql import S3ToMySqlOperator
 from airflow.models import Variable
 from airflow.utils.decorators import apply_defaults
-from contextlib import closing
 from tempfile import NamedTemporaryFile
 from contextlib import closing
 
@@ -30,6 +29,7 @@ s3 = boto3.client('s3')
 redshift_conn = 'cards-redshift-cluster'
 aws_conn = 'appsflyer_aws_s3_connection_id'
 mysql_rw_conn = 'mysql_rw_conn'
+iter_size = 10000
 
 
 def make_request(**kwargs):
@@ -86,6 +86,7 @@ def mysql_table_to_s3(**kwargs):
     print('Dumping MySQL query results to local file')
     conn = mysql.get_conn()
     cursor = conn.cursor()
+    cursor.itersize = iter_size
     cursor.execute(query)
     if kwargs.get('compress'):
         compressed_file(cursor, kwargs)
@@ -117,6 +118,7 @@ def pgsql_table_to_s3(**kwargs):
     print('Dumping PGSQL query results to local file')
     conn = pgsql.get_conn()
     cursor = conn.cursor()
+    cursor.itersize = iter_size
     cursor.execute(query)
     if kwargs.get('compress'):
         compressed_file(cursor, kwargs)

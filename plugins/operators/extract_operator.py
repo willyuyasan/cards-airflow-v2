@@ -30,6 +30,7 @@ s3 = boto3.client('s3')
 redshift_conn = 'cards-redshift-cluster'
 aws_conn = 'appsflyer_aws_s3_connection_id'
 mysql_rw_conn = 'mysql_rw_conn'
+iter_size = 10000
 
 
 def make_request(**kwargs):
@@ -84,8 +85,9 @@ def mysql_table_to_s3(**kwargs):
         return
     mysql = MySqlHook(mysql_conn_id='mysql_ro_conn')
     print('Dumping MySQL query results to local file')
-    conn = mysql.get_conn()
-    cursor = conn.cursor()
+    conn = closing(mysql.get_conn())
+    cursor = closing(conn.cursor())
+    cursor.itersize = iter_size
     cursor.execute(query)
     if kwargs.get('compress'):
         compressed_file(cursor, kwargs)
@@ -115,8 +117,9 @@ def pgsql_table_to_s3(**kwargs):
         return
     pgsql = PostgresHook(postgres_conn_id='postgres_ro_conn')
     print('Dumping PGSQL query results to local file')
-    conn = pgsql.get_conn()
-    cursor = conn.cursor()
+    conn = closing(pgsql.get_conn())
+    cursor = closing(conn.cursor())
+    cursor.itersize = iter_size
     cursor.execute(query)
     if kwargs.get('compress'):
         compressed_file(cursor, kwargs)

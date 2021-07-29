@@ -158,6 +158,7 @@ def s3_to_redshift(**kwargs):
         conn = pgsql.get_conn()
         cursor = conn.cursor()
         cursor.execute(f'TRUNCATE TABLE {sch_tbl}')
+        print(f'{sch_tbl} truncated')
     rs_op = S3ToRedshiftOperator(
         task_id='redshift-copy-task',
         s3_bucket=S3_BUCKET,

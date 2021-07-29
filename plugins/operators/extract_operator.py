@@ -46,30 +46,55 @@ def make_request(**kwargs):
         f.write(export_string)
     outfile_to_S3(outfile, kwargs)
 
+#
+# def compressed_file(cursor, kwargs):
+#     mem_file = io.BytesIO()
+#     with gzip.GzipFile(fileobj=mem_file, mode='a') as gz:
+#         print('Writing data to gzipped file.')
+#         for row in cursor:
+#             buff = io.StringIO()
+#             writer = csv.writer(buff)
+#             writer.writerow(row)
+#             gz.write(buff.getvalue().encode())
+#         print('Data written')
+#         gz.close()
+#         mem_file.seek(0)
+#     print('Sending to S3')
+#     key = kwargs.get('key')
+#     if '/' in key:
+#         S3_KEY = key + '.gz'
+#     else:
+#         name = key.split('.')[0]
+#         ts = datetime.now()
+#         prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
+#         S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
+#     s3.upload_fileobj(Fileobj=mem_file, Bucket=S3_BUCKET, Key=S3_KEY)
+#     print('Sent')
+
 
 def compressed_file(cursor, kwargs):
-    mem_file = io.BytesIO()
-    with gzip.GzipFile(fileobj=mem_file, mode='a') as gz:
-        print('Writing data to gzipped file.')
-        for row in cursor:
-            buff = io.StringIO()
-            writer = csv.writer(buff)
-            writer.writerow(row)
-            gz.write(buff.getvalue().encode())
-        print('Data written')
-        gz.close()
-        mem_file.seek(0)
-    print('Sending to S3')
-    key = kwargs.get('key')
-    if '/' in key:
-        S3_KEY = key + '.gz'
-    else:
-        name = key.split('.')[0]
-        ts = datetime.now()
-        prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
-        S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
-    s3.upload_fileobj(Fileobj=mem_file, Bucket=S3_BUCKET, Key=S3_KEY)
-    print('Sent')
+    with NamedTemporaryFile('wb+') as temp_file:
+        with gzip.GzipFile(fileobj=temp_file, mode='a') as gz:
+            print('Writing data to gzipped file.')
+            for row in cursor:
+                buff = io.StringIO()
+                writer = csv.writer(buff)
+                writer.writerow(row)
+                gz.write(buff.getvalue().encode())
+            print('Data written')
+            gz.close()
+            temp_file.seek(0)
+        print('Sending to S3')
+        key = kwargs.get('key')
+        if '/' in key:
+            S3_KEY = key + '.gz'
+        else:
+            name = key.split('.')[0]
+            ts = datetime.now()
+            prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
+            S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
+        s3.upload_fileobj(Fileobj=temp_file, Bucket=S3_BUCKET, Key=S3_KEY)
+        print('Sent')
 
 
 def mysql_table_to_s3(**kwargs):

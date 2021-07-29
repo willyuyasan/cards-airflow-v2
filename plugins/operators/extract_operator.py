@@ -153,6 +153,11 @@ def s3_to_redshift(**kwargs):
     if kwargs.get('compress'):
         S3_KEY += '.gz'
         copy_options.append('GZIP')
+    if not kwargs.get('no_truncate'):
+        pgsql = PostgresHook(postgres_conn_id=redshift_conn)
+        conn = pgsql.get_conn()
+        cursor = conn.cursor()
+        cursor.execute(f'TRUNCATE TABLE {sch_tbl}')
     rs_op = S3ToRedshiftOperator(
         task_id='redshift-copy-task',
         s3_bucket=S3_BUCKET,

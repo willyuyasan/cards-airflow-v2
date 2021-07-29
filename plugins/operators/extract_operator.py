@@ -21,6 +21,7 @@ from airflow.models import Variable
 from airflow.utils.decorators import apply_defaults
 from contextlib import closing
 from tempfile import NamedTemporaryFile
+from contextlib import closing
 
 conn = BaseHook.get_connection('appsflyer')
 BASE_URI = conn.host
@@ -47,27 +48,28 @@ def make_request(**kwargs):
 
 
 def compressed_file(cursor, kwargs):
-    mem_file = io.BytesIO()
-    with gzip.GzipFile(fileobj=mem_file, mode='w') as gz:
-        buff = io.StringIO()
-        writer = csv.writer(buff)
-        writer.writerows(cursor)
-        print('Writing data to gzipped file.')
-        gz.write(buff.getvalue().encode())
-        print('Data written')
-        gz.close()
-        mem_file.seek(0)
-    print('Sending to S3')
-    key = kwargs.get('key')
-    if '/' in key:
-        S3_KEY = key + '.gz'
-    else:
-        name = key.split('.')[0]
-        ts = datetime.now()
-        prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
-        S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
-    s3.upload_fileobj(Fileobj=mem_file, Bucket=S3_BUCKET, Key=S3_KEY)
-    print('Sent')
+    with NamedTemporaryFile('wb+') as temp_file:
+        with gzip.GzipFile(fileobj=temp_file, mode='a') as gz:
+            print('Writing data to gzipped file.')
+            for row in cursor:
+                buff = io.StringIO()
+                writer = csv.writer(buff)
+                writer.writerow(row)
+                gz.write(buff.getvalue().encode())
+            print('Data written')
+            gz.close()
+            temp_file.seek(0)
+        print('Sending to S3')
+        key = kwargs.get('key')
+        if '/' in key:
+            S3_KEY = key + '.gz'
+        else:
+            name = key.split('.')[0]
+            ts = datetime.now()
+            prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
+            S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
+        s3.upload_fileobj(Fileobj=temp_file, Bucket=S3_BUCKET, Key=S3_KEY)
+        print('Sent')
 
 
 def mysql_table_to_s3(**kwargs):
@@ -151,6 +153,12 @@ def s3_to_redshift(**kwargs):
     if kwargs.get('compress'):
         S3_KEY += '.gz'
         copy_options.append('GZIP')
+    if not kwargs.get('no_truncate'):
+        pgsql = PostgresHook(postgres_conn_id=redshift_conn)
+        conn = pgsql.get_conn()
+        cursor = conn.cursor()
+        cursor.execute(f'TRUNCATE TABLE {sch_tbl}')
+        print(f'{sch_tbl} truncated')
     rs_op = S3ToRedshiftOperator(
         task_id='redshift-copy-task',
         s3_bucket=S3_BUCKET,
@@ -170,7 +178,6 @@ def s3_to_mysql(**kwargs):
     if not sch_tbl:
         print('Table not found')
         return
-    schema, table = sch_tbl.split('.')
     key = kwargs.get('key')
     if '/' in key:
         S3_KEY = key
@@ -179,9 +186,6 @@ def s3_to_mysql(**kwargs):
         ts = datetime.now()
         prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
         S3_KEY = prefix + (key if key else 'no_name.csv')
-    if kwargs.get('field_format'):
-        with open(f'/usr/local/airflow/dags/json/field_format/{kwargs["field_format"]}', 'r') as f:
-            field_format = json.loads(f.read())
     mysql_op = S3ToMySqlOperator(
         s3_source_key=f's3://{S3_BUCKET}/{S3_KEY}',
         mysql_table=sch_tbl,
@@ -212,17 +216,3 @@ def outfile_to_S3(outfile, kwargs):
     print(response)
     if os.path.exists(outfile):
         os.remove(outfile)
-
-
-# def outfile_to_S3(outfile, kwargs):
-#     print('Loading file into S3')
-#     key = kwargs.get('key')
-#     name = key.split('.')[0]
-#     ts = datetime.now()
-#     prefix = f'/cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
-#     S3_KEY = prefix + (key if key else 'no_name.csv')
-#     with open(outfile, 'rb') as f:
-#         response = s3.upload_fileobj(f, S3_BUCKET, S3_KEY)
-#     print(response)
-#     if os.path.exists(outfile):
-#         os.remove(outfile)

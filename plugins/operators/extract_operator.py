@@ -19,7 +19,6 @@ from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOp
 from airflow.providers.mysql.transfers.s3_to_mysql import S3ToMySqlOperator
 from airflow.models import Variable
 from airflow.utils.decorators import apply_defaults
-from contextlib import closing
 from tempfile import NamedTemporaryFile
 from contextlib import closing
 
@@ -85,8 +84,8 @@ def mysql_table_to_s3(**kwargs):
         return
     mysql = MySqlHook(mysql_conn_id='mysql_ro_conn')
     print('Dumping MySQL query results to local file')
-    conn = closing(mysql.get_conn())
-    cursor = closing(conn.cursor())
+    conn = mysql.get_conn()
+    cursor = conn.cursor()
     cursor.itersize = iter_size
     cursor.execute(query)
     if kwargs.get('compress'):
@@ -117,8 +116,8 @@ def pgsql_table_to_s3(**kwargs):
         return
     pgsql = PostgresHook(postgres_conn_id='postgres_ro_conn')
     print('Dumping PGSQL query results to local file')
-    conn = closing(pgsql.get_conn())
-    cursor = closing(conn.cursor())
+    conn = pgsql.get_conn()
+    cursor = conn.cursor()
     cursor.itersize = iter_size
     cursor.execute(query)
     if kwargs.get('compress'):

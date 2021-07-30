@@ -21,6 +21,7 @@ from airflow.models import Variable
 from airflow.utils.decorators import apply_defaults
 from tempfile import NamedTemporaryFile
 from contextlib import closing
+import MySQLdb.cursors
 
 conn = BaseHook.get_connection('appsflyer')
 BASE_URI = conn.host
@@ -29,7 +30,7 @@ s3 = boto3.client('s3')
 redshift_conn = 'cards-redshift-cluster'
 aws_conn = 'appsflyer_aws_s3_connection_id'
 mysql_rw_conn = 'mysql_rw_conn'
-iter_size = 1000
+iter_size = 100
 
 
 def make_request(**kwargs):
@@ -119,16 +120,17 @@ def mysql_s3_test(**kwargs):
     mysql = MySqlHook(mysql_conn_id='mysql_ro_conn')
     print('Dumping MySQL query results to local file')
     with closing(mysql.get_conn()) as conn:
+        conn.
         with closing(conn.cursor()) as cur:
             print(1)
             cur.itersize = iter_size
             print('executing query')
             cur.execute(query)
-            printt('query executed')
+            print('query executed')
             with NamedTemporaryFile('wb+') as temp_file:
                 with gzip.GzipFile(fileobj=temp_file, mode='a') as gz:
                     print('Writing data to gzipped file.')
-                    for row in cursor:
+                    for row in cur:
                         buff = io.StringIO()
                         writer = csv.writer(buff)
                         writer.writerow(row)

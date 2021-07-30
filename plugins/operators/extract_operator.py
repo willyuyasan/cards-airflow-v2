@@ -29,7 +29,7 @@ s3 = boto3.client('s3')
 redshift_conn = 'cards-redshift-cluster'
 aws_conn = 'appsflyer_aws_s3_connection_id'
 mysql_rw_conn = 'mysql_rw_conn'
-iter_size = 10000
+iter_size = 1000
 
 
 def make_request(**kwargs):
@@ -87,7 +87,9 @@ def mysql_table_to_s3(**kwargs):
     conn = mysql.get_conn()
     cursor = conn.cursor()
     cursor.itersize = iter_size
+    print('executing query')
     cursor.execute(query)
+    print('query executed')
     if kwargs.get('compress'):
         compressed_file(cursor, kwargs)
         cursor.close()

@@ -341,7 +341,7 @@ upgrade_model_training_notebook_task = {
 usbank_model_training_notebook_task = {
     'base_parameters': {
         "issuer": "US Bank",
-        "card_ids": "230612326, 7624, 23066306"
+        "card_ids": "230612326, 7624, 23066306, 7909"
     },
     'notebook_path': '/Production/CardMatchDS/Combined/CardMatch_python_train-shadow',
 }

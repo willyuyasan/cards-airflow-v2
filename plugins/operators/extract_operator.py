@@ -88,7 +88,7 @@ def mysql_table_to_s3(**kwargs):
     cursor = conn.cursor()
     cursor.itersize = iter_size
     print('Getting query count')
-    cursor.execute(f'SELECT count(*) rowcount FROM ({query})')
+    cursor.execute(f'SELECT count(*) rowcount FROM ({query}) a')
     rowcount = cursor.fetchone()[0]
     print('row count', rowcount)
     print('executing query')

@@ -85,12 +85,13 @@ def mysql_table_to_s3(**kwargs):
     mysql = MySqlHook(mysql_conn_id='mysql_ro_conn')
     print('Dumping MySQL query results to local file')
     conn = mysql.get_conn()
-    cursor = conn.cursor()
-    cursor.itersize = iter_size
+    cursor = conn.SSCursor()
+    # cursor = conn.cursor()
+    # cursor.itersize = iter_size
     print('Getting query count')
-    cursor.execute(f'SELECT count(*) rowcount FROM ({query}) a')
-    rowcount = cursor.fetchone()[0]
-    print('row count', rowcount)
+    # cursor.execute(f'SELECT count(*) rowcount FROM ({query}) a')
+    # rowcount = cursor.fetchone()[0]
+    # print('row count', rowcount)
     print('executing query')
     cursor.execute(query)
     print('query executed')

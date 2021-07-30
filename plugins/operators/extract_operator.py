@@ -84,13 +84,9 @@ def mysql_table_to_s3(**kwargs):
         return
     mysql = MySqlHook(mysql_conn_id='mysql_ro_conn')
     print('Dumping MySQL query results to local file')
-    conn = closing(mysql.get_conn())
+    conn = mysql.get_conn()
     cursor = conn.cursor()
     cursor.itersize = iter_size
-    print('Getting query count')
-    cursor.execute(f'SELECT count(*) rowcount FROM ({query}) a')
-    rowcount = cursor.fetchone()[0]
-    print('row count', rowcount)
     print('executing query')
     cursor.execute(query)
     print('query executed')
@@ -108,6 +104,49 @@ def mysql_table_to_s3(**kwargs):
             cursor.close()
             conn.close()
         outfile_to_S3(outfile, kwargs)
+
+
+def mysql_s3_test(**kwargs):
+    print('Retrieving query from .sql file')
+    if kwargs.get('extract_script'):
+        with open(f'/usr/local/airflow/dags/sql/extract/{kwargs["extract_script"]}', 'r') as f:
+            query = f.read()
+    elif kwargs.get('query'):
+        query = kwargs.get('query')
+    else:
+        print('Query file not found')
+        return
+    mysql = MySqlHook(mysql_conn_id='mysql_ro_conn')
+    print('Dumping MySQL query results to local file')
+    with closing(mysql.get_conn()) as conn:
+        with closing(conn.cursor('mysql_extract_cursor')) as cur:
+            print(1)
+            cur.itersize = iter_size
+            print('executing query')
+            cur.execute(query)
+            printt('query executed')
+            with NamedTemporaryFile('wb+') as temp_file:
+                with gzip.GzipFile(fileobj=temp_file, mode='a') as gz:
+                    print('Writing data to gzipped file.')
+                    for row in cursor:
+                        buff = io.StringIO()
+                        writer = csv.writer(buff)
+                        writer.writerow(row)
+                        gz.write(buff.getvalue().encode())
+                    print('Data written')
+                    gz.close()
+                    temp_file.seek(0)
+                print('Sending to S3')
+                key = kwargs.get('key')
+                if '/' in key:
+                    S3_KEY = key + '.gz'
+                else:
+                    name = key.split('.')[0]
+                    ts = datetime.now()
+                    prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
+                    S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
+                s3.upload_fileobj(Fileobj=temp_file, Bucket=S3_BUCKET, Key=S3_KEY)
+                print('Sent')
 
 
 def pgsql_table_to_s3(**kwargs):

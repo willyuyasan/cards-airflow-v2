@@ -15,7 +15,7 @@ S3_BUCKET = Variable.get('DBX_CARDS_Bucket')
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime.now() - timedelta(hours=1),
+    'start_date': datetime(2021, 5, 19),
     'email': ['rzagade@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
@@ -29,6 +29,7 @@ dag = DAG('cccom-dw-payin_tiers',
           schedule_interval='45 0,8,12,16,20 * * *',
           dagrun_timeout=timedelta(hours=1),
           catchup=False,
+          max_active_runs=1,
           default_args=default_args)
 
 extract_payin_tiers = PythonOperator(

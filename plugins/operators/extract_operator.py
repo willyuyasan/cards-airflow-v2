@@ -21,6 +21,7 @@ from airflow.models import Variable
 from airflow.utils.decorators import apply_defaults
 from tempfile import NamedTemporaryFile
 from contextlib import closing
+import MySQLdb.cursors
 
 conn = BaseHook.get_connection('appsflyer')
 BASE_URI = conn.host
@@ -87,7 +88,9 @@ def mysql_table_to_s3(**kwargs):
     conn = mysql.get_conn()
     cursor = conn.cursor()
     cursor.itersize = iter_size
+    print('executing query')
     cursor.execute(query)
+    print('query executed')
     if kwargs.get('compress'):
         compressed_file(cursor, kwargs)
         cursor.close()
@@ -95,6 +98,40 @@ def mysql_table_to_s3(**kwargs):
     else:
         ts = str(time.time()).replace('.', '_')
         outfile = f'/home/airflow/mysql_{ts}.csv'
+        with open(outfile, 'w', newline='') as f:
+            csv_writer = csv.writer(f)
+            csv_writer.writerows(cursor)
+            f.flush()
+            cursor.close()
+            conn.close()
+        outfile_to_S3(outfile, kwargs)
+
+
+def pgsql_s3_test(**kwargs):
+    print('Retrieving query from .sql file')
+    if kwargs.get('extract_script'):
+        with open(f'/usr/local/airflow/dags/sql/extract/{kwargs["extract_script"]}', 'r') as f:
+            query = f.read()
+    elif kwargs.get('query'):
+        query = kwargs.get('query')
+    else:
+        print('Query file not found')
+        return
+    pgsql = PostgresHook(postgres_conn_id='postgres_ro_conn')
+    print('Dumping PGSQL query results to local file')
+    conn = pgsql.get_conn()
+    cursor = conn.cursor()
+    cursor.itersize = iter_size
+    print('Executing Query')
+    cursor.execute(query)
+    print('Query Executed')
+    if kwargs.get('compress'):
+        compressed_file(cursor, kwargs)
+        cursor.close()
+        conn.close()
+    else:
+        ts = str(time.time()).replace('.', '_')
+        outfile = f'/home/airflow/pgsql_{ts}.csv'
         with open(outfile, 'w', newline='') as f:
             csv_writer = csv.writer(f)
             csv_writer.writerows(cursor)
@@ -119,7 +156,9 @@ def pgsql_table_to_s3(**kwargs):
     conn = pgsql.get_conn()
     cursor = conn.cursor()
     cursor.itersize = iter_size
+    print('Executing Query')
     cursor.execute(query)
+    print('Query Executed')
     if kwargs.get('compress'):
         compressed_file(cursor, kwargs)
         cursor.close()

@@ -3,7 +3,7 @@ from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
 from operators.extract_operator import pgsql_s3_test
 
-query = 'select a.* from transactions.transactions a'
+query = 'select a.* from transactions.transactions a, '
 query += ', '.join([f'transactions.transactions a{i}' for i in range(8)])
 
 

@@ -1,10 +1,10 @@
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
-from operators.extract_operator import mysql_s3_test
+from operators.extract_operator import pgsql_s3_test
 
-query = 'select * from cccomus.partner_affiliates'
-query += ' UNION ALL select * from cccomus.partner_affiliates' * 99
+query = 'select a.* from transactions.transactions a, '
+query += ', '.join([f'transactions.transactions a{i}' for i in range(8)])
 
 
 default_args = {
@@ -30,7 +30,7 @@ with DAG('mikes-bigquery-dag',
 
     extract_affiliates = PythonOperator(
         task_id='bigquery_task',
-        python_callable=mysql_s3_test,
+        python_callable=pgsql_s3_test,
         op_kwargs={'query': query, 'key': 'bigquery_test/bigquery.csv', 'compress': True},
         provide_context=True
     )

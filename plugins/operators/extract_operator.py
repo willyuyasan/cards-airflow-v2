@@ -107,7 +107,7 @@ def mysql_table_to_s3(**kwargs):
         outfile_to_S3(outfile, kwargs)
 
 
-def mysql_s3_test(**kwargs):
+def pgsql_s3_test(**kwargs):
     print('Retrieving query from .sql file')
     if kwargs.get('extract_script'):
         with open(f'/usr/local/airflow/dags/sql/extract/{kwargs["extract_script"]}', 'r') as f:
@@ -117,37 +117,28 @@ def mysql_s3_test(**kwargs):
     else:
         print('Query file not found')
         return
-    mysql = MySqlHook(mysql_conn_id='mysql_ro_conn')
-    print('Dumping MySQL query results to local file')
-    with closing(mysql.get_conn()) as conn:
-        with closing(conn.cursor()) as cur:
-            print(1)
-            cur.itersize = iter_size
-            print('executing query')
-            cur.execute(query)
-            print('query executed')
-            with NamedTemporaryFile('wb+') as temp_file:
-                with gzip.GzipFile(fileobj=temp_file, mode='a') as gz:
-                    print('Writing data to gzipped file.')
-                    for row in cur:
-                        buff = io.StringIO()
-                        writer = csv.writer(buff)
-                        writer.writerow(row)
-                        gz.write(buff.getvalue().encode())
-                    print('Data written')
-                    gz.close()
-                    temp_file.seek(0)
-                print('Sending to S3')
-                key = kwargs.get('key')
-                if '/' in key:
-                    S3_KEY = key + '.gz'
-                else:
-                    name = key.split('.')[0]
-                    ts = datetime.now()
-                    prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
-                    S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
-                s3.upload_fileobj(Fileobj=temp_file, Bucket=S3_BUCKET, Key=S3_KEY)
-                print('Sent')
+    pgsql = PostgresHook(postgres_conn_id='postgres_ro_conn')
+    print('Dumping PGSQL query results to local file')
+    conn = pgsql.get_conn()
+    cursor = conn.cursor()
+    cursor.itersize = iter_size
+    print('Executing Query')
+    cursor.execute(query)
+    print('Query Executed')
+    if kwargs.get('compress'):
+        compressed_file(cursor, kwargs)
+        cursor.close()
+        conn.close()
+    else:
+        ts = str(time.time()).replace('.', '_')
+        outfile = f'/home/airflow/pgsql_{ts}.csv'
+        with open(outfile, 'w', newline='') as f:
+            csv_writer = csv.writer(f)
+            csv_writer.writerows(cursor)
+            f.flush()
+            cursor.close()
+            conn.close()
+        outfile_to_S3(outfile, kwargs)
 
 
 def pgsql_table_to_s3(**kwargs):

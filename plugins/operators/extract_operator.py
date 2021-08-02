@@ -165,7 +165,9 @@ def pgsql_table_to_s3(**kwargs):
     conn = pgsql.get_conn()
     cursor = conn.cursor()
     cursor.itersize = iter_size
+    print('Executing Query')
     cursor.execute(query)
+    print('Query Executed')
     if kwargs.get('compress'):
         compressed_file(cursor, kwargs)
         cursor.close()

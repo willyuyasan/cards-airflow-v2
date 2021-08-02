@@ -14,7 +14,7 @@ S3_BUCKET = Variable.get('DBX_CARDS_Bucket')
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2021, 5, 19),
+    'start_date': datetime(2021, 8, 2),
     'email': ['rzagade@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
@@ -54,7 +54,6 @@ merge_commission_rates_log = PostgresOperator(
     sql='/sql/merge/cccom/merge_commission_rates.sql',
     dag=dag
 )
-
 extract_commission_rates_log.set_upstream(latest_only_task)
 load_commission_rates_log.set_upstream(extract_commission_rates_log)
 merge_commission_rates_log.set_upstream(load_commission_rates_log)

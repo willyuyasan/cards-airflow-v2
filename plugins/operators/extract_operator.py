@@ -119,6 +119,8 @@ def pgsql_s3_test(**kwargs):
         return
     pgsql = PostgresHook(postgres_conn_id='postgres_ro_conn')
     print('Dumping PGSQL query results to local file')
+    pgsql.bulk_dump(f'({query})', 'mytmp')
+    print(2)
     conn = pgsql.get_conn()
     cursor = conn.cursor()
     cursor.itersize = iter_size

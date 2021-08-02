@@ -30,7 +30,7 @@ s3 = boto3.client('s3')
 redshift_conn = 'cards-redshift-cluster'
 aws_conn = 'appsflyer_aws_s3_connection_id'
 mysql_rw_conn = 'mysql_rw_conn'
-iter_size = 100
+iter_size = 10000
 
 
 def make_request(**kwargs):

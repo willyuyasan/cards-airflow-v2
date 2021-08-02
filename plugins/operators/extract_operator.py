@@ -120,7 +120,6 @@ def mysql_s3_test(**kwargs):
     mysql = MySqlHook(mysql_conn_id='mysql_ro_conn')
     print('Dumping MySQL query results to local file')
     with closing(mysql.get_conn()) as conn:
-        conn.
         with closing(conn.cursor()) as cur:
             print(1)
             cur.itersize = iter_size

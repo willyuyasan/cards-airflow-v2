@@ -29,8 +29,6 @@ redshift_conn = 'cards-redshift-cluster'
 aws_conn = 'appsflyer_aws_s3_connection_id'
 mysql_rw_conn = 'mysql_rw_conn'
 iter_size = 10000
-​
-​
 
 
 def make_request(**kwargs):
@@ -47,7 +45,7 @@ def make_request(**kwargs):
         f.write(export_string)
     outfile_to_S3(outfile, kwargs)
 
-    
+
 def compressed_file(cursor, kwargs):
     with NamedTemporaryFile('wb+') as temp_file:
         with gzip.GzipFile(fileobj=temp_file, mode='a') as gz:

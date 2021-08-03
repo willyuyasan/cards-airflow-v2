@@ -119,28 +119,24 @@ def pgsql_s3_test(**kwargs):
         return
     pgsql = PostgresHook(postgres_conn_id='postgres_ro_conn')
     print('Dumping PGSQL query results to local file')
-    pgsql.bulk_dump(f'({query})', 'mytmp')
-    print(2)
-    conn = pgsql.get_conn()
-    cursor = conn.cursor()
-    cursor.itersize = iter_size
-    print('Executing Query')
-    cursor.execute(query)
-    print('Query Executed')
-    if kwargs.get('compress'):
-        compressed_file(cursor, kwargs)
-        cursor.close()
-        conn.close()
+    with NamedTemporaryFile('wb+') as temp_file:
+        with gzip.GzipFile(fileobj=temp_file, mode='w') as gz:
+            print('Writing data to gzipped file.')
+            pgsql.bulk_dump(f'({query})', temp_file.name)
+            print('Data written')
+            gz.close()
+            temp_file.seek(0)
+    print('Sending to S3')
+    key = kwargs.get('key')
+    if '/' in key:
+        S3_KEY = key + '.gz'
     else:
-        ts = str(time.time()).replace('.', '_')
-        outfile = f'/home/airflow/pgsql_{ts}.csv'
-        with open(outfile, 'w', newline='') as f:
-            csv_writer = csv.writer(f)
-            csv_writer.writerows(cursor)
-            f.flush()
-            cursor.close()
-            conn.close()
-        outfile_to_S3(outfile, kwargs)
+        name = key.split('.')[0]
+        ts = datetime.now()
+        prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
+        S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
+    s3.upload_fileobj(Fileobj=temp_file, Bucket=S3_BUCKET, Key=S3_KEY)
+    print('Sent')
 
 
 def pgsql_table_to_s3(**kwargs):

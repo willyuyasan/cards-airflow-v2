@@ -20,9 +20,7 @@ import gzip
 import csv
 import io
 import json
-​
-​
-​
+
 conn = BaseHook.get_connection('appsflyer')
 BASE_URI = conn.host
 S3_BUCKET = Variable.get('DBX_CARDS_Bucket')
@@ -33,8 +31,6 @@ mysql_rw_conn = 'mysql_rw_conn'
 iter_size = 10000
 ​
 ​
-
-
 def make_request(**kwargs):
     params = {
         'api_token': Variable.get('APPSFLYER_API_TOKEN_V1'),
@@ -48,12 +44,8 @@ def make_request(**kwargs):
     with open(outfile, 'w') as f:
         f.write(export_string)
     outfile_to_S3(outfile, kwargs)
-
-
 ​
 ​
-
-
 def compressed_file(cursor, kwargs):
     with NamedTemporaryFile('wb+') as temp_file:
         with gzip.GzipFile(fileobj=temp_file, mode='a') as gz:
@@ -77,12 +69,8 @@ def compressed_file(cursor, kwargs):
             S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
         s3.upload_fileobj(Fileobj=temp_file, Bucket=S3_BUCKET, Key=S3_KEY)
         print('Sent')
-
-
 ​
 ​
-
-
 def mysql_table_to_s3(**kwargs):
     print('Retrieving query from .sql file')
     if kwargs.get('extract_script'):
@@ -98,9 +86,7 @@ def mysql_table_to_s3(**kwargs):
     conn = mysql.get_conn()
     cursor = conn.cursor()
     cursor.itersize = iter_size
-    print('executing query')
     cursor.execute(query)
-    print('query executed')
     if kwargs.get('compress'):
         compressed_file(cursor, kwargs)
         cursor.close()
@@ -115,10 +101,6 @@ def mysql_table_to_s3(**kwargs):
             cursor.close()
             conn.close()
         outfile_to_S3(outfile, kwargs)
-
-
-​
-​
 
 
 def pgsql_s3_test(**kwargs):
@@ -153,10 +135,6 @@ def pgsql_s3_test(**kwargs):
     print('Sent')
 
 
-​
-​
-
-
 def pgsql_table_to_s3(**kwargs):
     print('Retrieving query from .sql file')
     if kwargs.get('extract_script'):
@@ -172,9 +150,7 @@ def pgsql_table_to_s3(**kwargs):
     conn = pgsql.get_conn()
     cursor = conn.cursor()
     cursor.itersize = iter_size
-    print('Executing Query')
     cursor.execute(query)
-    print('Query Executed')
     if kwargs.get('compress'):
         compressed_file(cursor, kwargs)
         cursor.close()
@@ -189,12 +165,8 @@ def pgsql_table_to_s3(**kwargs):
             cursor.close()
             conn.close()
         outfile_to_S3(outfile, kwargs)
-
-
 ​
 ​
-
-
 def s3_to_redshift(**kwargs):
     print('Loading file into Redshift')
     sch_tbl = kwargs.get('table')
@@ -231,12 +203,8 @@ def s3_to_redshift(**kwargs):
         copy_options=copy_options
     )
     rs_op.execute('')
-
-
 ​
 ​
-
-
 def s3_to_mysql(**kwargs):
     print('Loading file into RDS MySQL')
     sch_tbl = kwargs.get('table')
@@ -264,12 +232,8 @@ def s3_to_mysql(**kwargs):
         mysql_conn_id=mysql_rw_conn
     )
     mysql_op.execute('')
-
-
 ​
 ​
-
-
 def outfile_to_S3(outfile, kwargs):
     print('Loading file into S3')
     key = kwargs.get('key')

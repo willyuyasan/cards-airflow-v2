@@ -1,3 +1,15 @@
+import MySQLdb.cursors
+from contextlib import closing
+from tempfile import NamedTemporaryFile
+from airflow.utils.decorators import apply_defaults
+from airflow.models import Variable
+from airflow.providers.mysql.transfers.s3_to_mysql import S3ToMySqlOperator
+from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
+from airflow.hooks.postgres_hook import PostgresHook
+from airflow.models import BaseOperator
+from airflow.hooks.S3_hook import S3Hook
+from airflow.hooks.mysql_hook import MySqlHook
+from airflow.hooks.base_hook import BaseHook
 from datetime import datetime, timedelta
 import time
 import requests
@@ -8,19 +20,6 @@ import gzip
 import csv
 import io
 import json
-
-
-from airflow.hooks.base_hook import BaseHook
-from airflow.hooks.mysql_hook import MySqlHook
-from airflow.hooks.S3_hook import S3Hook
-from airflow.models import BaseOperator
-from airflow.hooks.postgres_hook import PostgresHook
-from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
-from airflow.providers.mysql.transfers.s3_to_mysql import S3ToMySqlOperator
-from airflow.models import Variable
-from airflow.utils.decorators import apply_defaults
-from tempfile import NamedTemporaryFile
-from contextlib import closing
 
 conn = BaseHook.get_connection('appsflyer')
 BASE_URI = conn.host
@@ -102,6 +101,38 @@ def mysql_table_to_s3(**kwargs):
             cursor.close()
             conn.close()
         outfile_to_S3(outfile, kwargs)
+
+
+def pgsql_s3_test(**kwargs):
+    print('Retrieving query from .sql file')
+    if kwargs.get('extract_script'):
+        with open(f'/usr/local/airflow/dags/sql/extract/{kwargs["extract_script"]}', 'r') as f:
+            query = f.read()
+    elif kwargs.get('query'):
+        query = kwargs.get('query')
+    else:
+        print('Query file not found')
+        return
+    pgsql = PostgresHook(postgres_conn_id='postgres_ro_conn')
+    print('Dumping PGSQL query results to local file')
+    with NamedTemporaryFile('wb+') as temp_file:
+        with gzip.GzipFile(fileobj=temp_file, mode='w') as gz:
+            print('Writing data to gzipped file.')
+            pgsql.bulk_dump(f'({query})', temp_file.name)
+            print('Data written')
+            gz.close()
+            temp_file.seek(0)
+    print('Sending to S3')
+    key = kwargs.get('key')
+    if '/' in key:
+        S3_KEY = key + '.gz'
+    else:
+        name = key.split('.')[0]
+        ts = datetime.now()
+        prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
+        S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
+    s3.upload_fileobj(Fileobj=temp_file, Bucket=S3_BUCKET, Key=S3_KEY)
+    print('Sent')
 
 
 def pgsql_table_to_s3(**kwargs):

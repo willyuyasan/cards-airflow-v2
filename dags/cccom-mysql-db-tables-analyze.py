@@ -30,7 +30,7 @@ with DAG('cccom-mysql-db-tables-analyze',
 
     cccom_mysql_db_tables_analyze = BashOperator(
         task_id='cccom_mysql_db_tables_analyze',
-        bash_command='/shellscripts/cccom-mysql-db-tables-analyze.sh',
+        bash_command='/scripts/shell/cccom-mysql-db-tables-analyze.sh',
         execution_timeout=timedelta(minutes=15),
         params={"env": str(Variable.get('refresh_env')),
                 "mysql_db_host": str(mysql_connection.host),
@@ -38,5 +38,4 @@ with DAG('cccom-mysql-db-tables-analyze',
                 "mysql_db_host_stag": str(mysql_connection_stg.host)},
         dag=dag
     )
-
 cccom_mysql_db_tables_analyze

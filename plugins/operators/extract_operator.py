@@ -46,10 +46,8 @@ def make_request(**kwargs):
     with open(outfile, 'w') as f:
         f.write(export_string)
     outfile_to_S3(outfile, kwargs)
-​
-​
 
-
+    
 def compressed_file(cursor, kwargs):
     with NamedTemporaryFile('wb+') as temp_file:
         with gzip.GzipFile(fileobj=temp_file, mode='a') as gz:
@@ -73,8 +71,6 @@ def compressed_file(cursor, kwargs):
             S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
         s3.upload_fileobj(Fileobj=temp_file, Bucket=S3_BUCKET, Key=S3_KEY)
         print('Sent')
-​
-​
 
 
 def mysql_table_to_s3(**kwargs):
@@ -171,8 +167,6 @@ def pgsql_table_to_s3(**kwargs):
             cursor.close()
             conn.close()
         outfile_to_S3(outfile, kwargs)
-​
-​
 
 
 def s3_to_redshift(**kwargs):
@@ -211,8 +205,6 @@ def s3_to_redshift(**kwargs):
         copy_options=copy_options
     )
     rs_op.execute('')
-​
-​
 
 
 def s3_to_mysql(**kwargs):
@@ -242,8 +234,6 @@ def s3_to_mysql(**kwargs):
         mysql_conn_id=mysql_rw_conn
     )
     mysql_op.execute('')
-​
-​
 
 
 def outfile_to_S3(outfile, kwargs):

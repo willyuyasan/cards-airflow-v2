@@ -38,6 +38,9 @@ class MySqlReplSafeUpdateOperator(MySqlOperator):
         self.duplicate_handling = duplicate_handling
 
     def execute(self, context):
+        # Added by RZ to check SQL assignment. START
+        sql = str(self.sql)
+        # Added by RZ to check SQL assignment. END
         logging.info('Retrieving entries:\n' + str(self.sql))
         hook = MySqlHook(mysql_conn_id=self.mysql_conn_id)
 

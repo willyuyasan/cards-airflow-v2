@@ -113,16 +113,6 @@ def pgsql_s3_test(**kwargs):
     else:
         print('Query file not found')
         return
-    pgsql = PostgresHook(postgres_conn_id='postgres_ro_conn')
-    print('Dumping PGSQL query results to local file')
-    with NamedTemporaryFile('wb+') as temp_file:
-        with gzip.GzipFile(fileobj=temp_file, mode='w') as gz:
-            print('Writing data to gzipped file.')
-            pgsql.bulk_dump(f'({query})', temp_file.name)
-            print('Data written')
-            gz.close()
-            temp_file.seek(0)
-    print('Sending to S3')
     key = kwargs.get('key')
     if '/' in key:
         S3_KEY = key + '.gz'
@@ -130,8 +120,38 @@ def pgsql_s3_test(**kwargs):
         name = key.split('.')[0]
         ts = datetime.now()
         prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
-        S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
-    s3.upload_fileobj(Fileobj=temp_file, Bucket=S3_BUCKET, Key=S3_KEY)
+        filepath = prefix + key
+    pgsql = PostgresHook(postgres_conn_id='postgres_ro_conn')
+    conn = pgsql.get_conn()
+    cur = conn.cursor()
+    print('define uri')
+    cur.execute(f"""SELECT aws_commons.create_s3_uri(
+                '{S3_BUCKET}',
+                '{filepath}',
+                'us-west-2'
+                ) AS s3_uri_1 \\gset""")
+    print('uri defined. Running query')
+    cur.execute(f"SELECT * FROM aws_s3.query_export_to_s3('{query}', :'s3_uri_1')")
+    cur.commit()
+    conn.close()
+    # print('Dumping PGSQL query results to local file')
+    # with NamedTemporaryFile('wb+') as temp_file:
+    #     with gzip.GzipFile(fileobj=temp_file, mode='w') as gz:
+    #         print('Writing data to gzipped file.')
+    #         pgsql.bulk_dump(f'({query})', temp_file.name)
+    #         print('Data written')
+    #         gz.close()
+    #         temp_file.seek(0)
+    # print('Sending to S3')
+    # key = kwargs.get('key')
+    # if '/' in key:
+    #     S3_KEY = key + '.gz'
+    # else:
+    #     name = key.split('.')[0]
+    #     ts = datetime.now()
+    #     prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
+    #     S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
+    # s3.upload_fileobj(Fileobj=temp_file, Bucket=S3_BUCKET, Key=S3_KEY)
     print('Sent')
 
 

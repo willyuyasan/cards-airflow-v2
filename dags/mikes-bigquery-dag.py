@@ -22,7 +22,6 @@ default_args = {
 
 # Using a DAG context manager, you don't have to specify the dag property of each task
 with DAG('mikes-bigquery-dag',
-         schedule_interval=timedelta(minutes=300),
          catchup=False,
          max_active_runs=1,
          dagrun_timeout=timedelta(hours=2),

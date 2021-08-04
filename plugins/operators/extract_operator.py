@@ -120,14 +120,14 @@ def pgsql_s3_test(**kwargs):
         name = key.split('.')[0]
         ts = datetime.now()
         prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
-        filepath = prefix + key
+        S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
     pgsql = PostgresHook(postgres_conn_id='postgres_ro_conn')
     conn = pgsql.get_conn()
     cur = conn.cursor()
     print('define uri')
     cur.execute(f"""SELECT aws_commons.create_s3_uri(
                 '{S3_BUCKET}',
-                '{filepath}',
+                '{S3_KEY}',
                 'us-west-2'
                 ) AS s3_uri_1 \\gset""")
     print('uri defined. Running query')

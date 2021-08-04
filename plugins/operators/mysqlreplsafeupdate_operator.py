@@ -2,8 +2,7 @@ import sys
 import logging
 import tempfile
 import csv
-from unicode_csv_helper import UnicodeWriter
-
+from operators.unicode_csv_helper import UnicodeWriter
 from airflow.hooks.mysql_hook import MySqlHook
 from airflow.operators.mysql_operator import MySqlOperator
 from airflow.utils.decorators import apply_defaults

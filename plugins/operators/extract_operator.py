@@ -129,7 +129,7 @@ def pgsql_s3_test(**kwargs):
                 '{S3_BUCKET}',
                 '{S3_KEY}',
                 'us-west-2'
-                ) AS s3_uri_1 \\gset""")
+                ) AS s3_uri_1""")
     print('uri defined. Running query')
     cur.execute(f"SELECT * FROM aws_s3.query_export_to_s3('{query}', :'s3_uri_1')")
     cur.commit()

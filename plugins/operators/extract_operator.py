@@ -103,38 +103,6 @@ def mysql_table_to_s3(**kwargs):
         outfile_to_S3(outfile, kwargs)
 
 
-def pgsql_s3_test(**kwargs):
-    print('Retrieving query from .sql file')
-    if kwargs.get('extract_script'):
-        with open(f'/usr/local/airflow/dags/sql/extract/{kwargs["extract_script"]}', 'r') as f:
-            query = f.read()
-    elif kwargs.get('query'):
-        query = kwargs.get('query')
-    else:
-        print('Query file not found')
-        return
-    pgsql = PostgresHook(postgres_conn_id='postgres_ro_conn')
-    print('Dumping PGSQL query results to local file')
-    with NamedTemporaryFile('wb+') as temp_file:
-        with gzip.GzipFile(fileobj=temp_file, mode='w') as gz:
-            print('Writing data to gzipped file.')
-            pgsql.bulk_dump(f'({query})', temp_file.name)
-            print('Data written')
-            gz.close()
-            temp_file.seek(0)
-    print('Sending to S3')
-    key = kwargs.get('key')
-    if '/' in key:
-        S3_KEY = key + '.gz'
-    else:
-        name = key.split('.')[0]
-        ts = datetime.now()
-        prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
-        S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
-    s3.upload_fileobj(Fileobj=temp_file, Bucket=S3_BUCKET, Key=S3_KEY)
-    print('Sent')
-
-
 def pgsql_table_to_s3(**kwargs):
     print('Retrieving query from .sql file')
     if kwargs.get('extract_script'):

@@ -5,12 +5,12 @@ from airflow.models import Variable
 from airflow.operators.mysql_operator import MySqlOperator
 
 # conn_id = 'core-prod-57-rw-user'
-conn_id = 'mysql_ro_conn'
+conn_id = 'mysql_rw_conn'
 
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2017, 11, 28),
+    'start_date': datetime(2021, 8, 3),
     'email': ['rzagade@redventures.com'],
     'email_on_failure': True,
     'email_on_retry': False,

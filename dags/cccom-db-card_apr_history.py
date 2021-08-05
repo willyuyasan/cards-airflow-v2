@@ -10,7 +10,7 @@ from rvairflow import slack_hook as sh
 # Default settings applied to all tasks
 default_args = {
     'owner': 'airflow',
-    'start_date': datetime.now() - timedelta(hours=1),
+    'start_date': datetime(2021, 8, 3),
     'depends_on_past': False,
     'email': ['rzagade@redventures.com'],
     'email_on_failure': False,
@@ -32,7 +32,7 @@ with DAG('cccom-db-card_apr_history',
 
     query_task = MySqlOperator(
         task_id='cccom-db-card_query',
-        mysql_conn_id='mysql_ro_conn',
+        mysql_conn_id='mysql_rw_conn',
         sql='/sql/cron/cccom-db-card_apr_history.sql',
         dag=dag)
 

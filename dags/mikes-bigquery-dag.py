@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 # from operators.extract_operator import pgsql_s3_test
 from airflow.hooks.postgres_hook import PostgresHook
 import gzip
+import io
 
 query = 'select a.* from transactions.transactions a, '
 query += ', '.join([f'transactions.transactions a{i}' for i in range(11)])
@@ -40,9 +41,11 @@ def pgsql_s3_test(**kwargs):
         prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
         S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
     pgsql = PostgresHook(postgres_conn_id='postgres_ro_conn')
+    conn = pgsql.get_conn()
+    cursor = conn.cursor()
     print('Dumping PGSQL query results to local file')
     with gzip.open('table-data.gz', 'wb+') as gzip_file:
-        pgsql.bulk_dump(f'({query})', 'table-data.gz')
+        cursor.copy_to(gzip_file, f'({query})')
     print('data dumped')
 
 

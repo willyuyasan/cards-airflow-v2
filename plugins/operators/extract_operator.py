@@ -123,8 +123,8 @@ def pgsql_s3_test(**kwargs):
         S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
     pgsql = PostgresHook(postgres_conn_id='postgres_ro_conn')
     print('Dumping PGSQL query results to local file')
-    with gzip.open('table-data.gz', 'wb') as gzip_file:
-        pgsql.bulk_dump(f'({query})', gzip_file)
+    with gzip.open('table-data.gz', 'wb+') as gzip_file:
+        pgsql.bulk_dump(f'({query})', 'table-data.gz')
     print('data dumped')
     # with NamedTemporaryFile('wb+') as temp_file:
     #     with gzip.GzipFile(fileobj=temp_file, mode='w') as gz:

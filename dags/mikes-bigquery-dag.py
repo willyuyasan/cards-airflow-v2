@@ -54,7 +54,8 @@ def pgsql_s3_test(**kwargs):
         S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
     pgsql = PostgresHook(postgres_conn_id='postgres_ro_conn')
     conn = pgsql.get_conn()
-    cursor = conn.cursor()
+    cursor = conn.cursor('my_named_cursor')
+    cursor.execute(query)
     print('Dumping PGSQL query results to local file')
     with NamedTemporaryFile('wb+') as temp_file:
         with gzip.GzipFile(fileobj=temp_file, mode='w') as gz:

@@ -5,6 +5,18 @@ from datetime import datetime, timedelta
 from airflow.hooks.postgres_hook import PostgresHook
 import gzip
 import io
+import boto3
+import csv
+import NamedTemporaryFile
+from airflow.models import Variable
+
+
+S3_BUCKET = Variable.get('DBX_CARDS_Bucket')
+s3 = boto3.client('s3')
+redshift_conn = 'cards-redshift-cluster'
+aws_conn = 'appsflyer_aws_s3_connection_id'
+mysql_rw_conn = 'mysql_rw_conn'
+iter_size = 10000
 
 query = 'select a.* from transactions.transactions a, '
 query += ', '.join([f'transactions.transactions a{i}' for i in range(11)])
@@ -44,9 +56,28 @@ def pgsql_s3_test(**kwargs):
     conn = pgsql.get_conn()
     cursor = conn.cursor()
     print('Dumping PGSQL query results to local file')
-    with gzip.open('table-data.gz', 'wb+') as gzip_file:
-        cursor.copy_to(gzip_file, f'({query})')
-    print('data dumped')
+    with NamedTemporaryFile('wb+') as temp_file:
+        with gzip.GzipFile(fileobj=temp_file, mode='w') as gz:
+            print('Writing data to gzipped file.')
+            for row in cursor:
+                buff = io.StringIO()
+                writer = csv.writer(buff)
+                writer.writerow(row)
+                gz.write(buff.getvalue().encode())
+            print('Data written')
+            gz.close()
+            temp_file.seek(0)
+    print('Sending to S3')
+    key = kwargs.get('key')
+    if '/' in key:
+        S3_KEY = key + '.gz'
+    else:
+        name = key.split('.')[0]
+        ts = datetime.now()
+        prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
+        S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
+    s3.upload_fileobj(Fileobj=temp_file, Bucket=S3_BUCKET, Key=S3_KEY)
+    print('Sent')
 
 
 # Using a DAG context manager, you don't have to specify the dag property of each task

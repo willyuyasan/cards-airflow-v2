@@ -122,19 +122,10 @@ def pgsql_s3_test(**kwargs):
         prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
         S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
     pgsql = PostgresHook(postgres_conn_id='postgres_ro_conn')
-    conn = pgsql.get_conn()
-    cur = conn.cursor()
-    print('define uri')
-    cur.execute(f"""SELECT aws_commons.create_s3_uri(
-                '{S3_BUCKET}',
-                '{S3_KEY}',
-                'us-west-2'
-                ) AS s3_uri_1""")
-    print('uri defined. Running query')
-    cur.execute(f"SELECT * FROM aws_s3.query_export_to_s3('{query}', :'s3_uri_1')")
-    cur.commit()
-    conn.close()
-    # print('Dumping PGSQL query results to local file')
+    print('Dumping PGSQL query results to local file')
+    with gzip.open('table-data.gz', 'wb') as gzip_file:
+        pgsql.bulk_dump(f'({query})', gzip_file)
+    print('data dumped')
     # with NamedTemporaryFile('wb+') as temp_file:
     #     with gzip.GzipFile(fileobj=temp_file, mode='w') as gz:
     #         print('Writing data to gzipped file.')
@@ -152,7 +143,7 @@ def pgsql_s3_test(**kwargs):
     #     prefix = f'cccom-dwh/stage/cccom/{name}/{ts.year}/{ts.month}/{ts.day}/'
     #     S3_KEY = prefix + (key + '.gz' if key else 'no_name.csv.gz')
     # s3.upload_fileobj(Fileobj=temp_file, Bucket=S3_BUCKET, Key=S3_KEY)
-    print('Sent')
+    # print('Sent')
 
 
 def pgsql_table_to_s3(**kwargs):

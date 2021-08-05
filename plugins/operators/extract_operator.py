@@ -116,9 +116,11 @@ def pgsql_table_to_s3(**kwargs):
     pgsql = PostgresHook(postgres_conn_id='postgres_ro_conn')
     print('Dumping PGSQL query results to local file')
     conn = pgsql.get_conn()
-    cursor = conn.cursor()
+    cursor = conn.cursor('named_cursor')
     cursor.itersize = iter_size
+    print('Executing query')
     cursor.execute(query)
+    print('Query executed')
     if kwargs.get('compress'):
         compressed_file(cursor, kwargs)
         cursor.close()

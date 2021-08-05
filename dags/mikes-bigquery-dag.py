@@ -85,7 +85,8 @@ def pgsql_s3_test(**kwargs):
 with DAG('mikes-bigquery-dag',
          catchup=False,
          max_active_runs=1,
-         dagrun_timeout=timedelta(hours=2),
+         dagrun_timeout=timedelta(minutes=10),
+         schedule_interval=timedelta(hours=200),
          default_args=default_args) as dag:
 
     extract_affiliates = PythonOperator(

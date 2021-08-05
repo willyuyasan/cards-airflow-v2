@@ -7,7 +7,7 @@ import gzip
 import io
 import boto3
 import csv
-import NamedTemporaryFile
+from tempfile import NamedTemporaryFile
 from airflow.models import Variable
 
 

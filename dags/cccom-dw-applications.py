@@ -14,7 +14,7 @@ S3_BUCKET = Variable.get('DBX_CARDS_Bucket')
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime.now() - timedelta(hours=1),
+    'start_date': datetime(2021, 8, 10),
     'email': ['rzagade@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,

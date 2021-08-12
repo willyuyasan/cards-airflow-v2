@@ -5,6 +5,7 @@ from rvairflow import slack_hook as sh
 from airflow.models import Variable
 from operators.mysqlreplsafeupdate_operator import MySqlReplSafeUpdateOperator
 from airflow.operators.mysql_operator import MySqlOperator
+import sys
 
 default_args = {
     'owner': 'airflow',

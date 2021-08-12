@@ -34,7 +34,7 @@ class UnicodeReader:
 
     def next(self):
         row = self.reader.next()
-        return [unicode(s, "utf-8") for s in row]
+        return [str(s, "utf-8") for s in row]
 
     def __iter__(self):
         return self
@@ -56,7 +56,8 @@ class UnicodeWriter:
     def writerow(self, row):
         print("Unicode CSV Helper Version : ", sys.version)
         self.writer.writerow([s.encode("utf-8")
-                              if isinstance(s, unicode) else s for s in row])
+                              if type(s) == str else s for s in row])
+
         # Fetch UTF-8 output from the queue ...
         data = self.queue.getvalue()
         data = data.decode("utf-8")

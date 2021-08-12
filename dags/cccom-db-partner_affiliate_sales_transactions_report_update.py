@@ -7,8 +7,6 @@ from operators.mysqlreplsafeupdate_operator import MySqlReplSafeUpdateOperator
 from airflow.operators.mysql_operator import MySqlOperator
 import sys
 
-print("Current Version : ", sys.version)
-
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,

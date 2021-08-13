@@ -52,7 +52,8 @@ class MySqlReplSafeUpdateOperator(MySqlOperator):
         conn = hook.get_conn()
 
         tmp = tempfile.NamedTemporaryFile()
-
+        logging.info('LOG This is the Temporary File Name :: ' + tmp.name)
+        print('This is the Temporary File Name :: ' + tmp.name)
         cur = conn.cursor()
         cur.execute(sql)
         result = cur.fetchall()

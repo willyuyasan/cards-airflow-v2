@@ -23,34 +23,6 @@ airflow_svc_token = "databricks_airflow_svc_token"
 ACCOUNT = 'cards'
 DAG_NAME = 'data-lake-dw-cdm-sdk-cof-healthline-gam'
 
-#tenants
-tenants =   ("4b075c45-81db-4c14-8c72-46a1eff91981",
-               "89144c93-5662-4fb8-b8eb-0a2140dc52f0",
-               "src_1jbobeEHGTZmBD9QsSnBOaHCzpy",
-               "src_1kYriYWtbLbCMPKD70alLfKJrWO",
-               "src_1kZIrJza0Ger6IH4Oxfqi9McDOx",
-               "f68ce971-1a80-4e60-bcc7-998224286138",
-               "a80f134c-8aa7-482f-bce1-7c8af6e0a271",
-               "3a96cef3-4355-4236-b5ba-7efdc2a1e552",
-               "64bf0ba4-8b94-4188-8645-6703f8b33f0a",
-               "ab687b54-79c7-44d5-b6dc-455689b7e2b5",
-               "ad5746ee-d875-40bd-906d-77b046bb1f45",
-               "7350d3bf-18d7-4d19-9917-66b8423efebf",
-               "e5b42ea4-4f7c-499e-afa4-837028aca12f",
-               "2c9f1797-a23b-4051-9fff-68d10990d658",
-               "5c94f1db-0662-4d7f-b894-83e7d3bf028f",
-               "5cd2036c-8780-4d65-896a-fb2612c2a17d",
-               "0efcde65-4fb8-4aa5-9b17-4c641d5f9e3b",
-               "8830ce36-13f9-40da-8176-b8cbf73a598c",
-               "src_1lg1SLNP84Uk7Ocf2fMZGpo1k10",
-               "src_1NT29eAqcol4XeySBENzOtJn2jj",
-               "a04f810b-eb6f-46a9-8842-e1f9b98ae026",
-               "src_1WWpnfn4eOBQ0a9YmXEux3ZQCLx",
-               "dc0c22a1-ea8a-45ae-ae9a-f63379366a5")
-
-
-
-
 LOG_PATH = {
     'dbfs': {
         'destination': 'dbfs:/tmp/airflow_logs/%s/%s/%s/%s' % (ACCOUNT, Variable.get("environment"), DAG_NAME, datetime.date(datetime.now()))
@@ -106,13 +78,13 @@ credit_report_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CREDIT_REPORT_lookback_days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cof.staging.GamByOrderIds",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + tenants,
+        "TENANTS=" + Variable.get("HL_GAM_TENANTS"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }

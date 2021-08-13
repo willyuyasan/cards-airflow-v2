@@ -7,7 +7,7 @@ from rvairflow import slack_hook as sh
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2021, 08, 01),
+    'start_date': datetime(2021, 08, 13),
     'email': ['ckonatalapalli@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,

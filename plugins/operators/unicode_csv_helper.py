@@ -54,7 +54,7 @@ class UnicodeWriter:
         self.encoder = codecs.getincrementalencoder(encoding)()
 
     def writerow(self, row):
-        print("Unicode CSV Helper Version : ", sys.version)
+        # print("Unicode CSV Helper Version : ", sys.version)
         self.writer.writerow([s.encode("utf-8")
                               if isinstance(s, str) else s for s in row])
         # Fetch UTF-8 output from the queue ...

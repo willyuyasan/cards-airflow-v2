@@ -39,7 +39,7 @@ class MySqlReplSafeUpdateOperator(MySqlOperator):
 
     def execute(self, context):
         # Added by RZ to check SQL assignment. START
-        print("My SQL Safe Replace Version : ", sys.version)
+        # print("My SQL Safe Replace Version : ", sys.version)
         sql = str(self.sql)
         # Added by RZ to check SQL assignment. END
         logging.info('Retrieving entries:\n' + str(self.sql))

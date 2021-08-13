@@ -56,11 +56,10 @@ class UnicodeWriter:
     def writerow(self, row):
         print("Unicode CSV Helper Version : ", sys.version)
         self.writer.writerow([s.encode("utf-8")
-                              if type(s) == str else s for s in row])
-
+                              if isinstance(s, str) else s for s in row])
         # Fetch UTF-8 output from the queue ...
         data = self.queue.getvalue()
-        data = data.decode("utf-8")
+        # data = data.decode("utf-8")
         # ... and reencode it into the target encoding
         data = self.encoder.encode(data)
         # write to the target stream

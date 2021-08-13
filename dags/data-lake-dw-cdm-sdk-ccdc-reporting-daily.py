@@ -342,6 +342,22 @@ page_view_outcomes_update_reporting_notebook_task = {
     'notebook_path': '/Production/cards-data-mart-ccdc/' + Variable.get("DBX_CCDC_CODE_ENV") + '/reporting-table-notebooks/OutcomesUpdate',
 }
 
+productList_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("CCDC_DAILY_LOOKBACK_DAYS")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.ccdc.reporting.ProductList",
+        "ACCOUNT=" + Variable.get("DBX_CCDC_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CCDC_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
+        "CUSTOM_PARAMETERS__redshift_Partitioned_Days=" + Variable.get("DBX_CCDC_Product_Redshift_Partitoned_Upload_Days")
+    ]
+}
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
@@ -450,8 +466,18 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
         polling_period_seconds=120
     )
 
+    productList_reporting = FinServDatabricksSubmitRunOperator(
+        task_id='productList-reporting',
+        new_cluster=medium_task_cluster,
+        spark_jar_task=productList_reporting_jar_task,
+        libraries=reporting_libraries,
+        timeout_seconds=9000,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=240
+    )
+
 # Dependencies
-ccdc_staging_tables >> [conversion_reporting]
+ccdc_staging_tables >> [conversion_reporting, productList_reporting]
 
 # outcomes update reporting dependencies
 conversion_reporting >> conversion_outcomes_update_reporting

@@ -57,7 +57,7 @@ class MySqlReplSafeUpdateOperator(MySqlOperator):
         cur.execute(sql)
         result = cur.fetchall()
 
-        with open(tmp.name, mode='w') as csvfile:
+        with open(tmp.name, mode='wb') as csvfile:
             csv_writer = UnicodeWriter(csvfile, delimiter='\t')
             for row in result:
                 csv_writer.writerow(row)

@@ -211,7 +211,7 @@ session_reporting_jar_task = {
             datetime.now() - (timedelta(days=int(int(Variable.get("AMEX_BUSINESS_REPORTING_LONG_LOOKBACK_DAYS")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_Tenant_Id"),
+        "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_Session_Tenant_Id"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.amex_business.reporting.Session",
         "ACCOUNT=" + Variable.get("DBX_AMEX_BUSINESS_Account"),
         "WRITE_BUCKET=" + Variable.get("DBX_AMEX_Bucket"),

@@ -1361,7 +1361,7 @@ amex_ot_details_staging >> amex_ot_summary_staging
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging,
  element_viewed_staging, device_staging, location_staging, decsion_staging, traffic_sources_staging,
  form_submitted_staging, paidsearch_staging, cookies_staging, pzn_offers_received_staging, twilio_call_connected_staging,
- amex_ot_summary_staging] >> amex_business_staging_tables
+ twilio_call_transferred_staging, amex_ot_summary_staging] >> amex_business_staging_tables
 
 # Amex Consumer Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging,

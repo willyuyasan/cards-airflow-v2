@@ -1,1 +1,0 @@
-create table transactions.transactions_test_de as select * from  transactions.transactions ;

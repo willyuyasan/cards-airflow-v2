@@ -32,7 +32,7 @@ with DAG('DE_Heavy_Load_Test_Dag',
     test_extract_heavy_data_to_s3 = PythonOperator(
         task_id='test-extract-heay-data-to-s3',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'query': '/sql/cron/test_extract_transaction_data_heavy.sql',
+        op_kwargs={'extract_script': 'cccom/test_extract_transaction_data_heavy.sql',
                    'key': 'test_extract_transaction_data_heavy.csv'},
         provide_context=True
     )

@@ -182,6 +182,7 @@ def s3_to_mysql(**kwargs):
         print('Table not found')
         return
     key = kwargs.get('key')
+    dup_handle = kwargs.get('duplicate_handling')
     if '/' in key:
         S3_KEY = key
     else:
@@ -192,10 +193,9 @@ def s3_to_mysql(**kwargs):
     mysql_op = S3ToMySqlOperator(
         s3_source_key=f's3://{S3_BUCKET}/{S3_KEY}',
         mysql_table=sch_tbl,
-        mysql_duplicate_key_handling='IGNORE',
+        mysql_duplicate_key_handling=dup_handle if dup_handle else 'IGNORE',
         mysql_extra_options="""
-            FIELDS TERMINATED BY ','
-            IGNORE 1 LINES
+            FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
             """,
         task_id='transfer_task',
         aws_conn_id=aws_conn,

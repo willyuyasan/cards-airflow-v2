@@ -71,6 +71,9 @@ staging_libraries = [
     {
         "jar": "dbfs:/FileStore/jars/d69470f3_6b85_4b6a_9f84_677fed6a9631-cdm_cof_assembly_1_0_6-e0007.jar",
     },
+    {
+        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/" + Variable.get("environment") + "/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
+    },
 ]
 
 credit_report_jar_task = {
@@ -89,6 +92,21 @@ credit_report_jar_task = {
     ]
 }
 
+cof_report_hl_mapping_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.HLGamMapping",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("HL_GAM_TENANTS"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
 
 # DAG Creation Step
 with DAG(DAG_NAME,
@@ -107,4 +125,14 @@ with DAG(DAG_NAME,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
+    )
+
+    hl_gam_mapping_report_task = FinServDatabricksSubmitRunOperator(
+    task_id='cof-healthline-gam-mapping',
+    new_cluster=large_task_custom_cluster,
+    spark_jar_task=cof_report_hl_mapping_task,
+    libraries=staging_libraries,
+    timeout_seconds=3600,
+    databricks_conn_id=airflow_svc_token,
+    polling_period_seconds=120
     )

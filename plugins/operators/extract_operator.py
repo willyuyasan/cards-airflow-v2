@@ -195,10 +195,7 @@ def s3_to_mysql(**kwargs):
         mysql_table=sch_tbl,
         mysql_duplicate_key_handling=dup_handle if dup_handle else 'IGNORE',
         mysql_extra_options="""
-            FIELDS TERMINATED BY ','
-            IGNORE 1 LINES
-            OPTIONALLY ENCLOSED BY '"'
-            LINES TERMINATED BY '\n'
+            FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
             """,
         task_id='transfer_task',
         aws_conn_id=aws_conn,

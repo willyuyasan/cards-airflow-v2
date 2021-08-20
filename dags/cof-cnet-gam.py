@@ -73,7 +73,7 @@ staging_libraries = [
     },
 ]
 
-credit_report_jar_task = {
+cof_report_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
@@ -102,7 +102,7 @@ with DAG(DAG_NAME,
     credit_report_task = FinServDatabricksSubmitRunOperator(
         task_id='cof-cnet-gam-mapping',
         new_cluster=large_task_custom_cluster,
-        spark_jar_task=credit_report_jar_task,
+        spark_jar_task=cof_report_jar_task,
         libraries=staging_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,

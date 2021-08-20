@@ -58,4 +58,4 @@ select
     thirdref,
     external_visit_id,
     refinceptiondate
-from cccomus.transactions ;
+from cccomus.transactions limit 10;

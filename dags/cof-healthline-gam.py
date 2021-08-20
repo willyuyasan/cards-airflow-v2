@@ -128,11 +128,11 @@ with DAG(DAG_NAME,
     )
 
     hl_gam_mapping_report_task = FinServDatabricksSubmitRunOperator(
-    task_id='cof-healthline-gam-mapping',
-    new_cluster=large_task_custom_cluster,
-    spark_jar_task=cof_report_hl_mapping_task,
-    libraries=staging_libraries,
-    timeout_seconds=3600,
-    databricks_conn_id=airflow_svc_token,
-    polling_period_seconds=120
+        task_id='cof-healthline-gam-mapping',
+        new_cluster=large_task_custom_cluster,
+        spark_jar_task=cof_report_hl_mapping_task,
+        libraries=staging_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
     )

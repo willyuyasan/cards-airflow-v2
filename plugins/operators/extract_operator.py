@@ -197,6 +197,8 @@ def s3_to_mysql(**kwargs):
         mysql_extra_options="""
             FIELDS TERMINATED BY ','
             IGNORE 1 LINES
+            OPTIONALLY ENCLOSED BY '"'
+            LINES TERMINATED BY '\n'
             """,
         task_id='transfer_task',
         aws_conn_id=aws_conn,

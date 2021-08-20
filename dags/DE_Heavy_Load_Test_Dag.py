@@ -38,7 +38,7 @@ with DAG('DE_Heavy_Load_Test_Dag',
     test_load_data_s3_to_mysql = PythonOperator(
         task_id='test-load-data-s3-to-mysql',
         python_callable=s3_to_mysql,
-        op_kwargs={'table': 'cccomus.transactions_test_de', 'key': 'test_extract_transaction_data_heavy.csv'},
+        op_kwargs={'table': 'cccomus.transactions_test_de', 'key': 'test_extract_transaction_data_heavy.csv', 'duplicate_handling': 'REPLACE'},
         provide_context=True,
         dag=dag)
 test_extract_heavy_data_to_s3 >> test_load_data_s3_to_mysql

@@ -32,13 +32,13 @@ with DAG('DE_Heavy_Load_Test_Dag',
     test_extract_heavy_data_to_s3 = PythonOperator(
         task_id='test-extract-heay-data-to-s3',
         python_callable=mysql_table_to_s3,
-        op_kwargs={'extract_script': 'cccom/test_extract_transaction_data_heavy.sql', 'key': 'test_extract_transaction_data_heavy.csv', 'compress': True},
+        op_kwargs={'extract_script': 'cccom/test_extract_transaction_data_heavy.sql', 'key': 'test_extract_transaction_data_heavy.csv'},
         provide_context=True
     )
     test_load_data_s3_to_mysql = PythonOperator(
         task_id='test-load-data-s3-to-mysql',
         python_callable=s3_to_mysql,
-        op_kwargs={'table': 'cccomus.transactions_test_de', 'key': 'test_extract_transaction_data_heavy.csv', 'compress': True},
+        op_kwargs={'table': 'cccomus.transactions_test_de', 'key': 'test_extract_transaction_data_heavy.csv'},
         provide_context=True,
         dag=dag)
 test_extract_heavy_data_to_s3 >> test_load_data_s3_to_mysql

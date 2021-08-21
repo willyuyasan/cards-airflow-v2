@@ -64,19 +64,25 @@ large_task_custom_cluster = {
 }
 
 # Libraries
-staging_libraries = [
+cof_staging_libraries = [
     {
         "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
     },
     {
         "jar": "dbfs:/FileStore/jars/d69470f3_6b85_4b6a_9f84_677fed6a9631-cdm_cof_assembly_1_0_6-e0007.jar",
     },
+]
+
+staging_libraries = [
+    {
+        "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
+    },
     {
         "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/" + Variable.get("environment") + "/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
     },
 ]
 
-credit_report_jar_task = {
+gam_jar_task = {
     'main_class_name': "com.redventures.cdm.cof.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
@@ -117,11 +123,11 @@ with DAG(DAG_NAME,
          default_args=default_args
          ) as dag:
 
-    credit_report_task = FinServDatabricksSubmitRunOperator(
+    gam_report_task = FinServDatabricksSubmitRunOperator(
         task_id='cof-healthline-gam',
         new_cluster=large_task_custom_cluster,
-        spark_jar_task=credit_report_jar_task,
-        libraries=staging_libraries,
+        spark_jar_task=gam_jar_task,
+        libraries=cof_staging_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120

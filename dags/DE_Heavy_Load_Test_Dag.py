@@ -5,7 +5,8 @@ from airflow.operators.mysql_operator import MySqlOperator
 from airflow.operators.python_operator import PythonOperator
 from operators.extract_operator import mysql_table_to_s3, s3_to_mysql
 from airflow.models import Variable
-from rvairflow import slack_hook as sh
+from airflow.operators.mysql_operator import MySqlOperator
+# from rvairflow import slack_hook as sh
 
 mysql_rw_conn = 'mysql_rw_conn'
 
@@ -29,6 +30,11 @@ with DAG('DE_Heavy_Load_Test_Dag',
          dagrun_timeout=timedelta(hours=3),
          default_args=default_args) as dag:
 
+    delete_heavy_load = MySqlOperator(
+        task_id='delete_heavy_load',
+        mysql_conn_id=mysql_rw_conn,
+        sql='sql/extract/cccom/test_delete_heavy_data.sql',
+        dag=dag)
     test_extract_heavy_data_to_s3 = PythonOperator(
         task_id='test-extract-heay-data-to-s3',
         python_callable=mysql_table_to_s3,
@@ -41,4 +47,4 @@ with DAG('DE_Heavy_Load_Test_Dag',
         op_kwargs={'table': 'cccomus.transactions_test_de', 'key': 'test_extract_transaction_data_heavy.csv', 'duplicate_handling': 'REPLACE'},
         provide_context=True,
         dag=dag)
-test_extract_heavy_data_to_s3 >> test_load_data_s3_to_mysql
+delete_heavy_load >> test_extract_heavy_data_to_s3 >> test_load_data_s3_to_mysql

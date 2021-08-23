@@ -1,0 +1,1 @@
+delete from cccomus.transactions_test_de;

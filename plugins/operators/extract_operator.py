@@ -194,7 +194,7 @@ def s3_to_mysql(**kwargs):
     mysql_op = S3ToMySqlOperator(
         s3_source_key=f's3://{S3_BUCKET}/{S3_KEY}',
         mysql_table=sch_tbl,
-        finserv_local_path='/home/airflow/tmp',
+        finserv_local_path='/home/airflow',
         mysql_duplicate_key_handling=dup_handle if dup_handle else 'IGNORE',
         mysql_extra_options="""
             FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'

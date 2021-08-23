@@ -41,5 +41,4 @@ with DAG('DE_Heavy_Test_with_old_operator',
         table='cccomus.transactions_test_de',
         duplicate_handling='REPLACE',
         dag=dag)
-
 delete_heavy_load >> select_heavy_load

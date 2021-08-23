@@ -119,7 +119,7 @@ gam_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_HL_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cof.staging.GamByOrderIds",
@@ -135,7 +135,7 @@ cof_report_hl_mapping_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_HL_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.HLGamMapping",
@@ -174,3 +174,6 @@ with DAG(DAG_NAME,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
+
+# dependencies
+gam_report_task >> hl_gam_mapping_report_task

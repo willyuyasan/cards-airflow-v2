@@ -59,4 +59,4 @@ select
     external_visit_id,
     refinceptiondate
 from cccomus.transactions
-limit 300000
+limit 500000

@@ -72,6 +72,9 @@ small_task_cluster = {
     'spark_conf': {
         'spark.sql.sources.partitionOverwriteMode': 'dynamic'
     },
+    'spark_env_vars': {
+        'GOOGLE_APPLICATION_CREDENTIALS': '/dbfs/gcp/rv-mt-data-prod-svc-key.json'
+    },
     'aws_attributes': {
         'availability': 'SPOT_WITH_FALLBACK',
         'instance_profile_arn': Variable.get("DBX_CCDC_IAM_ROLE"),

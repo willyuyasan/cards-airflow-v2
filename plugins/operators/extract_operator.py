@@ -3,7 +3,8 @@ from contextlib import closing
 from tempfile import NamedTemporaryFile
 from airflow.utils.decorators import apply_defaults
 from airflow.models import Variable
-from airflow.providers.mysql.transfers.s3_to_mysql import S3ToMySqlOperator
+# from airflow.providers.mysql.transfers.s3_to_mysql import S3ToMySqlOperator
+from operators.finserv_s3_to_mysql import S3ToMySqlOperator
 from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.models import BaseOperator
@@ -193,6 +194,7 @@ def s3_to_mysql(**kwargs):
     mysql_op = S3ToMySqlOperator(
         s3_source_key=f's3://{S3_BUCKET}/{S3_KEY}',
         mysql_table=sch_tbl,
+        finserv_local_path='/home/airflow',
         mysql_duplicate_key_handling=dup_handle if dup_handle else 'IGNORE',
         mysql_extra_options="""
             FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'

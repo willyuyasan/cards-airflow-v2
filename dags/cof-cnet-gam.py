@@ -62,6 +62,33 @@ large_task_custom_cluster = {
         'TaskId': "{{ti.task_id}}"
     },
 }
+small_task_cluster = {
+    'spark_version': '7.6.x-scala2.12',
+    'node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
+    'driver_node_type_id': Variable.get("DBX_MEDIUM_CLUSTER"),
+    'num_workers': Variable.get("DBX_MEDIUM_CLUSTER_NUM_NODES"),
+    'auto_termination_minutes': 0,
+    'dbfs_cluster_log_conf': 'dbfs://home/cluster_log',
+    'spark_conf': {
+        'spark.sql.sources.partitionOverwriteMode': 'dynamic'
+    },
+    'aws_attributes': {
+        'availability': 'SPOT_WITH_FALLBACK',
+        'instance_profile_arn': Variable.get("DBX_CCDC_IAM_ROLE"),
+        'ebs_volume_count': 2,
+        'ebs_volume_size': 100,
+        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
+        'first_on_demand': '2',
+        'spot_bid_price_percent': '70',
+        'zone_id': 'us-east-1c'
+    },
+    'custom_tags': {
+        'Partner': 'B530',
+        'Project': 'CreditCards.com',
+        'DagId': "{{ti.dag_id}}",
+        'TaskId': "{{ti.task_id}}"
+    },
+}
 
 # Libraries
 staging_libraries = [
@@ -72,6 +99,29 @@ staging_libraries = [
         "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/" + Variable.get("environment") + "/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
     },
 ]
+
+notebook_libraries = [
+    {
+        "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
+    },
+    {
+        "jar": "dbfs:/Libraries/JVM/cdm-timeinc/cdm-timeinc-assembly-0.0.14.jar",
+    },
+]
+
+cnet_gam_notebook_task = {
+    'base_parameters': {
+        "Environment": Variable.get("DBX_CNET_CODE_ENV"),
+        "endDate": datetime.now().strftime("%Y-%m-%d"),
+        "redshiftWriteMode": "insert-only",
+        "extraLookbackDays": "1",
+        "s3WriteMode": "overwrite",
+        "startDate": (
+                datetime.now() - (timedelta(days=int(int(Variable.get("CNET_GAM_Lookback")))))).strftime(
+            "%Y-%m-%d"),
+    },
+    'notebook_path': '/Production/cards-data-mart-ccdc/production-environment/staging-table-notebooks/cnet_gam_data_pull',
+}
 
 cof_report_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
@@ -99,7 +149,17 @@ with DAG(DAG_NAME,
          default_args=default_args
          ) as dag:
 
-    credit_report_task = FinServDatabricksSubmitRunOperator(
+    cnet_gam_data_task = FinServDatabricksSubmitRunOperator(
+        task_id='cnet-gam-data-pull',
+        new_cluster=small_task_cluster,
+        notebook_task=cnet_gam_notebook_task,
+        libraries=notebook_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
+    cnet_gam_mapping_task = FinServDatabricksSubmitRunOperator(
         task_id='cof-cnet-gam-mapping',
         new_cluster=large_task_custom_cluster,
         spark_jar_task=cof_report_jar_task,
@@ -108,3 +168,5 @@ with DAG(DAG_NAME,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
+# Defining  dependencies
+cnet_gam_data_task >> cnet_gam_mapping_task

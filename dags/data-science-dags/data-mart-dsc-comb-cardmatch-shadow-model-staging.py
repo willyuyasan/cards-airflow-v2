@@ -197,7 +197,7 @@ credit_one_model_training_notebook_task_a = {
 credit_one_model_training_notebook_task_b = {
     'base_parameters': {
         "issuer": "Credit One",
-        "card_ids": "229611305"
+        "card_ids": "229611305, 7925, 7924"
     },
     'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train-shadow',
 }

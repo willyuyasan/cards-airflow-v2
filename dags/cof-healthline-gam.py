@@ -142,7 +142,8 @@ cof_report_hl_mapping_task = {
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("HL_GAM_TENANTS"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
+        "CUSTOM_PARAMETERS__crosssitelookback=" + Variable.get("DBX_gam_crosssite_lookback_days")
     ]
 }
 

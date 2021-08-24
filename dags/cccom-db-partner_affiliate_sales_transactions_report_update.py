@@ -33,7 +33,7 @@ with DAG('cccom-db-partner_affiliate_sales_transactions_report_update',
         dag=dag)
 
     extract_cccom = PythonOperator(
-        task_id='select_cccom',
+        task_id='extract_cccom',
         python_callable=mysql_table_to_s3,
         op_kwargs={'extract_script': 'partner_affiliate/cccom_trans.sql', 'key': 'cccom_trans.csv'},
         provide_context=True
@@ -47,14 +47,14 @@ with DAG('cccom-db-partner_affiliate_sales_transactions_report_update',
         dag=dag)
 
     extract_noncccom = PythonOperator(
-        task_id='select_noncccom',
+        task_id='extract_noncccom',
         python_callable=mysql_table_to_s3,
         op_kwargs={'extract_script': 'partner_affiliate/non_cccom_trans.sql', 'key': 'non_cccom_trans.csv'},
         provide_context=True
     )
 
     load_noncccom = PythonOperator(
-        task_id='load_cccom',
+        task_id='load_noncccom',
         python_callable=s3_to_mysql,
         op_kwargs={'table': 'cccomus.partner_affiliate_sales_transactions_report', 'key': 'non_cccom_trans.csv', 'duplicate_handling': 'REPLACE'},
         provide_context=True,
@@ -67,14 +67,14 @@ with DAG('cccom-db-partner_affiliate_sales_transactions_report_update',
         dag=dag)
 
     extract_bonus = PythonOperator(
-        task_id='select_bonus',
+        task_id='extract_bonus',
         python_callable=mysql_table_to_s3,
         op_kwargs={'extract_script': 'partner_affiliate/bonus_summary.sql', 'key': 'bonus_summary.csv'},
         provide_context=True
     )
 
     load_bonus = PythonOperator(
-        task_id='load_cccom',
+        task_id='load_bonus',
         python_callable=s3_to_mysql,
         op_kwargs={'table': 'cccomus.partner_affiliate_bonus_summary', 'key': 'bonus_summary.csv', 'duplicate_handling': 'REPLACE'},
         provide_context=True,

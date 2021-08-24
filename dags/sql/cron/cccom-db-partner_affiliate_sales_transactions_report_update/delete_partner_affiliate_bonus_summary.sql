@@ -1,2 +1,2 @@
-DELETE FROM partner_affiliate_bonus_summary
+DELETE FROM cccomus.partner_affiliate_bonus_summary
 WHERE provider_process_date >= (CAST(NOW() AS DATE)) - INTERVAL 90 DAY

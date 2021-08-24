@@ -1,11 +1,10 @@
 from airflow import DAG
-from airflow.operators.latest_only_operator import LatestOnlyOperator
 from datetime import datetime, timedelta
 from rvairflow import slack_hook as sh
 from airflow.models import Variable
-from operators.mysqlreplsafeupdate_operator import MySqlReplSafeUpdateOperator
+from operators.extract_operator import mysql_table_to_s3, s3_to_mysql
+from airflow.operators.python_operator import PythonOperator
 from airflow.operators.mysql_operator import MySqlOperator
-import sys
 
 default_args = {
     'owner': 'airflow',
@@ -18,58 +17,74 @@ default_args = {
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
     'dagrun_timeout': timedelta(hours=1)}
-# conn_id = 'core-prod-57-rw-user'
+
 conn_id = 'mysql_rw_conn'
-dag = DAG('cccom-db-partner_affiliate_sales_transactions_report_update',
-          default_args=default_args,
-          max_active_runs=1,
-          schedule_interval='40 8 * * *',
-          catchup=False)
 
-select_load_cccom = MySqlReplSafeUpdateOperator(
-    task_id='select_load_cccom',
-    mysql_conn_id=conn_id,
-    sql='sql/cron/cccom-db-partner_affiliate_sales_transactions_report_update/cccom_trans.sql',
-    table='cccomus.partner_affiliate_sales_transactions_report',
-    duplicate_handling='REPLACE',
-    dag=dag)
+with DAG('cccom-db-partner_affiliate_sales_transactions_report_update',
+         default_args=default_args,
+         max_active_runs=1,
+         schedule_interval='40 8 * * *',
+         catchup=False) as dag:
 
-select_load_noncccom = MySqlReplSafeUpdateOperator(
-    task_id='select_load_noncccom',
-    mysql_conn_id=conn_id,
-    sql='sql/cron/cccom-db-partner_affiliate_sales_transactions_report_update/non_cccom_trans.sql',
-    table='cccomus.partner_affiliate_sales_transactions_report',
-    duplicate_handling='REPLACE',
-    dag=dag)
+    delete_sales_trans = MySqlOperator(
+        task_id='delete_sales_trans',
+        mysql_conn_id=conn_id,
+        sql='sql/cron/cccom-db-partner_affiliate_sales_transactions_report_update/delete_partner_affiliate_sales_transactions_report.sql',
+        dag=dag)
 
-select_load_bonus = MySqlReplSafeUpdateOperator(
-    task_id='select_load_bonus',
-    mysql_conn_id=conn_id,
-    sql='sql/cron/cccom-db-partner_affiliate_sales_transactions_report_update/bonus_summary.sql',
-    table='cccomus.partner_affiliate_bonus_summary',
-    duplicate_handling='REPLACE',
-    dag=dag)
+    extract_cccom = PythonOperator(
+        task_id='extract_cccom',
+        python_callable=mysql_table_to_s3,
+        op_kwargs={'extract_script': 'partner_affiliate/cccom_trans.sql', 'key': 'cccom_trans.csv'},
+        provide_context=True
+    )
 
-delete_sales_trans = MySqlOperator(
-    task_id='delete_sales_trans',
-    mysql_conn_id=conn_id,
-    sql='sql/cron/cccom-db-partner_affiliate_sales_transactions_report_update/delete_partner_affiliate_sales_transactions_report.sql',
-    dag=dag)
+    load_cccom = PythonOperator(
+        task_id='load_cccom',
+        python_callable=s3_to_mysql,
+        op_kwargs={'table': 'cccomus.partner_affiliate_sales_transactions_report', 'key': 'cccom_trans.csv', 'duplicate_handling': 'REPLACE'},
+        provide_context=True,
+        dag=dag)
 
-delete_bonus = MySqlOperator(
-    task_id='delete_bonus',
-    mysql_conn_id=conn_id,
-    sql='sql/cron/cccom-db-partner_affiliate_sales_transactions_report_update/delete_partner_affiliate_bonus_summary.sql',
-    dag=dag)
+    extract_noncccom = PythonOperator(
+        task_id='extract_noncccom',
+        python_callable=mysql_table_to_s3,
+        op_kwargs={'extract_script': 'partner_affiliate/non_cccom_trans.sql', 'key': 'non_cccom_trans.csv'},
+        provide_context=True
+    )
 
-truncate_load_adjustments = MySqlOperator(
-    task_id='truncate_load_adjustments',
-    mysql_conn_id=conn_id,
-    sql='sql/cron/cccom-db-partner_affiliate_sales_transactions_report_update/truncate_load_partner_affiliate_sales_transactions_report_adjustments.sql',
-    dag=dag)
+    load_noncccom = PythonOperator(
+        task_id='load_noncccom',
+        python_callable=s3_to_mysql,
+        op_kwargs={'table': 'cccomus.partner_affiliate_sales_transactions_report', 'key': 'non_cccom_trans.csv', 'duplicate_handling': 'REPLACE'},
+        provide_context=True,
+        dag=dag)
 
-select_load_cccom.set_upstream(delete_sales_trans)
-select_load_noncccom.set_upstream(select_load_cccom)
-select_load_bonus.set_upstream(delete_bonus)
-truncate_load_adjustments.set_upstream(select_load_bonus)
-truncate_load_adjustments.set_upstream(select_load_noncccom)
+    delete_bonus = MySqlOperator(
+        task_id='delete_bonus',
+        mysql_conn_id=conn_id,
+        sql='sql/cron/cccom-db-partner_affiliate_sales_transactions_report_update/delete_partner_affiliate_bonus_summary.sql',
+        dag=dag)
+
+    extract_bonus = PythonOperator(
+        task_id='extract_bonus',
+        python_callable=mysql_table_to_s3,
+        op_kwargs={'extract_script': 'partner_affiliate/bonus_summary.sql', 'key': 'bonus_summary.csv'},
+        provide_context=True
+    )
+
+    load_bonus = PythonOperator(
+        task_id='load_bonus',
+        python_callable=s3_to_mysql,
+        op_kwargs={'table': 'cccomus.partner_affiliate_bonus_summary', 'key': 'bonus_summary.csv', 'duplicate_handling': 'REPLACE'},
+        provide_context=True,
+        dag=dag)
+
+    truncate_load_adjustments = MySqlOperator(
+        task_id='truncate_load_adjustments',
+        mysql_conn_id=conn_id,
+        sql='sql/cron/cccom-db-partner_affiliate_sales_transactions_report_update/truncate_load_partner_affiliate_sales_transactions_report_adjustments.sql',
+        dag=dag)
+
+delete_sales_trans >> extract_cccom >> load_cccom >> extract_noncccom >> load_noncccom >> truncate_load_adjustments
+delete_bonus >> extract_bonus >> load_bonus >> truncate_load_adjustments

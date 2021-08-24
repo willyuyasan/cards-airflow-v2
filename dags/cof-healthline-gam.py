@@ -170,7 +170,7 @@ with DAG(DAG_NAME,
         new_cluster=gam_mapping_large_task_custom_cluster,
         spark_jar_task=cof_report_hl_mapping_task,
         libraries=staging_libraries,
-        timeout_seconds=3600,
+        timeout_seconds=9600,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )

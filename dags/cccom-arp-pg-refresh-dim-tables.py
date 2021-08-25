@@ -2,7 +2,7 @@ from airflow import DAG
 from airflow.models import Variable
 from datetime import datetime, timedelta
 from airflow.operators.python_operator import PythonOperator
-import slack_helpers_v2 as sh
+# import slack_helpers_v2 as sh
 import data_pipeline_helpers_v2 as dh
 from postgres_extract_operator import PostgresExtractOperator
 from airflow.operators.postgres_operator import PostgresOperator
@@ -17,7 +17,7 @@ default_args = {
     'email': ['pkarmakar@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'on_failure_callback': sh.slack_failure_callback(),
+    # 'on_failure_callback': sh.slack_failure_callback(),
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
     'provide_context': True

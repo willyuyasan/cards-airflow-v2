@@ -49,7 +49,7 @@ with DAG('cccom-arp-pg-refresh-dim-tables',
     # connections in QA and DEV env has been set to same env
     arp_refresh_dim_tables_stag = BashOperator(
         task_id='ar_refresh_dim_tables_stag',
-        bash_command='/shellscripts/cccom-arp-pg-refresh-dim-tables-stag.sh',
+        bash_command='/scripts/shell/cccom-arp-pg-refresh-dim-tables-stag.sh',
         execution_timeout=timedelta(minutes=30),
         params={
                 "DUMP_FILEPATH": str(Variable.get('cccom_dump_file_path')),

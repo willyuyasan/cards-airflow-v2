@@ -77,7 +77,7 @@ small_task_cluster = {
     },
     'aws_attributes': {
         'availability': 'SPOT_WITH_FALLBACK',
-        'instance_profile_arn': Variable.get("DBX_CCDC_IAM_ROLE"),
+        'instance_profile_arn': Variable.get("DBX_CARDS_IAM_ROLE"),
         'ebs_volume_count': 2,
         'ebs_volume_size': 100,
         'ebs_volume_type': 'GENERAL_PURPOSE_SSD',

@@ -32,7 +32,7 @@ with DAG('cccom-mysql-db-tables-analyze',
         task_id='cccom_mysql_db_tables_analyze',
         bash_command='/scripts/shell/cccom-mysql-db-tables-analyze.sh',
         execution_timeout=timedelta(minutes=15),
-        params={
+        params={"env": str(Variable.get('refresh_env')),
                 "mysql_db_host": str(mysql_connection.host),
                 "mysql_db_user": str(mysql_connection.login),
                 "mysql_db_host_stag": str(mysql_connection_stg.host)

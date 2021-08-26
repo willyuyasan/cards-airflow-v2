@@ -17,13 +17,12 @@ echo "My SQL Connection Start 1 END.."
 # connect to Postgresql to load the data dumped in the previous step
 # export P1GPASSWORD= ${PGSQL_DB_PASS}
 echo "PG SQL Connection Start 1 Start.."
-PGPASSWORD='${P1GPASSWORD}' psql -h ${PGSQL_DBHOST} -d ${PGSQL_DB} -u ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh.sql -o ${DUMP_FILEPATH}/arp_dim_affiliates_refresh_out.log
+PGPASSWORD="${P1GPASSWORD}" psql -h ${PGSQL_DBHOST} -d ${PGSQL_DIM_DB} -u ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh.sql -o ${DUMP_FILEPATH}/arp_dim_affiliates_refresh_out.log
+
 echo "PG SQL Connection Start 1 END.."
 
 rm ${DUMP_FILEPATH}/arp_dim_refresh.sql
 
-
-rm ${DUMP_FILEPATH}/arp_dim_refresh.sql
 
 
 SQL="select concat('select affiliate_reporting.proc_dim_websites_refresh(',a.website_id,',''',a.affiliate_id,''',''', replace(a.url,'''','''''') /*replace(replace(replace(a.url,'''',''''''),'=\\','=\\\\'),'/?','//?')*/, ''',''', a.status, ''',''',now(),''',''', now(),''');') from cccomus.partner_websites a where a.deleted = 0;"
@@ -33,7 +32,8 @@ echo "My SQL Connection Start 2 END.."
 
 # connect to Postgresql to load the data dumped in the previous step
 # export P1GPASSWORD= ${PGSQL_DB_PASS}
-psql -h ${PGSQL_DBHOST} -d ${PGSQL_DB} -u ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh.sql -o ${DUMP_FILEPATH}/arp_dim_websites_refresh_out.log
+psql -h ${PGSQL_DBHOST} -d ${PGSQL_DIM_DB} -u ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh.sql -o ${DUMP_FILEPATH}/arp_dim_websites_refresh_out.log
+
 
 rm ${DUMP_FILEPATH}/arp_dim_refresh.sql
 
@@ -44,7 +44,8 @@ mysql -u ${MYSQL_DB_USER} -p${MYSQL_DB_PASS} -h ${MYSQL_DBHOST} -AN -e"${SQL}" >
 echo "My SQL Connection Start 3 END.."
 # connect to Postgresql to load the data dumped in the previous step
 # export P1GPASSWORD= ${PGSQL_DB_PASS}
-psql -h ${PGSQL_DBHOST} -d ${PGSQL_DB} -u ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh.sql -o ${DUMP_FILEPATH}/arp_dim_categories_refresh_out.log
+psql -h ${PGSQL_DBHOST} -d ${PGSQL_DIM_DB} -u ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh.sql -o ${DUMP_FILEPATH}/arp_dim_categories_refresh_out.log
+
 
 rm ${DUMP_FILEPATH}/arp_dim_refresh.sql
 

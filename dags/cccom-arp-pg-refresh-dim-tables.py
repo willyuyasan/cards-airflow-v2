@@ -1,3 +1,4 @@
+import os
 from airflow import DAG
 from airflow.models import Variable
 from datetime import datetime, timedelta
@@ -20,7 +21,7 @@ default_args = {
 
 mysql_connection = BaseHook.get_connection('mysql_rw_conn')
 pgsql_connection = BaseHook.get_connection('postgres_ro_conn')
-venv = {}
+venv = {**os.environ}
 venv["DUMP_FILEPATH"] = str(Variable.get('cccom_dump_file_path'))
 venv["MYSQL_DB_USER"] = str(mysql_connection.login)
 venv["MYSQL_DBHOST"] = str(mysql_connection.host)
@@ -51,7 +52,6 @@ with DAG('cccom-arp-pg-refresh-dim-tables',
         task_id='ar_refresh_dim_tables_stag',
         bash_command='/scripts/shell/cccom-arp-pg-refresh-dim-tables-stag.sh',
         env=venv,
-        execution_timeout=timedelta(minutes=60),
         dag=dag
     )
 arp_refresh_dim_tables >> arp_refresh_dim_tables_stag

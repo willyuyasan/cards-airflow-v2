@@ -40,7 +40,7 @@ with DAG('cccom-arp-pg-refresh-dim-tables',
 
     arp_refresh_dim_tables = BashOperator(
         task_id='ar_refresh_dim_tables',
-        bash_command='/scripts/shell/cccom-arp-pg-refresh-dim-tables.sh ',
+        bash_command='/scripts/shell/cccom-arp-pg-refresh-dim-tables.sh',
         execution_timeout=timedelta(minutes=60),
         env=venv,
         dag=dag
@@ -49,7 +49,7 @@ with DAG('cccom-arp-pg-refresh-dim-tables',
     # connections in QA and DEV env has been set to same env
     arp_refresh_dim_tables_stag = BashOperator(
         task_id='ar_refresh_dim_tables_stag',
-        bash_command='/shellscripts/cccom-arp-pg-refresh-dim-tables-stag.sh ',
+        bash_command='/scripts/shell/cccom-arp-pg-refresh-dim-tables-stag.sh',
         env=venv,
         execution_timeout=timedelta(minutes=60),
         dag=dag

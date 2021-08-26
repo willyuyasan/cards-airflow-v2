@@ -14,7 +14,7 @@ SQL="select concat('select affiliate_reporting.proc_dim_affiliates_refresh(''', 
 mysql -u ${MYSQL_DB_USER} -p ${MYSQL_DB_PASS} -h ${MYSQL_DBHOST}-AN -e"${SQL}" > ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql
 
 # connect to Postgresql to load the data dumped in the previous step
-export PGPASSWORD=${PGSQL_DB_PASS}
+# export PGPASSWORD=${PGSQL_DB_PASS}
 psql -h ${PGSQL_DBHOST} -d ${PGSQL_DB} -U ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql -o ${DUMP_FILEPATH}/arp_dim_affiliates_refresh_out_stag.log
 
 rm ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql
@@ -24,7 +24,7 @@ SQL="select concat('select affiliate_reporting.proc_dim_websites_refresh(',a.web
 mysql -u ${MYSQL_DB_USER} -p ${MYSQL_DB_PASS} -h ${MYSQL_DBHOST}-AN -e"${SQL}" > ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql
 
 # connect to Postgresql to load the data dumped in the previous step
-export PGPASSWORD=${PGSQL_DB_PASS}
+# export PGPASSWORD=${PGSQL_DB_PASS}
 psql -h ${PGSQL_DBHOST} -d ${PGSQL_DB} -U ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql -o ${DUMP_FILEPATH}/arp_dim_websites_refresh_out_stag.log
 
 rm ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql
@@ -35,7 +35,7 @@ SQL="select concat('select affiliate_reporting.proc_dim_categories_refresh(', a.
 mysql -u ${MYSQL_DB_USER} -p ${MYSQL_DB_PASS} -h ${MYSQL_DBHOST}-AN -e"${SQL}" > ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql
 
 # connect to Postgresql to load the data dumped in the previous step
-export PGPASSWORD=${PGSQL_DB_PASS}
+# export PGPASSWORD=${PGSQL_DB_PASS}
 psql -h ${PGSQL_DBHOST} -d ${PGSQL_DB} -U ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql -o ${DUMP_FILEPATH}/arp_dim_categories_refresh_out_stag.log
 
 rm ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql

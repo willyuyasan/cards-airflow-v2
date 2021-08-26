@@ -34,6 +34,7 @@ rm ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql
 SQL="select concat('select affiliate_reporting.proc_dim_categories_refresh(', a.page_id,',''',replace(a.page_name,'''',''''''),''',''', a.insert_time,''',''', now(),''');') from cccomus.pages a where a.deleted = 0;"
 
 mysql -u ${MYSQL_DB_USER} -p${MYSQL_DB_PASS} -h ${MYSQL_DBHOST}-AN -e"${SQL}" > ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql
+
 # connect to Postgresql to load the data dumped in the previous step
 # export PGPASSWORD=${PGSQL_DB_PASS}
 psql -h ${PGSQL_DBHOST} -d ${PGSQL_DB} -U ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql -o ${DUMP_FILEPATH}/arp_dim_categories_refresh_out_stag.log

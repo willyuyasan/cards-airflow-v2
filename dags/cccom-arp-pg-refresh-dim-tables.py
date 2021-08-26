@@ -20,16 +20,16 @@ default_args = {
 
 mysql_connection = BaseHook.get_connection('mysql_rw_conn')
 pgsql_connection = BaseHook.get_connection('postgres_ro_conn')
-env = {}
-venv = [DUMP_FILEPATH] = str(Variable.get('cccom_dump_file_path'))
-venv = [MYSQL_DB_USER] = str(mysql_connection.login)
-venv = [MYSQL_DBHOST] = str(mysql_connection.host)
-venv = [MYSQL_DB_PASS] = str(mysql_connection.password)
-venv = [PGSQL_DB_USER] = str(pgsql_connection.login)
-venv = [PGSQL_DBHOST] = str(pgsql_connection.host)
-venv = [PGSQL_DB_PASS] = str(pgsql_connection.password)
-venv = [PGSQL_STG_DB] = str(Variable.get('cccom_pg_stg_db_name'))
-venv = [PGSQL_DIM_DB] = str(Variable.get('cccom_pg_db_name'))
+venv = {}
+venv["DUMP_FILEPATH"] = str(Variable.get('cccom_dump_file_path'))
+venv["MYSQL_DB_USER"] = str(mysql_connection.login)
+venv["MYSQL_DBHOST"] = str(mysql_connection.host)
+venv["MYSQL_DB_PASS"] = str(mysql_connection.password)
+venv["PGSQL_DB_USER"] = str(pgsql_connection.login)
+venv["PGSQL_DBHOST"] = str(pgsql_connection.host)
+venv["PGSQL_DB_PASS"] = str(pgsql_connection.password)
+venv["PGSQL_STG_DB"] = str(Variable.get('cccom_pg_stg_db_name'))
+venv["PGSQL_DIM_DB"] = str(Variable.get('cccom_pg_db_name'))
 
 with DAG('cccom-arp-pg-refresh-dim-tables',
          schedule_interval='46 0 * * *',

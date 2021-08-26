@@ -3,6 +3,11 @@
 
 # . /home/airflow/.arp_cred
 # connect to Mysql to get a dump of the data
+echo "Connection string to test"
+echo ${MYSQL_DB_USER}
+echo ${MYSQL_DB_PASS}
+echo ${MYSQL_DBHOST}
+
 SQL="select concat('select affiliate_reporting.proc_dim_affiliates_refresh(''', a.affiliate_id , ''',''',replace(a.company_name,'''',''''''),''',''',a.email,''',''',replace(a.first_name,'''',''''''),''',''',replace(a.last_name,'''',''''''),''',''',a.status,''',',(case when a.in_house then '''True''' else '''False''' end ),',''',a.time_modified,''',''', a.time_inserted,''');') from cccomus.partner_affiliates a where a.deleted = 0 order by a.time_inserted desc;"
 
 mysql -u ${MYSQL_DB_USER} -p ${MYSQL_DB_PASS} -h ${MYSQL_DBHOST} -AN -e"{SQL}" > ${DUMP_FILEPATH}/arp_dim_refresh.sql

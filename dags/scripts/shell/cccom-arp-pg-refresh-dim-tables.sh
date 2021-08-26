@@ -17,9 +17,11 @@ echo "My SQL Connection Start 1 END.."
 # connect to Postgresql to load the data dumped in the previous step
 # export P1GPASSWORD= ${PGSQL_DB_PASS}
 echo "PG SQL Connection Start 1 Start.."
-PGPASSWORD= ${P1GPASSWORD} psql -h ${PGSQL_DBHOST} -d ${PGSQL_DB} -u ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh.sql -o ${DUMP_FILEPATH}/arp_dim_affiliates_refresh_out.log
+PGPASSWORD='${P1GPASSWORD}' psql -h ${PGSQL_DBHOST} -d ${PGSQL_DB} -u ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh.sql -o ${DUMP_FILEPATH}/arp_dim_affiliates_refresh_out.log
+echo "PG SQL Connection Start 1 END.."
 
-echo "PG SQL Connection Start 1 Start.."
+rm ${DUMP_FILEPATH}/arp_dim_refresh.sql
+
 
 rm ${DUMP_FILEPATH}/arp_dim_refresh.sql
 

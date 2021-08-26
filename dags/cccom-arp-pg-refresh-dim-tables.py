@@ -28,7 +28,7 @@ venv["MYSQL_DBHOST"] = str(mysql_connection.host)
 venv["MYSQL_DB_PASS"] = str(mysql_connection.password)
 venv["PGSQL_DB_USER"] = str(pgsql_connection.login)
 venv["PGSQL_DBHOST"] = str(pgsql_connection.host)
-venv["P1GPASSWORD"] = str(pgsql_connection.password)
+# venv["P1GPASSWORD"] = str(pgsql_connection.password)
 venv["PGSQL_STG_DB"] = str(Variable.get('cccom_pg_stg_db_name'))
 venv["PGSQL_DIM_DB"] = str(Variable.get('cccom_pg_db_name'))
 

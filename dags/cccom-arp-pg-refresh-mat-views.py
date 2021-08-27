@@ -26,7 +26,7 @@ with DAG('cccom-arp-pg-refresh-mat-views',
 
     arp_refresh_matviews = PostgresOperator(
         task_id='ar_refresh_material_views',
-        postgres_conn_id='cccomprod_postgres_rw_conn',
+        postgres_conn_id='postgres_arp_svc_user',
         sql='/sql/extract/cccom/refresh_ar_matetial_views.sql',
         # params=dict_template,
         execution_timeout=timedelta(minutes=15),
@@ -37,7 +37,7 @@ with DAG('cccom-arp-pg-refresh-mat-views',
     # connections in QA and DEV env has been set to same env
     arp_refresh_matviews_stg = PostgresOperator(
         task_id='ar_refresh_material_views_stg',
-        postgres_conn_id='cccomstg_postgres_rw_conn',
+        postgres_conn_id='postgres_arp_svc_user_stg',
         sql='/sql/extract/cccom/refresh_ar_matetial_views.sql',
         # params=dict_template,
         execution_timeout=timedelta(minutes=15),

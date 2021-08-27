@@ -273,20 +273,39 @@ with DAG('core_staging_data_refresh',
 
     post_cms_cleanup = BashOperator(
         task_id='post_cms_cleanup',
-        bash_command="rm " + cfg_root + '/out/cms.sql ;' + " rm " + cfg_root + '/out/cms_views.sql'
+        bash_command="ls -lhrt " + cfg_root + '/out/ ; ' + "rm " + cfg_root + '/out/cms.sql ;' + " rm " + cfg_root + '/out/cms_views.sql; ' + "ls -lhrt " + cfg_root + '/out/ '
     )
     post_cardbank_cleanup = BashOperator(
         task_id='post_cardbank_cleanup',
-        bash_command="rm " + cfg_root + '/out/cardbank_views.sql ;' + " rm " + cfg_root + '/out/cardbank.sql'
-    )
-    post_cccomus_cleanup = BashOperator(
-        task_id='post_cccomus_cleanup',
-        bash_command="rm " + cfg_root + '/out/cccomus.sql ;' + " rm " + cfg_root + '/out/cccomus_views.sql'
-    )
+        bash_command="ls -lhrt " +
+        cfg_root +
+        '/out/ ; ' +
+        "rm " +
+        cfg_root +
+        '/out/cardbank_views.sql ;' +
+        " rm " +
+        cfg_root +
+        '/out/cardbank.sql; ' +
+        "ls -lhrt " +
+        cfg_root +
+        '/out/ ')
+    post_cccomus_cleanup = BashOperator(task_id='post_cccomus_cleanup', bash_command="ls -lhrt " + cfg_root + '/out/ ; ' + "rm " + cfg_root +
+                                        '/out/cccomus.sql ;' + " rm " + cfg_root + '/out/cccomus_views.sql; ' + "ls -lhrt " + cfg_root + '/out/ ')
     post_nvmailer_cleanup = BashOperator(
         task_id='post_nvmailer_cleanup',
-        bash_command="rm " + cfg_root + '/out/nvmailer_views.sql ;' + " rm " + cfg_root + '/out/nvmailer.sql'
-    )
+        bash_command="ls -lhrt " +
+        cfg_root +
+        '/out/ ; ' +
+        "rm " +
+        cfg_root +
+        '/out/nvmailer_views.sql ;' +
+        " rm " +
+        cfg_root +
+        '/out/nvmailer.sql; ' +
+        "ls -lhrt " +
+        cfg_root +
+        '/out/ ')
+
 export_cms >> import_cms >> export_cms_views >> import_cms_views >> postprocess_cms >> post_cms_cleanup
 export_cardbank >> import_cardbank >> export_cardbank_views >> import_cardbank_views >> post_cardbank_cleanup
 export_cccomus >> import_cccomus >> export_cccomus_views >> import_cccomus_views >> postprocess_cccomus >> post_cccomus_cleanup

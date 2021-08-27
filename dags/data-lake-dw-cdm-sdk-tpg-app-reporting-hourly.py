@@ -140,6 +140,22 @@ waitlist_reporting_jar_task = {
     ]
 }
 
+session_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("TPG_APP_SHORT_LOOKBACK_DAYS")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.reporting.MobileSession",
+        "ACCOUNT=" + Variable.get("DBX_TPG_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_TPG_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-tpg-app-reporting-hourly',
          schedule_interval='0 0-6,11-23 * * *',
@@ -187,5 +203,15 @@ with DAG('data-lake-dw-cdm-sdk-tpg-app-reporting-hourly',
         polling_period_seconds=60
     )
 
+    session_reporting = FinServDatabricksSubmitRunOperator(
+        task_id='session-reporting',
+        new_cluster=small_task_cluster,
+        spark_jar_task=session_reporting_jar_task,
+        libraries=reporting_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+
 # Dependencies
-tpg_app_staging_tables >> [screenview_reporting, form_summary_reporting, waitlist_reporting]
+tpg_app_staging_tables >> [screenview_reporting, form_summary_reporting, waitlist_reporting, session_reporting]

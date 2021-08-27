@@ -711,6 +711,22 @@ mobile_screen_viewed_jar_task = {
     ]
 }
 
+mobile_application_backgrounded_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.staging.MobileApplicationBackgrounded",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_TPG_APP_Tenant_Id"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
 # AMEX specific jar:
 pqo_offer_received_staging_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
@@ -1306,6 +1322,17 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=60
     )
+
+    mobile_application_backgrounded = FinServDatabricksSubmitRunOperator(
+        task_id='mobile-application-backgrounded-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=mobile_application_backgrounded_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=2400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+
     ccdc_staging_tables = DummyOperator(
         task_id='external-ccdc-staging'
     )
@@ -1352,7 +1379,8 @@ paidsearch_staging >> traffic_sources_staging
  mobile_form_exited_staging, mobile_form_outcome_received_staging, mobile_form_started_staging,
  mobile_form_submitted_staging, mobile_product_clicked_staging, mobile_product_viewed_staging,
  mobile_screen_engaged_staging, mobile_screen_refreshed_staging, mobile_screen_viewed_staging,
- form_outcome_received_staging, traffic_sources_staging, form_submitted_staging] >> tpg_app_staging_tables
+ form_outcome_received_staging, traffic_sources_staging, form_submitted_staging,
+ mobile_application_backgrounded] >> tpg_app_staging_tables
 
 # Amex Business Dependencies
 [ot_raw_staging, ot_metadata_raw_staging] >> amex_ot_details_staging

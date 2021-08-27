@@ -4,36 +4,45 @@ from airflow.models import Variable
 from datetime import datetime, timedelta
 from airflow.operators.bash_operator import BashOperator
 from airflow.hooks.base_hook import BaseHook
-
+from rvairflow import slack_hook as sh
 
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2020, 1, 8),
-    'email': ['pkarmakar@redventures.com'],
+    'start_date': datetime(2021, 15, 8),
+    'email': ['rzagade@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    # 'on_failure_callback': sh.slack_failure_callback(),
+    'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
     'provide_context': True
 }
 
 mysql_connection = BaseHook.get_connection('mysql_rw_conn')
-pgsql_connection = BaseHook.get_connection('postgres_ro_conn')
+pgsql_dim = BaseHook.get_connection('cccomprod_postgres_rw_conn')
+pgsql_stg = BaseHook.get_connection('cccomstg_postgres_rw_conn')
+
 venv = {**os.environ}
 venv["DUMP_FILEPATH"] = str(Variable.get('cccom_dump_file_path'))
+
 venv["MYSQL_DB_USER"] = str(mysql_connection.login)
 venv["MYSQL_DBHOST"] = str(mysql_connection.host)
 venv["MYSQL_DB_PASS"] = str(mysql_connection.password)
-venv["PGSQL_DB_USER"] = str(pgsql_connection.login)
-venv["PGSQL_DBHOST"] = str(pgsql_connection.host)
-venv["P1GPASSWORD"] = str(pgsql_connection.password)
-venv["PGSQL_STG_DB"] = str(Variable.get('cccom_pg_stg_db_name'))
+
+venv["PGSQL_DIM_USER"] = str(pgsql_dim.login)
+venv["PGSQL_DIM_HOST"] = str(pgsql_dim.host)
+venv["DIMPASSWORD"] = str(pgsql_dim.password)
 venv["PGSQL_DIM_DB"] = str(Variable.get('cccom_pg_db_name'))
 
+venv["PGSQL_STG_USER"] = str(pgsql_stg.login)
+venv["PGSQL_STG_DBHOST"] = str(pgsql_stg.host)
+venv["STGPASSWORD"] = str(pgsql_stg.password)
+venv["PGSQL_STG_DB"] = str(Variable.get('cccom_pg_stg_db_name'))
+
+
 with DAG('cccom-arp-pg-refresh-dim-tables',
-         schedule_interval='46 0 * * *',
+         schedule_interval='@weekly',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
          max_active_runs=1,

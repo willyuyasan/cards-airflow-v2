@@ -3,20 +3,12 @@
 
 # . /home/airflow/.arp_cred_stag
 
-
-# connect to Mysql to get a dump of the data
-echo "Connection string to test"
-echo ${MYSQL_DB_USER}
-echo ${MYSQL_DB_PASS}
-echo ${MYSQL_DBHOST}
-
 SQL="select concat('select affiliate_reporting.proc_dim_affiliates_refresh(''', a.affiliate_id , ''',''',replace(a.company_name,'''',''''''),''',''',a.email,''',''',replace(a.first_name,'''',''''''),''',''',replace(a.last_name,'''',''''''),''',''',a.status,''',',(case when a.in_house then '''True''' else '''False''' end ),',''',a.time_modified,''',''', a.time_inserted,''');') from cccomus.partner_affiliates a where a.deleted = 0 order by a.time_inserted desc;"
 
 mysql -u ${MYSQL_DB_USER} -p${MYSQL_DB_PASS} -h ${MYSQL_DBHOST}-AN -e"${SQL}" > ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql
 
 # connect to Postgresql to load the data dumped in the previous step
-# export PGPASSWORD=${PGSQL_DB_PASS}
-psql -h ${PGSQL_DBHOST} -d ${PGSQL_DB} -U ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql -o ${DUMP_FILEPATH}/arp_dim_affiliates_refresh_out_stag.log
+PGPASSWORD="${STGPASSWORD}" psql -h ${PGSQL_STG_DBHOST} -d ${PGSQL_STG_DB} -U ${PGSQL_STG_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql -o ${DUMP_FILEPATH}/arp_dim_affiliates_refresh_out_stag.log
 
 rm ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql
 
@@ -25,8 +17,7 @@ SQL="select concat('select affiliate_reporting.proc_dim_websites_refresh(',a.web
 mysql -u ${MYSQL_DB_USER} -p${MYSQL_DB_PASS} -h ${MYSQL_DBHOST}-AN -e"${SQL}" > ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql
 
 # connect to Postgresql to load the data dumped in the previous step
-# export PGPASSWORD=${PGSQL_DB_PASS}
-psql -h ${PGSQL_DBHOST} -d ${PGSQL_DB} -U ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql -o ${DUMP_FILEPATH}/arp_dim_websites_refresh_out_stag.log
+PGPASSWORD="${STGPASSWORD}" psql -h ${PGSQL_STG_DBHOST} -d ${PGSQL_STG_DB} -U ${PGSQL_STG_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql -o ${DUMP_FILEPATH}/arp_dim_websites_refresh_out_stag.log
 
 rm ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql
 
@@ -36,8 +27,7 @@ SQL="select concat('select affiliate_reporting.proc_dim_categories_refresh(', a.
 mysql -u ${MYSQL_DB_USER} -p${MYSQL_DB_PASS} -h ${MYSQL_DBHOST}-AN -e"${SQL}" > ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql
 
 # connect to Postgresql to load the data dumped in the previous step
-# export PGPASSWORD=${PGSQL_DB_PASS}
-psql -h ${PGSQL_DBHOST} -d ${PGSQL_DB} -U ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql -o ${DUMP_FILEPATH}/arp_dim_categories_refresh_out_stag.log
+PGPASSWORD="${STGPASSWORD}" psql -h ${PGSQL_STG_DBHOST} -d ${PGSQL_STG_DB} -U ${PGSQL_STG_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql -o ${DUMP_FILEPATH}/arp_dim_categories_refresh_out_stag.log
 
 rm ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql
 

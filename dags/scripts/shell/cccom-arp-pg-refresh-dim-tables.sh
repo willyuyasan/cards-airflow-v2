@@ -9,7 +9,7 @@ echo ${MYSQL_DB_PASS}
 echo ${MYSQL_DBHOST}
 echo ${DUMP_FILEPATH}
 
-SQL="select concat('select affiliate_reporting.proc_dim_affiliates_refresh(''', a.affiliate_id , ''',''',replace(a.company_name,'''',''''''),''',''',a.email,''',''',replace(a.first_name,'''',''''''),''',''',replace(a.last_name,'''',''''''),''',''',a.status,''',',(case when a.in_house then '''True''' else '''False''' end ),',''',a.time_modified,''',''', a.time_inserted,''');') from cccomus.partner_affiliates a where a.deleted = 0 order by a.time_inserted desc;"
+SQL="select concat('select affiliate_reporting.proc_dim_affiliates_refresh(''', a.affiliate_id , ''',''',replace(a.company_name,'''',''''''),''',''',a.email,''',''',replace(a.first_name,'''',''''''),''',''',replace(a.last_name,'''',''''''),''',''',a.status,''',',(case when a.in_house then '''True''' else '''False''' end ),',''',a.time_modified,''',''', a.time_inserted,''');') from cccomus.partner_affiliates a where a.deleted = 0 order by a.time_inserted desc limit 10;"
 echo "My SQL Connection Start 1 Start.."
 mysql -u ${MYSQL_DB_USER} -p${MYSQL_DB_PASS} -h ${MYSQL_DBHOST} -AN -e"${SQL}" > ${DUMP_FILEPATH}/arp_dim_refresh.sql
 echo "My SQL Connection Start 1 END.."
@@ -19,34 +19,45 @@ echo "My SQL Connection Start 1 END.."
 echo "PG SQL Connection Start 1 Start.."
 PGPASSWORD="${P1GPASSWORD}" psql -h ${PGSQL_DBHOST} -d ${PGSQL_DIM_DB} -U ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh.sql -o ${DUMP_FILEPATH}/arp_dim_affiliates_refresh_out.log
 echo "PG SQL Connection Start 1 END.."
+echo "PG SQL Connection Start 1 END.."
 
+echo "Before Remove 1"
+ls -lhrt ${DUMP_FILEPATH}
 rm ${DUMP_FILEPATH}/arp_dim_refresh.sql
+echo "After Remove 1"
 
-
-SQL="select concat('select affiliate_reporting.proc_dim_websites_refresh(',a.website_id,',''',a.affiliate_id,''',''', replace(a.url,'''','''''') /*replace(replace(replace(a.url,'''',''''''),'=\\','=\\\\'),'/?','//?')*/, ''',''', a.status, ''',''',now(),''',''', now(),''');') from cccomus.partner_websites a where a.deleted = 0;"
+SQL="select concat('select affiliate_reporting.proc_dim_websites_refresh(',a.website_id,',''',a.affiliate_id,''',''', replace(a.url,'''','''''') /*replace(replace(replace(a.url,'''',''''''),'=\\','=\\\\'),'/?','//?')*/, ''',''', a.status, ''',''',now(),''',''', now(),''');') from cccomus.partner_websites a where a.deleted = 0 limit 10;"
 echo "My SQL Connection Start 2 Start.."
 mysql -u ${MYSQL_DB_USER} -p${MYSQL_DB_PASS} -h ${MYSQL_DBHOST} -AN -e"${SQL}" > ${DUMP_FILEPATH}/arp_dim_refresh.sql
 echo "My SQL Connection Start 2 END.."
 
 # connect to Postgresql to load the data dumped in the previous step
 # export P1GPASSWORD= ${PGSQL_DB_PASS}
-psql -h ${PGSQL_DBHOST} -d ${PGSQL_DIM_DB} -U ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh.sql -o ${DUMP_FILEPATH}/arp_dim_websites_refresh_out.log
+PGPASSWORD="${P1GPASSWORD}" psql -h ${PGSQL_DBHOST} -d ${PGSQL_DIM_DB} -U ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh.sql -o ${DUMP_FILEPATH}/arp_dim_websites_refresh_out.log
 
+echo "Before Remove 2"
+ls -lhrt ${DUMP_FILEPATH}
 rm ${DUMP_FILEPATH}/arp_dim_refresh.sql
+echo "After Remove 2"
 
-SQL="select concat('select affiliate_reporting.proc_dim_categories_refresh(', a.page_id,',''',replace(a.page_name,'''',''''''),''',''', a.insert_time,''',''', now(),''');') from cccomus.pages a where a.deleted = 0;"
+SQL="select concat('select affiliate_reporting.proc_dim_categories_refresh(', a.page_id,',''',replace(a.page_name,'''',''''''),''',''', a.insert_time,''',''', now(),''');') from cccomus.pages a where a.deleted = 0 limit 10;"
 echo "My SQL Connection Start 3 Start.."
 mysql -u ${MYSQL_DB_USER} -p${MYSQL_DB_PASS} -h ${MYSQL_DBHOST} -AN -e"${SQL}" > ${DUMP_FILEPATH}/arp_dim_refresh.sql
 echo "My SQL Connection Start 3 END.."
 # connect to Postgresql to load the data dumped in the previous step
 # export P1GPASSWORD= ${PGSQL_DB_PASS}
-psql -h ${PGSQL_DBHOST} -d ${PGSQL_DIM_DB} -U ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh.sql -o ${DUMP_FILEPATH}/arp_dim_categories_refresh_out.log
+PGPASSWORD="${P1GPASSWORD}" psql -h ${PGSQL_DBHOST} -d ${PGSQL_DIM_DB} -U ${PGSQL_DB_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh.sql -o ${DUMP_FILEPATH}/arp_dim_categories_refresh_out.log
 
-
+echo "Before Remove 3"
+ls -lhrt ${DUMP_FILEPATH}
 rm ${DUMP_FILEPATH}/arp_dim_refresh.sql
+echo "Before Remove 3"
 
 # housekeeping
+echo "Before Remove 4"
+ls -lhrt ${DUMP_FILEPATH}
+
 rm ${DUMP_FILEPATH}/arp_dim_affiliates_refresh_out.log
 rm ${DUMP_FILEPATH}/arp_dim_websites_refresh_out.log
 rm ${DUMP_FILEPATH}/arp_dim_categories_refresh_out.log
-
+echo "Before Remove 4"

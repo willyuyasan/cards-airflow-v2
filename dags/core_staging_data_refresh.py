@@ -26,7 +26,6 @@ default_args = {
     'retries': 1,
     'max_active_runs': 1,
     'retry_delay': timedelta(minutes=1),
-    'queue': 'io_intensive_queue',
     'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name"))
 }
 

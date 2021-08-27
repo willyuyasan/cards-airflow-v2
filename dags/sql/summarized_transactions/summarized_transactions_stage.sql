@@ -1,5 +1,4 @@
-TRUNCATE TABLE cccomus.summarized_transactions_stage;
-
+DELETE FROM cccomus.summarized_transactions_stage;
 INSERT INTO cccomus.summarized_transactions_stage (
   transaction_date,
   product_id,

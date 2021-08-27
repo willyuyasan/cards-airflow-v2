@@ -1,5 +1,6 @@
 from airflow import DAG
 from datetime import datetime, timedelta
+from airflow.models import Variable
 from rvairflow import slack_hook as sh
 from airflow.operators.postgres_operator import PostgresOperator
 

@@ -7,6 +7,7 @@ SQL="select concat('select affiliate_reporting.proc_dim_affiliates_refresh(''', 
 
 mysql -u ${MYSQL_DB_USER} -p${MYSQL_DB_PASS} -h ${MYSQL_DBHOST} -AN -e"${SQL}" > ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql
 
+
 # connect to Postgresql to load the data dumped in the previous step
 PGPASSWORD="${STGPASSWORD}" psql -h ${PGSQL_STG_DBHOST} -d ${PGSQL_STG_DB} -U ${PGSQL_STG_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh_stag.sql -o ${DUMP_FILEPATH}/arp_dim_affiliates_refresh_out_stag.log
 

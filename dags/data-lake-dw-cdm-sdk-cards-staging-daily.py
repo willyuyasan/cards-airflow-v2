@@ -1327,15 +1327,15 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=60
     )
 
-    # mobile_application_backgrounded = FinServDatabricksSubmitRunOperator(
-    #     task_id='mobile-application-backgrounded-staging',
-    #     new_cluster=extra_small_task_custom_cluster,
-    #     spark_jar_task=mobile_application_backgrounded_jar_task,
-    #     libraries=staging_libraries,
-    #     timeout_seconds=2400,
-    #     databricks_conn_id=airflow_svc_token,
-    #     polling_period_seconds=60
-    # )
+    mobile_application_backgrounded = FinServDatabricksSubmitRunOperator(
+        task_id='mobile-application-backgrounded-staging',
+        new_cluster=extra_small_task_custom_cluster,
+        spark_jar_task=mobile_application_backgrounded_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=2400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
 
     ccdc_staging_tables = DummyOperator(
         task_id='external-ccdc-staging'

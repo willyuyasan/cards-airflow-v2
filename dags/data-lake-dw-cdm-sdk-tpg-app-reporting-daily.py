@@ -213,5 +213,6 @@ with DAG('data-lake-dw-cdm-sdk-tpg-app-reporting-daily',
     #     polling_period_seconds=60
     # )
 
+
 # Dependencies
 tpg_app_staging_tables >> [screenview_reporting, form_summary_reporting, waitlist_reporting, session_reporting]

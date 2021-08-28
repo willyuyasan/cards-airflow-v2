@@ -203,15 +203,15 @@ with DAG('data-lake-dw-cdm-sdk-tpg-app-reporting-hourly',
         polling_period_seconds=60
     )
 
-    # session_reporting = FinServDatabricksSubmitRunOperator(
-    #     task_id='session-reporting',
-    #     new_cluster=small_task_cluster,
-    #     spark_jar_task=session_reporting_jar_task,
-    #     libraries=reporting_libraries,
-    #     timeout_seconds=3600,
-    #     databricks_conn_id=airflow_svc_token,
-    #     polling_period_seconds=60
-    # )
+    session_reporting = FinServDatabricksSubmitRunOperator(
+        task_id='session-reporting',
+        new_cluster=small_task_cluster,
+        spark_jar_task=session_reporting_jar_task,
+        libraries=reporting_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
 
 # Dependencies
 tpg_app_staging_tables >> [screenview_reporting, form_summary_reporting, waitlist_reporting, session_reporting]

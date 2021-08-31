@@ -43,7 +43,8 @@ large_task_custom_cluster = {
         'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
-        'java_opts': '-Dconfig.resource=' + Variable.get("COF_SDK_CONFIG_FILE")
+        'java_opts': '-Dconfig.resource=' + Variable.get("COF_SDK_CONFIG_FILE"),
+        'GOOGLE_APPLICATION_CREDENTIALS': '/dbfs/gcp/rv-mt-data-prod-svc-key.json'
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",
@@ -75,7 +76,8 @@ gam_mapping_large_task_custom_cluster = {
         'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
-        'java_opts': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE")
+        'java_opts': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE"),
+        'GOOGLE_APPLICATION_CREDENTIALS': '/dbfs/gcp/rv-mt-data-prod-svc-key.json'
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",
@@ -147,6 +149,22 @@ cof_report_hl_mapping_task = {
     ]
 }
 
+hl_gam_dim_jar_task = {
+    'main_class_name': "com.redventures.cdm.cof.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_GAM_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.gam.healthline.reporting.GamAdUnitDim,com.redventures.cdm.datamart.cards.gam.healthline.reporting.GamOrderLineItemDim,com.redventures.cdm.datamart.cards.gam.healthline.reporting.OpProduct,com.redventures.cdm.datamart.cards.gam.healthline.reporting.OpSalesOrder,com.redventures.cdm.datamart.cards.gam.healthline.reporting.OpSalesOrderLineItems",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("HL_GAM_TENANTS"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
 # DAG Creation Step
 with DAG(DAG_NAME,
          schedule_interval='0 9 * * *',
@@ -170,6 +188,16 @@ with DAG(DAG_NAME,
         task_id='cof-healthline-gam-mapping',
         new_cluster=gam_mapping_large_task_custom_cluster,
         spark_jar_task=cof_report_hl_mapping_task,
+        libraries=staging_libraries,
+        timeout_seconds=9600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
+    hl_gam_dim_task = FinServDatabricksSubmitRunOperator(
+        task_id='cof-healthline-gam-dim',
+        new_cluster=gam_mapping_large_task_custom_cluster,
+        spark_jar_task=hl_gam_dim_jar_task,
         libraries=staging_libraries,
         timeout_seconds=9600,
         databricks_conn_id=airflow_svc_token,

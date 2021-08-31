@@ -43,7 +43,8 @@ large_task_custom_cluster = {
         'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
-        'java_opts': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE")
+        'java_opts': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE"),
+        'GOOGLE_APPLICATION_CREDENTIALS': '/dbfs/gcp/rv-mt-data-prod-svc-key.json'
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",
@@ -143,6 +144,22 @@ cof_report_jar_task = {
     ]
 }
 
+cof_aam_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "daily",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_GAM_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.aam.reporting.SegmentsDim,com.redventures.cdm.datamart.cards.aam.reporting.TraitsDim,com.redventures.cdm.datamart.cards.aam.staging.Visitors",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
+    ]
+}
+
 
 # DAG Creation Step
 with DAG(DAG_NAME,
@@ -172,5 +189,16 @@ with DAG(DAG_NAME,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
+
+    cnet_aam_task = FinServDatabricksSubmitRunOperator(
+        task_id='cof-cnet-aam-task',
+        new_cluster=large_task_custom_cluster,
+        spark_jar_task=cof_aam_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=7200,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
 # Defining  dependencies
 cnet_gam_data_task >> cnet_gam_mapping_task

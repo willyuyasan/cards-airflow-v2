@@ -157,7 +157,11 @@ hl_gam_dim_jar_task = {
                 datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_GAM_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.gam.healthline.reporting.GamAdUnitDim,com.redventures.cdm.datamart.cards.gam.healthline.reporting.GamOrderLineItemDim,com.redventures.cdm.datamart.cards.gam.healthline.reporting.OpProduct,com.redventures.cdm.datamart.cards.gam.healthline.reporting.OpSalesOrder,com.redventures.cdm.datamart.cards.gam.healthline.reporting.OpSalesOrderLineItems",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.gam.healthline.reporting.GamAdUnitDim" +
+                    ",com.redventures.cdm.datamart.cards.gam.healthline.reporting.GamOrderLineItemDim" +
+                    ",com.redventures.cdm.datamart.cards.gam.healthline.reporting.OpProduct" +
+                    ",com.redventures.cdm.datamart.cards.gam.healthline.reporting.OpSalesOrder" +
+                    ",com.redventures.cdm.datamart.cards.gam.healthline.reporting.OpSalesOrderLineItems",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("HL_GAM_TENANTS"),

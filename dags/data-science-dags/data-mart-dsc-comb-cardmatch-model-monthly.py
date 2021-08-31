@@ -221,7 +221,7 @@ discover_model_training_notebook_task_a = {
 discover_model_training_notebook_task_b = {
     'base_parameters': {
         "issuer": "Discover",
-        "card_ids": "7608, 7609, 7610, 7611, 7612"
+        "card_ids": "7608, 7609, 7610, 7611, 7612, 7976, 7977"
     },
     'notebook_path': '/Production/CardMatchDS/Combined/CardMatch_python_train',
 }

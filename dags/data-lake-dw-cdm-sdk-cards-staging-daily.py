@@ -955,9 +955,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
-            
-            
-
+                      
     cookie_identified_staging = FinServDatabricksSubmitRunOperator(
         task_id='cookie-identified-staging',
         new_cluster=extra_small_task_custom_cluster,

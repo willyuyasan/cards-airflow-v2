@@ -215,7 +215,7 @@ page_view_staging_cof_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+            datetime.now() - (timedelta(days=2)).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.cohesion.staging.PageView",

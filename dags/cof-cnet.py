@@ -152,7 +152,9 @@ cof_aam_jar_task = {
                 datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_GAM_Lookback_Days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.aam.reporting.SegmentsDim,com.redventures.cdm.datamart.cards.aam.reporting.TraitsDim,com.redventures.cdm.datamart.cards.aam.staging.Visitors",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.aam.reporting.SegmentsDim" +
+                    ",com.redventures.cdm.datamart.cards.aam.reporting.TraitsDim" +
+                    ",com.redventures.cdm.datamart.cards.aam.staging.Visitors",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),

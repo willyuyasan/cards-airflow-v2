@@ -42,7 +42,7 @@ venv["PGSQL_STG_DB"] = str(Variable.get('cccom_pg_stg_db_name'))
 
 
 with DAG('cccom-arp-pg-refresh-dim-tables',
-         schedule_interval='@weekly',
+         schedule_interval='0 1 * * 0',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
          max_active_runs=1,

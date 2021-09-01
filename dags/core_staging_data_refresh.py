@@ -31,6 +31,7 @@ default_args = {
 
 # Config Root
 cfg_root = '/home/airflow/airflow/dags/core_staging'
+DUMP_FILEPATH = str(Variable.get('cccom_dump_file_path'))
 source_user_connection = 'core-prod-ro-user'
 
 airflow_core_stg_password = Variable.get('airflow_core_stg_password')
@@ -68,7 +69,7 @@ def export_schema_views_method(schema, source_connection, **kwargs):
         viewsString = viewsString + row[0] + ' '
 
     viewquery = "mysqldump -h '" + db_host + "' -u " + db_user + " -p" + db_password + " --lock-tables=false " + schema_name + \
-        " " + viewsString + " | sed -e 's/DEFINER[ ]*=[ ]*[^*]*\\*/\\*/'  > " + cfg_root + "/out/" + schema_name + "_views.sql"
+        " " + viewsString + " | sed -e 's/DEFINER[ ]*=[ ]*[^*]*\\*/\\*/'  > " + DUMP_FILEPATH + schema_name + "_views.sql"
     logging.info(viewquery)
     os.system(viewquery)
 
@@ -79,14 +80,14 @@ def export_schema_views_method(schema, source_connection, **kwargs):
         procString = viewsString + row[0] + ' '
 
     procString = "mysqldump -h '" + db_host + "' -u " + db_user + " -p" + db_password + " --lock-tables=false --routines --no-create-info --no-data --no-create-db " + \
-        schema_name + " | sed 's/DEFINER.*FUNCTION/FUNCTION/' | sed 's/DEFINER.*PROCEDURE/PROCEDURE/' >> " + cfg_root + "/out/" + schema_name + "_views.sql"
+        schema_name + " | sed 's/DEFINER.*FUNCTION/FUNCTION/' | sed 's/DEFINER.*PROCEDURE/PROCEDURE/' >> " + DUMP_FILEPATH + schema_name + "_views.sql"
     logging.info(procString)
     os.system(procString)
 
 
 with DAG('core_staging_data_refresh',
          default_args=default_args,
-         schedule_interval="@daily",
+         schedule_interval='0 7 * * 0',
          dagrun_timeout=timedelta(hours=8)) as dag:
     #    export_ccdata = BashOperator(
     #        task_id='export_ccdata',
@@ -96,19 +97,19 @@ with DAG('core_staging_data_refresh',
 
     export_nvmailer = BashOperator(
         task_id='export_nvmailer',
-        bash_command=superdump_cmd.format(outfile=cfg_root + '/out/nvmailer.sql',
+        bash_command=superdump_cmd.format(outfile=DUMP_FILEPATH + '/nvmailer.sql',
                                           config=cfg_root + '/config/nvmailer-staging.cfg',
                                           db='nvmailer'))
 
     export_cccomus = BashOperator(
         task_id='export_cccomus',
-        bash_command=superdump_cmd.format(outfile=cfg_root + '/out/cccomus.sql',
+        bash_command=superdump_cmd.format(outfile=DUMP_FILEPATH + '/cccomus.sql',
                                           config=cfg_root + '/config/cccomus-staging.cfg',
                                           db='cccomus'))
 
     export_cms = BashOperator(
         task_id='export_cms',
-        bash_command=superdump_cmd.format(outfile=cfg_root + '/out/cms.sql',
+        bash_command=superdump_cmd.format(outfile=DUMP_FILEPATH + '/cms.sql',
                                           config=cfg_root + '/config/cms-staging.cfg',
                                           db='cms'))
 
@@ -149,7 +150,7 @@ with DAG('core_staging_data_refresh',
 
     export_cardbank = BashOperator(
         task_id='export_cardbank',
-        bash_command=superdump_cmd.format(outfile=cfg_root + '/out/cardbank.sql',
+        bash_command=superdump_cmd.format(outfile=DUMP_FILEPATH + '/cardbank.sql',
                                           config=cfg_root + '/config/cardbank-staging.cfg',
                                           db='cardbank'))
 
@@ -178,7 +179,7 @@ with DAG('core_staging_data_refresh',
                 pwd=airflow_core_stg_password,
                 host=core_stg_endpoint,
                 db='nvmailer',
-                filename=cfg_root + '/out/nvmailer.sql'))
+                filename=DUMP_FILEPATH + '/nvmailer.sql'))
 
     import_cccomus = BashOperator(
         task_id='import_cccomus',
@@ -187,7 +188,7 @@ with DAG('core_staging_data_refresh',
                 pwd=airflow_core_stg_password,
                 host=core_stg_endpoint,
                 db='cccomus',
-                filename=cfg_root + '/out/cccomus.sql'))
+                filename=DUMP_FILEPATH + '/cccomus.sql'))
 
     import_cms = BashOperator(
         task_id='import_cms',
@@ -196,7 +197,7 @@ with DAG('core_staging_data_refresh',
                 pwd=airflow_core_stg_password,
                 host=core_stg_endpoint,
                 db='cms',
-                filename=cfg_root + '/out/cms.sql'))
+                filename=DUMP_FILEPATH + '/cms.sql'))
 
     import_cms_views = BashOperator(
         task_id='import_cms_views',
@@ -205,7 +206,7 @@ with DAG('core_staging_data_refresh',
                 pwd=airflow_core_stg_password,
                 host=core_stg_endpoint,
                 db='cms',
-                filename=cfg_root + '/out/cms_views.sql'))
+                filename=DUMP_FILEPATH + '/cms_views.sql'))
 
     import_cardbank_views = BashOperator(
         task_id='import_cardbank_views',
@@ -214,7 +215,7 @@ with DAG('core_staging_data_refresh',
                 pwd=airflow_core_stg_password,
                 host=core_stg_endpoint,
                 db='cardbank',
-                filename=cfg_root + '/out/cardbank_views.sql'))
+                filename=DUMP_FILEPATH + '/cardbank_views.sql'))
 
     import_nvmailer_views = BashOperator(
         task_id='import_nvmailer_views',
@@ -223,7 +224,7 @@ with DAG('core_staging_data_refresh',
                 pwd=airflow_core_stg_password,
                 host=core_stg_endpoint,
                 db='nvmailer',
-                filename=cfg_root + '/out/nvmailer_views.sql'))
+                filename=DUMP_FILEPATH + '/nvmailer_views.sql'))
 
     import_cccomus_views = BashOperator(
         task_id='import_cccomus_views',
@@ -232,7 +233,7 @@ with DAG('core_staging_data_refresh',
                 pwd=airflow_core_stg_password,
                 host=core_stg_endpoint,
                 db='cccomus',
-                filename=cfg_root + '/out/cccomus_views.sql'))
+                filename=DUMP_FILEPATH + '/cccomus_views.sql'))
 
     postprocess_cccomus = BashOperator(
         task_id='postprocess_cccomus',
@@ -268,42 +269,40 @@ with DAG('core_staging_data_refresh',
                 pwd=airflow_core_stg_password,
                 host=core_stg_endpoint,
                 db='cardbank',
-                filename=cfg_root + '/out/cardbank.sql'))
+                filename=DUMP_FILEPATH + '/cardbank.sql'))
 
     post_cms_cleanup = BashOperator(
         task_id='post_cms_cleanup',
-        bash_command="ls -lhrt " + cfg_root + '/out/ ; ' + "rm " + cfg_root + '/out/cms.sql ;' + " rm " + cfg_root + '/out/cms_views.sql; ' + "ls -lhrt " + cfg_root + '/out/ '
+        bash_command="ls -lhrt " + DUMP_FILEPATH + '; ' + "rm " + DUMP_FILEPATH + '/cms.sql ;' + " rm " + DUMP_FILEPATH + '/cms_views.sql; ' + "ls -lhrt " + DUMP_FILEPATH
     )
     post_cardbank_cleanup = BashOperator(
         task_id='post_cardbank_cleanup',
         bash_command="ls -lhrt " +
-        cfg_root +
-        '/out/ ; ' +
+        DUMP_FILEPATH +
+        '; ' +
         "rm " +
-        cfg_root +
-        '/out/cardbank_views.sql ;' +
+        DUMP_FILEPATH +
+        '/cardbank_views.sql ;' +
         " rm " +
-        cfg_root +
-        '/out/cardbank.sql; ' +
+        DUMP_FILEPATH +
+        '/cardbank.sql; ' +
         "ls -lhrt " +
-        cfg_root +
-        '/out/ ')
-    post_cccomus_cleanup = BashOperator(task_id='post_cccomus_cleanup', bash_command="ls -lhrt " + cfg_root + '/out/ ; ' + "rm " + cfg_root +
-                                        '/out/cccomus.sql ;' + " rm " + cfg_root + '/out/cccomus_views.sql; ' + "ls -lhrt " + cfg_root + '/out/ ')
+        DUMP_FILEPATH)
+    post_cccomus_cleanup = BashOperator(task_id='post_cccomus_cleanup', bash_command="ls -lhrt " + DUMP_FILEPATH + '; ' + "rm " + DUMP_FILEPATH +
+                                        '/cccomus.sql ;' + " rm " + DUMP_FILEPATH + '/cccomus_views.sql; ' + "ls -lhrt " + DUMP_FILEPATH)
     post_nvmailer_cleanup = BashOperator(
         task_id='post_nvmailer_cleanup',
         bash_command="ls -lhrt " +
-        cfg_root +
-        '/out/ ; ' +
+        DUMP_FILEPATH +
+        '; ' +
         "rm " +
-        cfg_root +
-        '/out/nvmailer_views.sql ;' +
+        DUMP_FILEPATH +
+        '/nvmailer_views.sql ;' +
         " rm " +
-        cfg_root +
-        '/out/nvmailer.sql; ' +
+        DUMP_FILEPATH +
+        '/nvmailer.sql; ' +
         "ls -lhrt " +
-        cfg_root +
-        '/out/ ')
+        DUMP_FILEPATH)
 
 export_cms >> import_cms >> export_cms_views >> import_cms_views >> postprocess_cms >> post_cms_cleanup
 export_cardbank >> import_cardbank >> export_cardbank_views >> import_cardbank_views >> post_cardbank_cleanup

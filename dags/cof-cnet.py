@@ -21,7 +21,7 @@ default_args = {
 # token variable
 airflow_svc_token = "databricks_airflow_svc_token"
 ACCOUNT = 'cards'
-DAG_NAME = 'data-lake-dw-cdm-sdk-cof-cnet-gam'
+DAG_NAME = 'data-lake-dw-cdm-sdk-cof-cnet'
 
 LOG_PATH = {
     'dbfs': {
@@ -149,7 +149,7 @@ cof_aam_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "daily",
         "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_GAM_Lookback_Days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("CNET_GAM_Lookback")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.aam.reporting.SegmentsDim" +

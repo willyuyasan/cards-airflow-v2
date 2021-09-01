@@ -210,6 +210,22 @@ page_view_staging_jar_task = {
     ]
 }
 
+page_view_staging_cof_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=2))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.cohesion.staging.PageView",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_COF_SDK_Tenants"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
 cookie_identified_staging_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
@@ -924,6 +940,16 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
         task_id='page-view-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=page_view_staging_jar_task,
+        libraries=staging_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
+    page_view_staging_cof = FinServDatabricksSubmitRunOperator(
+        task_id='page_view_staging_cof',
+        new_cluster=small_task_custom_cluster,
+        spark_jar_task=page_view_staging_cof_jar_task,
         libraries=staging_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,

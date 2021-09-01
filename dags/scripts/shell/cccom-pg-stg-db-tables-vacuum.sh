@@ -23,8 +23,8 @@ SQL="${SQL} ( 'schema_version','flyway_schema_history') and ((tablename not like
 SQL="${SQL} order by schemaname ,   tablename;"
 
 #prep actual vacuum table list
-PGPASSWORD="${PRODPASSWORD}" psql -t -U {{params.pg_db_user}} -h {{params.pg_db_host}} -d {{params.pg_db_name}} -c "${SQL}" -o ${FILEPATH}${FILENAME}
+PGPASSWORD="${STGPASSWORD}" psql -t -U {{params.pg_db_user}} -h {{params.pg_db_host}} -d {{params.pg_db_name}} -c "${SQL}" -o ${FILEPATH}${FILENAME}
 
 # actual running vacuum
-PGPASSWORD="${PRODPASSWORD}" psql -h {{params.pg_db_host}} -d {{params.pg_db_name}} -U {{params.pg_db_user}} -f ${FILEPATH}${FILENAME} -o ${FILEPATH}${LOG_FILE}
+PGPASSWORD="${STGPASSWORD}" psql -h {{params.pg_db_host}} -d {{params.pg_db_name}} -U {{params.pg_db_user}} -f ${FILEPATH}${FILENAME} -o ${FILEPATH}${LOG_FILE}
 

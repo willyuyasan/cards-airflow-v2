@@ -1,3 +1,4 @@
+import os
 from airflow import DAG
 from airflow.models import Variable
 from datetime import datetime, timedelta
@@ -18,8 +19,20 @@ default_args = {
     'provide_context': True
 }
 
-pg_connection = BaseHook.get_connection('postgres_arp_svc_user')
-pg_connection_stg = BaseHook.get_connection('postgres_arp_svc_user_stg')
+pg_cccom_prod = BaseHook.get_connection('postgres_arp_svc_user')
+pg_cccom_stg = BaseHook.get_connection('postgres_arp_svc_user_stg')
+
+venv = {**os.environ}
+venv["DUMP_FILEPATH"] = str(Variable.get('cccom_dump_file_path'))
+venv["PGSQL_PROD_USER"] = str(pg_cccom_prod.login)
+venv["PGSQL_PROD_HOST"] = str(pg_cccom_prod.host)
+venv["PRODPASSWORD"] = str(pg_cccom_prod.password)
+
+
+venv["PGSQL_STG_USER"] = str(pg_cccom_stg.login)
+venv["PGSQL_STG_DBHOST"] = str(pg_cccom_stg.host)
+venv["STGPASSWORD"] = str(pg_cccom_stg.password)
+
 
 with DAG('cccom-pg-db-tables-vacuum',
          schedule_interval='45 22 * * 6',
@@ -32,11 +45,12 @@ with DAG('cccom-pg-db-tables-vacuum',
         task_id='cccom_pg_db_tables_vacuum_p',
         bash_command='/scripts/shell/cccom-pg-db-tables-vacuum.sh',
         execution_timeout=timedelta(minutes=120),
-        params={"env": str(Variable.get('refresh_env')),
+        params={"refresh": str(Variable.get('refresh_env')),
                 "file_suffix": str(Variable.get('file_suffix_prod')),
-                "pg_db_host": str(pg_connection.host),
-                "pg_db_user": str(Variable.get('postgres_dba')),
-                "pg_db_name": str(pg_connection.schema)},
+                "pg_db_host": str(pg_cccom_prod.host),
+                "pg_db_user": str(pg_cccom_prod.login),
+                "pg_db_name": str(pg_cccom_prod.schema)},
+        env=venv,
         dag=dag
     )
 
@@ -44,13 +58,14 @@ with DAG('cccom-pg-db-tables-vacuum',
     # connections in QA and DEV env has been set to same env
     cccom_pg_db_tables_vacuum_stag = BashOperator(
         task_id='cccom_pg_db_tables_vacuum_s',
-        bash_command='/scripts/shell/cccom-pg-db-tables-vacuum.sh',
+        bash_command='/scripts/shell/cccom-pg-stg-db-tables-vacuum.sh',
         execution_timeout=timedelta(minutes=120),
-        params={"env": str(Variable.get('refresh_env')),
+        params={"refresh": str(Variable.get('refresh_env')),
                 "file_suffix": str(Variable.get('file_suffix_stag')),
-                "pg_db_host": str(pg_connection_stg.host),
-                "pg_db_user": str(Variable.get('postgres_dba_stag')),
-                "pg_db_name": str(pg_connection_stg.schema)},
+                "pg_db_host": str(pg_cccom_stg.host),
+                "pg_db_user": str(pg_cccom_stg.login),
+                "pg_db_name": str(pg_cccom_stg.schema)},
+        env=venv,
         dag=dag
     )
 

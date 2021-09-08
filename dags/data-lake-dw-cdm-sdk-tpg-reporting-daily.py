@@ -450,7 +450,7 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
         new_cluster=large_11w_task_cluster,
         spark_jar_task=attribution_reporting_jar_task,
         libraries=reporting_libraries,
-        timeout_seconds=14000,
+        timeout_seconds=22000,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=240
     )

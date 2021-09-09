@@ -157,8 +157,8 @@ large_5w_task_cluster = {
 
 large_11w_task_cluster = {
     'spark_version': '7.3.x-scala2.12',
-    'node_type_id': 'i3.4xlarge',
-    'driver_node_type_id': 'i3.4xlarge',
+    'node_type_id': 'r4.4xlarge',
+    'driver_node_type_id': 'r4.4xlarge',
     'num_workers': 11,
     'auto_termination_minutes': 0,
     'cluster_log_conf': LOG_PATH,

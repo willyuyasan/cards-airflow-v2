@@ -53,7 +53,7 @@ small_task_cluster = {
         'spot_bid_price_percent': '70',
         'zone_id': 'us-east-1c',
         'availability': 'SPOT_WITH_FALLBACK',
-        'instance_profile_arn': Variable.get("DBX_TPG_IAM_ROLE"),
+        'instance_profile_arn': Variable.get("DBX_CARDS_IAM_ROLE"),
     },
     'custom_tags': {
         'Partner': ' B532',

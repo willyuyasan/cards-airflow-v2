@@ -30,6 +30,39 @@ LOG_PATH = {
 }
 
 # Cluster Setup Step
+small_task_cluster = {
+    'spark_version': '7.3.x-scala2.12',
+    'node_type_id': Variable.get("DBX_SMALL_CLUSTER"),
+    'driver_node_type_id': Variable.get("DBX_SMALL_CLUSTER"),
+    'num_workers': Variable.get("DBX_SMALL_CLUSTER_NUM_NODES"),
+    'auto_termination_minutes': 0,
+    'cluster_log_conf': LOG_PATH,
+    'spark_conf': {
+        'spark.sql.sources.partitionOverwriteMode': 'dynamic',
+        'spark.driver.extraJavaOptions': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE"),
+        'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
+    },
+    'spark_env_vars': {
+        'java_opts': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE")
+    },
+    'aws_attributes': {
+        'ebs_volume_count': 2,
+        'ebs_volume_size': 100,
+        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
+        'first_on_demand': '2',
+        'spot_bid_price_percent': '70',
+        'zone_id': 'us-east-1c',
+        'availability': 'SPOT_WITH_FALLBACK',
+        'instance_profile_arn': Variable.get("DBX_TPG_IAM_ROLE"),
+    },
+    'custom_tags': {
+        'Partner': ' B532',
+        'Project': 'CreditCards.com',
+        'DagId': "{{ti.dag_id}}",
+        'TaskId': "{{ti.task_id}}"
+    },
+}
+
 large_task_custom_cluster = {
     'spark_version': '7.3.x-scala2.12',
     'node_type_id': Variable.get("DBX_LARGE_CLUSTER"),
@@ -147,6 +180,88 @@ cof_report_hl_mapping_task = {
     ]
 }
 
+hl_staging_gam_lineitem_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_GAM_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.gam.healthline.reporting.GamLineItem",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("HL_GAM_TENANTS"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
+hl_staging_gam_adunit_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_GAM_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.gam.healthline.reporting.GamAdUnit",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("HL_GAM_TENANTS"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
+hl_staging_gam_order_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_GAM_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.gam.healthline.reporting.GamOrder",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("HL_GAM_TENANTS"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
+hl_staging_funnel_ids_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_GAM_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.cof.staging.HLFunnelIds",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
+        "CUSTOM_PARAMETERS__HLORDERIDS=" + Variable.get("DBX_GAM_HLORDERIDS")
+    ]
+}
+
+hl_reporting_funnel_metrics_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_GAM_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.HLFunnelMetrics",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
+        "CUSTOM_PARAMETERS__HLORDERIDS=" + Variable.get("DBX_GAM_HLORDERIDS")
+    ]
+}
+
 # DAG Creation Step
 with DAG(DAG_NAME,
          schedule_interval='0 9 * * *',
@@ -163,7 +278,7 @@ with DAG(DAG_NAME,
         libraries=cof_staging_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        polling_period_seconds=60
     )
 
     hl_gam_mapping_report_task = FinServDatabricksSubmitRunOperator(
@@ -173,8 +288,60 @@ with DAG(DAG_NAME,
         libraries=staging_libraries,
         timeout_seconds=9600,
         databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        polling_period_seconds=60
+    )
+
+    hl_gam_staging_lineitem_task = FinServDatabricksSubmitRunOperator(
+        task_id='cof-gam-staging-lineitem',
+        new_cluster=small_task_cluster,
+        spark_jar_task=hl_staging_gam_lineitem_task,
+        libraries=staging_libraries,
+        timeout_seconds=9600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+
+    hl_gam_staging_adunit_task = FinServDatabricksSubmitRunOperator(
+        task_id='cof-gam-staging-adunit',
+        new_cluster=small_task_cluster,
+        spark_jar_task=hl_staging_gam_adunit_task,
+        libraries=staging_libraries,
+        timeout_seconds=9600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+
+    hl_gam_staging_order_task = FinServDatabricksSubmitRunOperator(
+        task_id='cof-gam-staging-order',
+        new_cluster=small_task_cluster,
+        spark_jar_task=hl_staging_gam_order_task,
+        libraries=staging_libraries,
+        timeout_seconds=9600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+
+    hl_gam_staging_funnel_ids_task = FinServDatabricksSubmitRunOperator(
+        task_id='cof-gam-staging-funnel-ids',
+        new_cluster=large_task_custom_cluster,
+        spark_jar_task=hl_staging_funnel_ids_task,
+        libraries=staging_libraries,
+        timeout_seconds=9600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+
+    hl_gam_reporting_funnel_metrics_task = FinServDatabricksSubmitRunOperator(
+        task_id='cof-gam-reporting-funnel-metrics',
+        new_cluster=large_task_custom_cluster,
+        spark_jar_task=hl_reporting_funnel_metrics_task,
+        libraries=staging_libraries,
+        timeout_seconds=9600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
     )
 
 # dependencies
 gam_report_task >> hl_gam_mapping_report_task
+hl_gam_staging_funnel_ids_task >> hl_gam_reporting_funnel_metrics_task
+[hl_gam_staging_lineitem_task, hl_gam_mapping_report_task] >> hl_gam_staging_funnel_ids_task

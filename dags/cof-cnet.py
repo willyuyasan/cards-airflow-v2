@@ -143,6 +143,41 @@ cof_report_jar_task = {
         "CUSTOM_PARAMETERS__crosssitelookback=" + Variable.get("DBX_gam_crosssite_lookback_days")
     ]
 }
+cnet_staging_funnel_ids_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_GAM_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.cof.staging.CnetFunnelIds",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_CNET_COF_Tenant_Ids"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
+        "CUSTOM_PARAMETERS__CNET_GAM_ORDER_IDS=" + Variable.get("DBX_GAM_CNET_ORDERIDS"),
+        "CUSTOM_PARAMETERS__CNET_OP_ORDER_IDS=" + Variable.get("DBX_OP_CNET_ORDERIDS")
+    ]
+}
+
+cnet_reporting_funnel_metrics_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_GAM_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.CnetFunnelMetrics",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_CNET_COF_Tenant_Ids"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
+        "CUSTOM_PARAMETERS__CNET_GAM_ORDER_IDS=" + Variable.get("DBX_GAM_CNET_ORDERIDS"),
+        "CUSTOM_PARAMETERS__CNET_OP_ORDER_IDS=" + Variable.get("DBX_OP_CNET_ORDERIDS")
+    ]
+}
 
 cof_aam_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
@@ -161,7 +196,6 @@ cof_aam_jar_task = {
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
     ]
 }
-
 
 # DAG Creation Step
 with DAG(DAG_NAME,
@@ -202,5 +236,26 @@ with DAG(DAG_NAME,
         polling_period_seconds=120
     )
 
+    cnet_gam_staging_funnel_ids_task = FinServDatabricksSubmitRunOperator(
+        task_id='cof-gam-staging-funnel-ids',
+        new_cluster=large_task_custom_cluster,
+        spark_jar_task=cnet_staging_funnel_ids_task,
+        libraries=staging_libraries,
+        timeout_seconds=9600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+
+    cnet_gam_reporting_funnel_metrics_task = FinServDatabricksSubmitRunOperator(
+        task_id='cof-gam-reporting-funnel-metrics',
+        new_cluster=large_task_custom_cluster,
+        spark_jar_task=cnet_reporting_funnel_metrics_task,
+        libraries=staging_libraries,
+        timeout_seconds=9600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+
 # Defining  dependencies
 cnet_gam_data_task >> cnet_gam_mapping_task
+cnet_gam_staging_funnel_ids_task >> cnet_gam_reporting_funnel_metrics_task

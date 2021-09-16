@@ -155,7 +155,7 @@ large_5w_task_cluster = {
     },
 }
 
-large_13w_task_cluster = {
+large_15w_task_cluster = {
     'spark_version': '7.3.x-scala2.12',
     'node_type_id': 'r4.4xlarge',
     'driver_node_type_id': 'r4.4xlarge',
@@ -447,7 +447,7 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
 
     attribution_reporting = FinServDatabricksSubmitRunOperator(
         task_id='attribution-reporting',
-        new_cluster=large_13w_task_cluster,
+        new_cluster=large_15w_task_cluster,
         spark_jar_task=attribution_reporting_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=22000,

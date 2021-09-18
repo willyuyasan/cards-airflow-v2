@@ -576,7 +576,7 @@ with DAG('data-lake-dw-tpg-audience-analytics-workflow',
         new_cluster=medium_2w_task_cluster,
         notebook_task=core_url_flow_content_score_predictions_notebook_task,
         libraries=notebook_libraries,
-        timeout_seconds=1200,
+        timeout_seconds=1800,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )

@@ -97,9 +97,9 @@ large_task_custom_cluster = {
 }
 gam_mapping_large_task_custom_cluster = {
     'spark_version': '7.3.x-scala2.12',
-    'node_type_id': Variable.get("DBX_LARGE_CLUSTER"),
-    'driver_node_type_id': Variable.get("DBX_LARGE_CLUSTER"),
-    'num_workers': Variable.get("DBX_LARGE_CLUSTER_NUM_NODES"),
+    'node_type_id': 'm5a.8xlarge',
+    'driver_node_type_id': 'm5a.8xlarge',
+    'num_workers': 8,
     'auto_termination_minutes': 0,
     'cluster_log_conf': LOG_PATH,
     'spark_conf': {
@@ -112,7 +112,7 @@ gam_mapping_large_task_custom_cluster = {
     },
     "aws_attributes": {
         "availability": "SPOT_WITH_FALLBACK",
-        'ebs_volume_count': 1,
+        'ebs_volume_count': 2,
         'ebs_volume_size': 400,
         'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
         'first_on_demand': '0',
@@ -286,9 +286,9 @@ with DAG(DAG_NAME,
         new_cluster=gam_mapping_large_task_custom_cluster,
         spark_jar_task=cof_report_hl_mapping_task,
         libraries=staging_libraries,
-        timeout_seconds=9600,
+        timeout_seconds=26000,
         databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=60
+        polling_period_seconds=120
     )
 
     hl_gam_staging_lineitem_task = FinServDatabricksSubmitRunOperator(

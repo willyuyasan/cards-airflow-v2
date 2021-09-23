@@ -97,9 +97,9 @@ large_task_custom_cluster = {
 }
 gam_mapping_large_task_custom_cluster = {
     'spark_version': '7.3.x-scala2.12',
-    'node_type_id': 'm5a.8xlarge',
-    'driver_node_type_id': 'm5a.8xlarge',
-    'num_workers': 8,
+    'node_type_id': 'm5a.2xlarge',
+    'driver_node_type_id': 'm5a.2xlarge',
+    'num_workers': 4,
     'auto_termination_minutes': 0,
     'cluster_log_conf': LOG_PATH,
     'spark_conf': {
@@ -228,6 +228,40 @@ hl_staging_gam_order_task = {
     ]
 }
 
+hl_staging_gam_impressions_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_GAM_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.gam.healthline.reporting.GamImpressions",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("HL_GAM_TENANTS"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
+        "CUSTOM_PARAMETERS__HLORDERIDS=" + Variable.get("DBX_GAM_HLORDERIDS")
+    ]
+}
+
+hl_staging_gam_clicks_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_GAM_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.gam.healthline.reporting.GamClicks",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("HL_GAM_TENANTS"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
+        "CUSTOM_PARAMETERS__HLORDERIDS=" + Variable.get("DBX_GAM_HLORDERIDS")
+    ]
+}
+
 hl_staging_funnel_ids_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
@@ -286,9 +320,9 @@ with DAG(DAG_NAME,
         new_cluster=gam_mapping_large_task_custom_cluster,
         spark_jar_task=cof_report_hl_mapping_task,
         libraries=staging_libraries,
-        timeout_seconds=26000,
+        timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        polling_period_seconds=60
     )
 
     hl_gam_staging_lineitem_task = FinServDatabricksSubmitRunOperator(
@@ -321,6 +355,26 @@ with DAG(DAG_NAME,
         polling_period_seconds=60
     )
 
+    hl_gam_impressions_task = FinServDatabricksSubmitRunOperator(
+        task_id='hl-staging-gam-impressions',
+        new_cluster=large_task_custom_cluster,
+        spark_jar_task=hl_staging_gam_impressions_task,
+        libraries=staging_libraries,
+        timeout_seconds=9600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+
+    hl_gam_clicks_task = FinServDatabricksSubmitRunOperator(
+        task_id='hl-staging-gam-clicks',
+        new_cluster=small_task_cluster,
+        spark_jar_task=hl_staging_gam_clicks_task,
+        libraries=staging_libraries,
+        timeout_seconds=9600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+
     hl_gam_staging_funnel_ids_task = FinServDatabricksSubmitRunOperator(
         task_id='cof-gam-staging-funnel-ids',
         new_cluster=large_task_custom_cluster,
@@ -342,6 +396,6 @@ with DAG(DAG_NAME,
     )
 
 # dependencies
-gam_report_task >> hl_gam_mapping_report_task
+[hl_gam_impressions_task, hl_gam_clicks_task] >> hl_gam_mapping_report_task
 hl_gam_staging_funnel_ids_task >> hl_gam_reporting_funnel_metrics_task
 [hl_gam_staging_lineitem_task, hl_gam_mapping_report_task] >> hl_gam_staging_funnel_ids_task

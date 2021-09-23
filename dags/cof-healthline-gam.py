@@ -147,22 +147,6 @@ staging_libraries = [
     },
 ]
 
-gam_jar_task = {
-    'main_class_name': "com.redventures.cdm.cof.Runner",
-    'parameters': [
-        "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_GAM_Lookback_Days")))))).strftime(
-            "%Y-%m-%d"),
-        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.cof.staging.GamByOrderIds",
-        "ACCOUNT=" + "cards",
-        "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("HL_GAM_TENANTS"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-    ]
-}
-
 cof_report_hl_mapping_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
@@ -304,16 +288,6 @@ with DAG(DAG_NAME,
          max_active_runs=1,
          default_args=default_args
          ) as dag:
-
-    gam_report_task = FinServDatabricksSubmitRunOperator(
-        task_id='cof-healthline-gam',
-        new_cluster=large_task_custom_cluster,
-        spark_jar_task=gam_jar_task,
-        libraries=cof_staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=60
-    )
 
     hl_gam_mapping_report_task = FinServDatabricksSubmitRunOperator(
         task_id='cof-healthline-gam-mapping',

@@ -183,7 +183,7 @@ anonymous_reporting_jar_task = {
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_COF_COHESION_Tenants"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.COFAnoymous",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.COFAnonymous",
         "ACCOUNT=" + Variable.get("DBX_COF_Account"),
         "WRITE_BUCKET=" + Variable.get("DBX_COF_Bucket"),
         "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")

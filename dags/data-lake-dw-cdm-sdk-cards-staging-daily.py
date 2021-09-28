@@ -1412,6 +1412,10 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
         task_id='external-lp-staging'
     )
 
+    cof_staging_tables = DummyOperator(
+        task_id='external-cof-staging'
+    )
+
 # Staging Dependencies
 session_staging >> traffic_sources_staging
 session_staging >> paidsearch_staging
@@ -1454,6 +1458,7 @@ amex_ot_details_staging >> amex_ot_summary_staging
 
 # Lonely Planet Dependencies
 [session_staging, page_view_staging, page_metrics_staging] >> lp_staging_tables
+[session_staging, page_view_staging, page_metrics_staging] >> cof_staging_tables
 
 # COF Page View
 page_view_staging_cof >> page_view_staging_cof_all_rv

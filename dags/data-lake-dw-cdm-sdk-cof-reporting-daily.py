@@ -24,7 +24,7 @@ default_args = {
 # token variable
 airflow_svc_token = "databricks_airflow_svc_token"
 ACCOUNT = 'cards'
-DAG_NAME = 'data-lake-dw-cdm-sdk-cof-reporting-hourly'
+DAG_NAME = 'data-lake-dw-cdm-sdk-cof-reporting-daily'
 
 LOG_PATH = {
     'dbfs': {
@@ -192,7 +192,7 @@ anonymous_reporting_jar_task = {
 
 
 # DAG Creation Step
-with DAG('data-lake-dw-cdm-sdk-cof-reporting-hourly',
+with DAG('data-lake-dw-cdm-sdk-cof-reporting-daily',
          schedule_interval='0 9 * * *',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
@@ -202,7 +202,7 @@ with DAG('data-lake-dw-cdm-sdk-cof-reporting-hourly',
 
     cof_staging_tables = ExternalTaskSensor(
         task_id='external-cof-reporting',
-        external_dag_id='data-lake-dw-cdm-sdk-cards-staging-hourly',
+        external_dag_id='data-lake-dw-cdm-sdk-cards-staging-daily',
         external_task_id='external-cof-staging',
         execution_timeout=timedelta(minutes=10),
         execution_delta=timedelta(minutes=30)

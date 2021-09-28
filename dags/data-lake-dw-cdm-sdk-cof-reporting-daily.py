@@ -147,7 +147,7 @@ session_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_COF_SDK_lookback_days")))))).strftime(
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_COF_SDK_daily_lookback_days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_COF_SDK_Tenants"),
@@ -163,7 +163,7 @@ page_view_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_COF_SDK_lookback_days")))))).strftime(
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_COF_SDK_daily_lookback_days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_COF_SDK_Tenants"),
@@ -179,7 +179,7 @@ anonymous_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_COF_SDK_lookback_days")))))).strftime(
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_COF_SDK_daily_lookback_days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_COF_SDK_Tenants"),
@@ -193,7 +193,7 @@ anonymous_reporting_jar_task = {
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-cof-reporting-hourly',
-         schedule_interval='0 0-6,11-23 * * *',
+         schedule_interval='0 9 * * *',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
          max_active_runs=1,
@@ -210,30 +210,30 @@ with DAG('data-lake-dw-cdm-sdk-cof-reporting-hourly',
 
     session_reporting = FinServDatabricksSubmitRunOperator(
         task_id='session-reporting',
-        new_cluster=medium_task_cluster,
+        new_cluster=large_task_cluster,
         spark_jar_task=session_reporting_jar_task,
         libraries=reporting_libraries,
-        timeout_seconds=3600,
+        timeout_seconds=7200,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
 
     page_view_reporting = FinServDatabricksSubmitRunOperator(
         task_id='page-view-reporting',
-        new_cluster=medium_task_cluster,
+        new_cluster=large_task_cluster,
         spark_jar_task=page_view_reporting_jar_task,
         libraries=reporting_libraries,
-        timeout_seconds=3600,
+        timeout_seconds=7200,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
 
     anonymous_reporting = FinServDatabricksSubmitRunOperator(
         task_id='anonymous-reporting',
-        new_cluster=medium_task_cluster,
+        new_cluster=large_task_cluster,
         spark_jar_task=anonymous_reporting_jar_task,
         libraries=reporting_libraries,
-        timeout_seconds=3600,
+        timeout_seconds=7200,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )

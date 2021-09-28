@@ -153,7 +153,7 @@ session_reporting_jar_task = {
         "TENANTS=" + Variable.get("DBX_COF_COHESION_Tenants"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.COFSession",
         "ACCOUNT=" + Variable.get("DBX_COF_Account"),
-        "WRITE_BUCKET=" + Variable.get("DBX_COF_Bucket"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
         "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
@@ -169,7 +169,7 @@ page_view_reporting_jar_task = {
         "TENANTS=" + Variable.get("DBX_COF_COHESION_Tenants"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.COFPageView",
         "ACCOUNT=" + Variable.get("DBX_COF_Account"),
-        "WRITE_BUCKET=" + Variable.get("DBX_COF_Bucket"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
         "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
@@ -185,7 +185,7 @@ anonymous_reporting_jar_task = {
         "TENANTS=" + Variable.get("DBX_COF_COHESION_Tenants"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.COFAnonymous",
         "ACCOUNT=" + Variable.get("DBX_COF_Account"),
-        "WRITE_BUCKET=" + Variable.get("DBX_COF_Bucket"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
         "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }

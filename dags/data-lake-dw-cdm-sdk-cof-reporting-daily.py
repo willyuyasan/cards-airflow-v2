@@ -13,7 +13,7 @@ default_args = {
     'email': ['vmalhotra@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-travel-name")),
+    'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
     'retries': 2,
     'retry_delay': timedelta(minutes=5),
     # 'op_kwargs': cfg_dict,
@@ -24,7 +24,7 @@ default_args = {
 # token variable
 airflow_svc_token = "databricks_airflow_svc_token"
 ACCOUNT = 'cards'
-DAG_NAME = 'data-lake-dw-cdm-sdk-lp-reporting-hourly'
+DAG_NAME = 'data-lake-dw-cdm-sdk-cof-reporting-daily'
 
 LOG_PATH = {
     'dbfs': {
@@ -56,7 +56,7 @@ small_task_cluster = {
         'first_on_demand': '2',
         'spot_bid_price_percent': '70',
         'zone_id': 'us-east-1c',
-        "instance_profile_arn": Variable.get("DBX_LP_IAM_ROLE"),
+        "instance_profile_arn": Variable.get("DBX_CARDS_IAM_ROLE"),
     },
     'custom_tags': {
         'Partner': 'B814',
@@ -89,7 +89,7 @@ medium_task_cluster = {
         'first_on_demand': '2',
         'spot_bid_price_percent': '70',
         'zone_id': 'us-east-1c',
-        "instance_profile_arn": Variable.get("DBX_LP_IAM_ROLE"),
+        "instance_profile_arn": Variable.get("DBX_CARDS_IAM_ROLE"),
     },
     'custom_tags': {
         'Partner': 'B814',
@@ -122,7 +122,7 @@ large_task_cluster = {
         'first_on_demand': '2',
         'spot_bid_price_percent': '70',
         'zone_id': 'us-east-1c',
-        "instance_profile_arn": Variable.get("DBX_LP_IAM_ROLE"),
+        "instance_profile_arn": Variable.get("DBX_CARDS_IAM_ROLE"),
     },
     'custom_tags': {
         'Partner': 'B814',
@@ -147,13 +147,13 @@ session_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_LP_SDK_lookback_days")))))).strftime(
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_COF_SDK_daily_lookback_days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TENANTS=" + Variable.get("DBX_LP_Tenant_Id"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.lp.reporting.LPSession",
-        "ACCOUNT=" + Variable.get("DBX_LP_Account"),
-        "WRITE_BUCKET=" + Variable.get("DBX_LP_Bucket"),
+        "TENANTS=" + Variable.get("DBX_COF_COHESION_Tenants"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.COFSession",
+        "ACCOUNT=" + Variable.get("DBX_COF_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
         "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
@@ -163,54 +163,81 @@ page_view_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_LP_SDK_lookback_days")))))).strftime(
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_COF_SDK_daily_lookback_days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TENANTS=" + Variable.get("DBX_LP_Tenant_Id"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.lp.reporting.LPPageView",
-        "ACCOUNT=" + Variable.get("DBX_LP_Account"),
-        "WRITE_BUCKET=" + Variable.get("DBX_LP_Bucket"),
+        "TENANTS=" + Variable.get("DBX_COF_COHESION_Tenants"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.COFPageView",
+        "ACCOUNT=" + Variable.get("DBX_COF_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
+anonymous_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_COF_SDK_daily_lookback_days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_COF_COHESION_Tenants"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.COFAnonymous",
+        "ACCOUNT=" + Variable.get("DBX_COF_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
         "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
 
 
 # DAG Creation Step
-with DAG('data-lake-dw-cdm-sdk-lp-reporting-hourly',
-         schedule_interval='0 0-6,11-23 * * *',
+with DAG('data-lake-dw-cdm-sdk-cof-reporting-daily',
+         schedule_interval='0 9 * * *',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,
          max_active_runs=1,
          default_args=default_args
          ) as dag:
 
-    lp_staging_tables = ExternalTaskSensor(
-        task_id='external-lp-reporting',
-        external_dag_id='data-lake-dw-cdm-sdk-cards-staging-hourly',
-        external_task_id='external-lp-staging',
+    cof_staging_tables = ExternalTaskSensor(
+        task_id='external-cof-reporting',
+        external_dag_id='data-lake-dw-cdm-sdk-cards-staging-daily',
+        external_task_id='external-cof-staging',
         execution_timeout=timedelta(minutes=10),
         execution_delta=timedelta(minutes=30)
     )
 
     session_reporting = FinServDatabricksSubmitRunOperator(
         task_id='session-reporting',
-        new_cluster=medium_task_cluster,
+        new_cluster=large_task_cluster,
         spark_jar_task=session_reporting_jar_task,
         libraries=reporting_libraries,
-        timeout_seconds=3600,
+        timeout_seconds=7200,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
 
     page_view_reporting = FinServDatabricksSubmitRunOperator(
         task_id='page-view-reporting',
-        new_cluster=medium_task_cluster,
+        new_cluster=large_task_cluster,
         spark_jar_task=page_view_reporting_jar_task,
         libraries=reporting_libraries,
-        timeout_seconds=3600,
+        timeout_seconds=7200,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
+    anonymous_reporting = FinServDatabricksSubmitRunOperator(
+        task_id='anonymous-reporting',
+        new_cluster=large_task_cluster,
+        spark_jar_task=anonymous_reporting_jar_task,
+        libraries=reporting_libraries,
+        timeout_seconds=7200,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
 
 # Dependencies
-lp_staging_tables >> [session_reporting, page_view_reporting]
+cof_staging_tables >> [session_reporting, page_view_reporting]
+[session_reporting, page_view_reporting] >> anonymous_reporting

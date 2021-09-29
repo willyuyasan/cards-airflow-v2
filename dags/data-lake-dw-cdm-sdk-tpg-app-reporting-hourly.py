@@ -13,7 +13,7 @@ default_args = {
     'email': ['kbhargavaram@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
+    'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-travel-name")),
     'retries': 2,
     'retry_delay': timedelta(minutes=5),
     # 'op_kwargs': cfg_dict,

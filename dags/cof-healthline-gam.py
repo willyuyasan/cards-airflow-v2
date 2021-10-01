@@ -129,15 +129,6 @@ gam_mapping_large_task_custom_cluster = {
 }
 
 # Libraries
-cof_staging_libraries = [
-    {
-        "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
-    },
-    {
-        "jar": "dbfs:/FileStore/jars/d69470f3_6b85_4b6a_9f84_677fed6a9631-cdm_cof_assembly_1_0_6-e0007.jar",
-    },
-]
-
 staging_libraries = [
     {
         "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
@@ -311,7 +302,7 @@ with DAG(DAG_NAME,
 
     hl_gam_staging_adunit_task = FinServDatabricksSubmitRunOperator(
         task_id='cof-gam-staging-adunit',
-        new_cluster=small_task_cluster,
+        new_cluster=large_task_custom_cluster,
         spark_jar_task=hl_staging_gam_adunit_task,
         libraries=staging_libraries,
         timeout_seconds=9600,

@@ -285,7 +285,7 @@ petal_model_training_notebook_task = {
 wells_fargo_model_training_notebook_task = {
     'base_parameters': {
         "issuer": "Wells Fargo",
-        "card_ids": "7683, 7684, 7685, 7730, 7731, 7878, 7879"
+        "card_ids": "7683, 7684, 7685, 7730, 7731, 7878, 7879, 8010, 8011"
     },
     'notebook_path': '/Production/CardMatchDS/Combined/CardMatch_python_train-shadow',
 }

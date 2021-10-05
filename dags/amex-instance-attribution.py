@@ -125,7 +125,7 @@ runner_params = RunnerParams(tenants=TENANT_ID,
                              start_date=START_DATE,
                              end_date=END_DATE,
                              tables=",".join([k for k, v in tables.items()])
-)
+                             )
 
 dependencies_dict = {
     # currently no dependencies

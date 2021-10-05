@@ -44,7 +44,7 @@ ROOT_NS = 'com.redventures.cdm'
 
 BANKRATE_NS = f'{ROOT_NS}.cards'
 # MAIN_CLASS = [
-  #  f'{BANKRATE_NS}.Runner'
+# f'{BANKRATE_NS}.Runner'
 # ]
 
 # BANKRATE_JAR_VERSION = Variable.get("BANKRATE_JAR_VERSION")
@@ -121,14 +121,11 @@ runner_params = RunnerParams(tenants=TENANT_ID,
                              paid_search_company_id='97',
                              environment=ENVIRONMENT,
                              dbx_secret_scope='cards',
-                             etl_time= str(datetime.now()),
+                             etl_time=str(datetime.now()),
                              start_date=START_DATE,
                              end_date=END_DATE,
                              tables=",".join([k for k, v in tables.items()])
 )
-
-
-
 
 dependencies_dict = {
     # currently no dependencies

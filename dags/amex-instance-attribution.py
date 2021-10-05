@@ -37,19 +37,19 @@ DAG_DESCRIPTION = f'amex cdm {ENVIRONMENT} instance attribution'
 TRIGGER_RULE = TriggerRule.ALL_SUCCESS
 
 ROOT_NS = 'com.redventures.cdm'
-#COHESION_NS = f'{ROOT_NS}.cohesion'
-#TRAFFIC_NS = f'{ROOT_NS}.trafficsources'
-#FLAT_REPORTING_NS = f'{ROOT_NS}.flatreporting'
-#EMAIL_NS = f'{ROOT_NS}.email'
+# COHESION_NS = f'{ROOT_NS}.cohesion'
+# TRAFFIC_NS = f'{ROOT_NS}.trafficsources'
+# FLAT_REPORTING_NS = f'{ROOT_NS}.flatreporting'
+# EMAIL_NS = f'{ROOT_NS}.email'
 
 BANKRATE_NS = f'{ROOT_NS}.cards'
-#MAIN_CLASS = [
+# MAIN_CLASS = [
   #  f'{BANKRATE_NS}.Runner'
-#]
+# ]
 
-#BANKRATE_JAR_VERSION = Variable.get("BANKRATE_JAR_VERSION")
-#TRAFFICSOURCES_JAR_VERSION = Variable.get("TRAFFICSOURCES_JAR_VERSION")
-#COHESION_JAR_VERSION = Variable.get("COHESION_JAR_VERSION")
+# BANKRATE_JAR_VERSION = Variable.get("BANKRATE_JAR_VERSION")
+# TRAFFICSOURCES_JAR_VERSION = Variable.get("TRAFFICSOURCES_JAR_VERSION")
+# COHESION_JAR_VERSION = Variable.get("COHESION_JAR_VERSION")
 
 # Jar Libraries
 JAR_LIBRARIES_DICT = {

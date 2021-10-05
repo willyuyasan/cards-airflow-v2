@@ -13,8 +13,8 @@ from rvairflow.util import create_name, convert_dep_dict_2_dag_tasks_dict
 
 # Variables
 DATABRICKS_CONN_ID = 'databricks_airflow_svc_token'
-ENVIRONMENT = Variable.get('CDM_ENV')
-INSTANCE_PROFILE_ARN = Variable.get('AMEXATTRIBUTION_INSTANCE_PROFILE')
+ENVIRONMENT = Variable.get('CARDS_SDK_ENV')
+INSTANCE_PROFILE_ARN = Variable.get('DBX_AMEX_IAM_ROLE')
 SPARK_VER = Variable.get('CDM_SPARK_VERSION')
 WRITE_BUCKET = Variable.get("AMEXATTRIBUTION__WRITE_BUCKET")
 READ_BUCKET = Variable.get("CDM_READ_BUCKET")

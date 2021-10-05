@@ -16,7 +16,7 @@ DATABRICKS_CONN_ID = 'databricks_airflow_svc_token'
 ENVIRONMENT = Variable.get('CARDS_SDK_ENV')
 INSTANCE_PROFILE_ARN = Variable.get('DBX_AMEX_IAM_ROLE')
 SPARK_VER = Variable.get('CDM_SPARK_VERSION')
-WRITE_BUCKET = Variable.get("AMEXATTRIBUTION__WRITE_BUCKET")
+WRITE_BUCKET = Variable.get("DBX_CARDS_Bucket")
 READ_BUCKET = Variable.get("CDM_READ_BUCKET")
 START_DATE = (datetime.now() - (timedelta(days=int(int(Variable.get("AMEXATTRIBUTION_LOOKBACK_DAYS")))))).strftime("%Y-%m-%d")
 END_DATE = datetime.now().strftime("%Y-%m-%d")

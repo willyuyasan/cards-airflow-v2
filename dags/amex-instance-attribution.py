@@ -150,7 +150,7 @@ for k, v in jar_tasks_dict.items():
     new_key = k.replace('_jar_task', '_task')
     dag_tasks[new_key] = CdmDatabricksSubmitRunOperator(job_name=new_key,
                                                         task=v,
-                                                        databricks_conn_id=cd,
+                                                        databricks_conn_id=DATABRICKS_CONN_ID,
                                                         timeout_seconds=3600,
                                                         dag=dag,
                                                         trigger_rule=TRIGGER_RULE)

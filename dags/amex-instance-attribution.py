@@ -26,7 +26,9 @@ SCHEDULE_INTERVAL = Variable.get("AMEXATTRIBUTION_SCHEDULE_DAILY")
 # Constants
 
 DBX_SECRET_SCOPE = 'cards'
-TENANT_ID = ['4a836525-cbc2-4923-8ee2-fba662934af9', '86ce0ab9-5128-47e1-a19b-fa6bc8799966', '08b9e791-59e6-45cb-9b5a-0f36db81313a', 'daf2a469-5e41-4eab-a71a-14e14cc11f58', '684b6ce1-dba1-4de6-92d5-761d6f3613b1', 'f91a6d8b-ad2a-403b-8814-c273dc30d885']
+TENANT_ID = ['4a836525-cbc2-4923-8ee2-fba662934af9', '86ce0ab9-5128-47e1-a19b-fa6bc8799966',
+             '08b9e791-59e6-45cb-9b5a-0f36db81313a', 'daf2a469-5e41-4eab-a71a-14e14cc11f58',
+             '684b6ce1-dba1-4de6-92d5-761d6f3613b1', 'f91a6d8b-ad2a-403b-8814-c273dc30d885']
 APP_CONF_FILE = f'application-cards-{ENVIRONMENT}'
 
 DAG_NAME = f'amex-{ENVIRONMENT}-{ACCOUNT}-instance_attribution'

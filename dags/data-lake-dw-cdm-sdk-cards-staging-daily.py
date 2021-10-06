@@ -226,22 +226,6 @@ page_view_staging_cof_jar_task = {
     ]
 }
 
-page_view_staging_cof_rv_all_jar_task = {
-    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
-    'parameters': [
-        "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (
-                datetime.now() - (timedelta(days=2))).strftime(
-            "%Y-%m-%d"),
-        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.PageViewAllRv",
-        "ACCOUNT=" + "cards",
-        "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_COF_SDK_Tenants"),
-        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-    ]
-}
-
 cookie_identified_staging_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
@@ -972,16 +956,6 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    page_view_staging_cof_all_rv = FinServDatabricksSubmitRunOperator(
-        task_id='page_view_staging_cof_all_rv',
-        new_cluster=medium_task_custom_cluster,
-        spark_jar_task=page_view_staging_cof_rv_all_jar_task,
-        libraries=staging_libraries,
-        timeout_seconds=3600,
-        databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
-    )
-
     cookie_identified_staging = FinServDatabricksSubmitRunOperator(
         task_id='cookie-identified-staging',
         new_cluster=extra_small_task_custom_cluster,
@@ -1458,7 +1432,6 @@ amex_ot_details_staging >> amex_ot_summary_staging
 
 # Lonely Planet Dependencies
 [session_staging, page_view_staging, page_metrics_staging] >> lp_staging_tables
-[session_staging, page_view_staging, page_metrics_staging] >> cof_staging_tables
 
-# COF Page View
-page_view_staging_cof >> page_view_staging_cof_all_rv
+# COF Reporting Dependencies
+[session_staging, page_view_staging, page_metrics_staging] >> cof_staging_tables

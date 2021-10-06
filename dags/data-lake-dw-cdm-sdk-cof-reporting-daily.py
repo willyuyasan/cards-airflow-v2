@@ -190,6 +190,22 @@ anonymous_reporting_jar_task = {
     ]
 }
 
+page_view_reporting_cof_rv_all_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=2))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.PageViewAllRv",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_COF_SDK_Tenants"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-cof-reporting-daily',
@@ -238,6 +254,16 @@ with DAG('data-lake-dw-cdm-sdk-cof-reporting-daily',
         polling_period_seconds=120
     )
 
+    page_view_reporting_cof_all_rv = FinServDatabricksSubmitRunOperator(
+        task_id='page_view_staging_cof_all_rv',
+        new_cluster=large_task_cluster,
+        spark_jar_task=page_view_reporting_cof_rv_all_jar_task,
+        libraries=reporting_libraries,
+        timeout_seconds=7200,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
 # Dependencies
-cof_staging_tables >> [session_reporting, page_view_reporting]
+cof_staging_tables >> [session_reporting, page_view_reporting, page_view_reporting_cof_all_rv]
 [session_reporting, page_view_reporting] >> anonymous_reporting

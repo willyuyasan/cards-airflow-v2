@@ -55,7 +55,7 @@ BANKRATE_NS = f'{ROOT_NS}.cards'
 JAR_LIBRARIES_DICT = {
     'cards_jar': {'jar': [
 
-        'dbfs:/FileStore/jars/ae38779e_5fe7_405b_898f_a229470d0e88-cdm_data_mart_cards_assembly_0_0_1_SNAPSHOT-97c7e.jar',
+        'dbfs:/FileStore/jars/c4accc3b_ea4b_4164_b923_81c03a5c680c-cdm_data_mart_cards_assembly_0_0_1_SNAPSHOT-97c7e.jar',
         'dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar'],
         'main_class': 'com.redventures.cdm.datamart.cards.Runner'}
 }

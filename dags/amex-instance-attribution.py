@@ -19,7 +19,7 @@ SPARK_VER = Variable.get('CDM_SPARK_VERSION')
 WRITE_BUCKET = Variable.get("DBX_CARDS_Bucket")
 READ_BUCKET = Variable.get("CDM_READ_BUCKET")
 START_DATE = (datetime.now() - (timedelta(days=int(int(Variable.get("AMEXATTRIBUTION_LOOKBACK_DAYS")))))).strftime("%Y-%m-%d")
-END_DATE = datetime.now().strftime("%Y-%m-%d")
+END_DATE = (datetime.now()+timedelta(days=1)).strftime("%Y-%m-%d")
 ACCOUNT = Variable.get("CDM_ACCOUNT")
 SCHEDULE_INTERVAL = Variable.get("AMEXATTRIBUTION_SCHEDULE_DAILY")
 

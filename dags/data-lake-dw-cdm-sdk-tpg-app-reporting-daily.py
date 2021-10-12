@@ -241,4 +241,4 @@ with DAG('data-lake-dw-cdm-sdk-tpg-app-reporting-daily',
 
 
 # Dependencies
-tpg_app_staging_tables >> [screenview_reporting, form_summary_reporting, session_reporting]
+tpg_app_staging_tables >> [screenview_reporting, form_summary_reporting, session_reporting, connection_history_reporting ]

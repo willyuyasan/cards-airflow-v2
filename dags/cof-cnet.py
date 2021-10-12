@@ -189,7 +189,7 @@ cof_aam_jar_task = {
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.aam.reporting.SegmentsDim" +
                     ",com.redventures.cdm.datamart.cards.aam.reporting.TraitsDim" +
-                    ",com.redventures.cdm.datamart.cards.aam.staging.Visitors",
+                    ",com.redventures.cdm.datamart.cards.aam.reporting.Visitors",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),

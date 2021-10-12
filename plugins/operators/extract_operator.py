@@ -41,7 +41,8 @@ def make_request(**kwargs):
     response = requests.get(BASE_URI, params=params)
     export_string = response.text
     ts = str(time.time()).replace('.', '_')
-    outfile = f'/home/airflow/appsflyer_{ts}.csv'
+    # outfile = f'/home/airflow/appsflyer_{ts}.csv'
+    outfile = f'/scratch/appsflyer_{ts}.csv'
     with open(outfile, 'w') as f:
         f.write(export_string)
     outfile_to_S3(outfile, kwargs)
@@ -94,7 +95,8 @@ def mysql_table_to_s3(**kwargs):
         conn.close()
     else:
         ts = str(time.time()).replace('.', '_')
-        outfile = f'/home/airflow/mysql_{ts}.csv'
+        # outfile = f'/home/airflow/mysql_{ts}.csv'
+        outfile = f'/scratch/mysql_{ts}.csv'
         with open(outfile, 'w', newline='') as f:
             csv_writer = csv.writer(f)
             csv_writer.writerows(cursor)
@@ -128,7 +130,8 @@ def pgsql_table_to_s3(**kwargs):
         conn.close()
     else:
         ts = str(time.time()).replace('.', '_')
-        outfile = f'/home/airflow/pgsql_{ts}.csv'
+        # outfile = f'/home/airflow/pgsql_{ts}.csv'
+        outfile = f'/scratch/pgsql_{ts}.csv'
         with open(outfile, 'w', newline='') as f:
             csv_writer = csv.writer(f)
             csv_writer.writerows(cursor)
@@ -194,7 +197,8 @@ def s3_to_mysql(**kwargs):
     mysql_op = S3ToMySqlOperator(
         s3_source_key=f's3://{S3_BUCKET}/{S3_KEY}',
         mysql_table=sch_tbl,
-        finserv_local_path='/home/airflow',
+        # finserv_local_path='/home/airflow',
+        finserv_local_path='/scratch',
         mysql_duplicate_key_handling=dup_handle if dup_handle else 'IGNORE',
         mysql_extra_options="""
             FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'

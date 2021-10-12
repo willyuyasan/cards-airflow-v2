@@ -34,8 +34,7 @@ with DAG('cccom-dw-partner-banners',
     extract_partner_banners = PythonOperator(
         task_id='extract-cccom-partner_banners',
         python_callable=mysql_table_to_s3,
-        # op_kwargs={'extract_script': 'cccom/extract_banners.sql', 'key': 'banners.csv', 'compress': True},
-        op_kwargs={'extract_script': 'cccom/extract_banners.sql', 'key': 'banners.csv'},
+        op_kwargs={'extract_script': 'cccom/extract_banners.sql', 'key': 'banners.csv', 'compress': True},
         provide_context=True,
         dag=dag)
 

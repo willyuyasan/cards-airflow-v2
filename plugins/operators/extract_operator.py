@@ -41,7 +41,8 @@ def make_request(**kwargs):
     response = requests.get(BASE_URI, params=params)
     export_string = response.text
     ts = str(time.time()).replace('.', '_')
-    outfile = f'/home/airflow/appsflyer_{ts}.csv'
+    # outfile = f'/home/airflow/appsflyer_{ts}.csv'
+    outfile = f'/scratch/appsflyer_{ts}.csv'
     with open(outfile, 'w') as f:
         f.write(export_string)
     outfile_to_S3(outfile, kwargs)

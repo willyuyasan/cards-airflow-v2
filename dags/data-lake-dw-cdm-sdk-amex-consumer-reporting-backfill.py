@@ -91,6 +91,22 @@ conversion_reporting_jar_task = {
         "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
+conversion_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.strptime(Variable.get("AMEX_CONSUMER_BACKFILL_LOOKBACK_TODATE"), "%Y-%m-%d")
+            - (timedelta(days=int(int(Variable.get("AMEX_CONSUMER_BACKFILL_LOOKBACK_DAYS")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + Variable.get("AMEX_CONSUMER_BACKFILL_LOOKBACK_TODATE"),
+        "TENANTS=" + Variable.get("DBX_AMEX_CONSUMER_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.reporting.PaidSearchSummary",
+        "ACCOUNT=" + Variable.get("DBX_AMEX_CONSUMER_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_AMEX_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
 
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-amex-consumer-reporting-backfill',
@@ -104,6 +120,16 @@ with DAG('data-lake-dw-cdm-sdk-amex-consumer-reporting-backfill',
         task_id='conversion-reporting',
         new_cluster=medium_task_cluster,
         spark_jar_task=conversion_reporting_jar_task,
+        libraries=reporting_libraries,
+        timeout_seconds=14400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=240
+    )
+    
+    pss_reporting = FinServDatabricksSubmitRunOperator(
+        task_id='pss-reporting',
+        new_cluster=medium_task_cluster,
+        spark_jar_task=pss_reporting_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=14400,
         databricks_conn_id=airflow_svc_token,

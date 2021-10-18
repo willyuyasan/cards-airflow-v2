@@ -96,12 +96,10 @@ pss_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.strptime(Variable.get("AMEX_BUSINESS_BACKFILL_LOOKBACK_TODATE"), "%Y-%m-%d")
-            - (timedelta(days=int(int(Variable.get("AMEX_BUSINESS_BACKFILL_LOOKBACK_DAYS")))))).strftime(
-            "%Y-%m-%d"),
+            datetime.strptime(Variable.get("AMEX_BUSINESS_BACKFILL_LOOKBACK_TODATE"), "%Y-%m-%d"),
         "END_DATE=" + Variable.get("AMEX_BUSINESS_BACKFILL_LOOKBACK_TODATE"),
         "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_Tenant_Id"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.reporting.PaidSearchSummary",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.common.reporting.PaidSearchSummary",
         "ACCOUNT=" + Variable.get("DBX_AMEX_BUSINESS_Account"),
         "WRITE_BUCKET=" + Variable.get("DBX_AMEX_Bucket"),
         "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
@@ -126,7 +124,7 @@ with DAG('data-lake-dw-cdm-sdk-amex-business-reporting-backfill',
         polling_period_seconds=240
     )
     pss_data = FinServDatabricksSubmitRunOperator(
-        task_id='pss-data',
+        task_id='paid-search-reporting',
         new_cluster=medium_task_cluster,
         spark_jar_task=pss_reporting_jar_task,
         libraries=reporting_libraries,

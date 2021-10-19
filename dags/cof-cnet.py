@@ -258,4 +258,5 @@ with DAG(DAG_NAME,
 
 # Defining  dependencies
 cnet_gam_data_task >> cnet_gam_mapping_task
+cnet_gam_mapping_task >> cnet_gam_staging_funnel_ids_task
 cnet_gam_staging_funnel_ids_task >> cnet_gam_reporting_funnel_metrics_task

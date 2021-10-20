@@ -95,7 +95,7 @@ pss_reporting_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + datetime.strptime(Variable.get("AMEX_BUSINESS_BACKFILL_LOOKBACK_TODATE"), "%Y-%m-%d"),
+        "START_DATE=" + Variable.get("AMEX_BUSINESS_BACKFILL_LOOKBACK_TODATE"),
         "END_DATE=" + Variable.get("AMEX_BUSINESS_BACKFILL_LOOKBACK_TODATE"),
         "TENANTS=" + Variable.get("DBX_AMEX_BUSINESS_Tenant_Id"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.reporting.PaidSearchSummary",

@@ -96,7 +96,7 @@ pss_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + Variable.get("AMEX_CONSUMER_BACKFILL_LOOKBACK_TODATE"),
-        "END_DATE=" + Variable.get("AMEX_CONSUMER_BACKFILL_LOOKBACK_TODATE"),
+        "END_DATE=" + Variable.get("AMEX_CONSUMER_BACKFILL_LOOKBACK_ENDDATE"),
         "TENANTS=" + Variable.get("DBX_AMEX_CONSUMER_Tenant_Id"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.reporting.PaidSearchSummary",
         "ACCOUNT=" + Variable.get("DBX_AMEX_CONSUMER_Account"),

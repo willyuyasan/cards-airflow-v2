@@ -107,8 +107,8 @@ def mysql_table_to_s3(**kwargs):
             f.flush()
             cursor.close()
             conn.close()
-        print('mysql to s3 Temp Data File = ' + outfile.name)
-        print('mysql to s3 Temp Data File size = ' + str(os.stat(outfile.name).st_size)+" Bytes.")
+        print('mysql to s3 Temp Data File = ' + outfile)
+        print('mysql to s3 Temp Data File size = ' + str(os.stat(outfile).st_size)+" Bytes.")
         outfile_to_S3(outfile, kwargs)
 
 
@@ -145,8 +145,8 @@ def pgsql_table_to_s3(**kwargs):
             f.flush()
             cursor.close()
             conn.close()
-        print('pgsql to s3 Temp Data File = ' + outfile.name)
-        print('pgsql to s3 Temp Data File size = ' + str(os.stat(outfile.name).st_size)+" Bytes.")
+        print('pgsql to s3 Temp Data File = ' + outfile)
+        print('pgsql to s3 Temp Data File size = ' + str(os.stat(outfile).st_size)+" Bytes.")
         outfile_to_S3(outfile, kwargs)
 
 

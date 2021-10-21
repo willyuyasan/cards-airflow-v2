@@ -92,6 +92,6 @@ class S3ToMySqlOperator(BaseOperator):
             )
         finally:
             # Remove file downloaded from s3 to be idempotent.
-            print('s3 to MySQL Temp Data File = ' + file.name)
-            print('s3 to MySQL Temp Data File size = ' + str(os.stat(file.name).st_size) + " Bytes.")
+            print('s3 to MySQL Temp Data File = ' + file)
+            print('s3 to MySQL Temp Data File size = ' + str(os.stat(file).st_size) + " Bytes.")
             os.remove(file)

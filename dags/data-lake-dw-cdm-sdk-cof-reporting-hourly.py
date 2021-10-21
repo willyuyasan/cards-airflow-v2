@@ -270,7 +270,7 @@ with DAG('data-lake-dw-cdm-sdk-cof-reporting-hourly',
     )
 
     product_viewed_reporting = FinServDatabricksSubmitRunOperator(
-        task_id='page-view-reporting',
+        task_id='product-viewed-reporting',
         new_cluster=medium_task_cluster,
         spark_jar_task=productviewed_reporting_jar_task,
         libraries=reporting_libraries,
@@ -280,7 +280,7 @@ with DAG('data-lake-dw-cdm-sdk-cof-reporting-hourly',
     )
 
     product_clicked_reporting = FinServDatabricksSubmitRunOperator(
-        task_id='page-view-reporting',
+        task_id='product-clicked-reporting',
         new_cluster=medium_task_cluster,
         spark_jar_task=productclicked_reporting_jar_task,
         libraries=reporting_libraries,

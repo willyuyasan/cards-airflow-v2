@@ -93,6 +93,7 @@ def mysql_table_to_s3(**kwargs):
     cursor.itersize = iter_size
     cursor.execute(query)
     if kwargs.get('compress'):
+        print('Compress File mysql to s3 process')
         compressed_file(cursor, kwargs)
         cursor.close()
         conn.close()
@@ -106,6 +107,8 @@ def mysql_table_to_s3(**kwargs):
             f.flush()
             cursor.close()
             conn.close()
+        print('mysql to s3 Temp Data File = ' + outfile.name)
+        print('mysql to s3 Temp Data File size = ' + str(os.stat(outfile.name).st_size)+" Bytes.")
         outfile_to_S3(outfile, kwargs)
 
 
@@ -128,6 +131,7 @@ def pgsql_table_to_s3(**kwargs):
     cursor.execute(query)
     print('Query executed')
     if kwargs.get('compress'):
+        print('Compress File pgsql to s3 process')
         compressed_file(cursor, kwargs)
         cursor.close()
         conn.close()
@@ -141,6 +145,8 @@ def pgsql_table_to_s3(**kwargs):
             f.flush()
             cursor.close()
             conn.close()
+        print('pgsql to s3 Temp Data File = ' + outfile.name)
+        print('pgsql to s3 Temp Data File size = ' + str(os.stat(outfile.name).st_size)+" Bytes.")
         outfile_to_S3(outfile, kwargs)
 
 

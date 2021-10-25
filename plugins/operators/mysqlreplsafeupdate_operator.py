@@ -50,7 +50,7 @@ class MySqlReplSafeUpdateOperator(MySqlOperator):
         if sys.version_info[0] < 3:
             sql = self.sql.encode('utf-8')
         conn = hook.get_conn()
-        tmp = tempfile.NamedTemporaryFile(dir="/home/airflow")
+        tmp = tempfile.NamedTemporaryFile(dir="/scratch")
         logging.info('LOG This is the Temporary File Name :: ' + tmp.name)
         print('This is the Temporary File Name :: ' + tmp.name)
         cur = conn.cursor()

@@ -138,7 +138,7 @@ cof_report_jar_task = {
         "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.CnetGamMapping",
         "ACCOUNT=" + "cards",
         "READ_BUCKET=" + "rv-core-pipeline",
-        "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
+        "TENANTS=" + Variable.get("DBX_CNET_CCDC_Tenant_Id"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
         "CUSTOM_PARAMETERS__crosssitelookback=" + Variable.get("DBX_gam_crosssite_lookback_days")
     ]

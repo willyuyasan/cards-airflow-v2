@@ -223,6 +223,22 @@ productList_reporting_jar_task = {
     ]
 }
 
+productClicked_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_CCDC_SDK_lookback_days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.ccdc.reporting.ProductClicked",
+        "ACCOUNT=" + Variable.get("DBX_CCDC_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CCDC_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-hourly',
          schedule_interval='0 0-6,11-23 * * *',
@@ -290,10 +306,20 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-hourly',
         polling_period_seconds=240
     )
 
+    productClicked_reporting = FinServDatabricksSubmitRunOperator(
+        task_id='productClicked-reporting',
+        new_cluster=small_task_cluster,
+        spark_jar_task=productClicked_reporting_jar_task,
+        libraries=reporting_libraries,
+        timeout_seconds=9000,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+
 # Dependencies
 
 # reporting dependencies
-ccdc_staging_tables >> [conversion_reporting, productList_reporting]
+ccdc_staging_tables >> [conversion_reporting, productList_reporting, productClicked_reporting]
 conversion_reporting >> session_reporting
 conversion_reporting >> product_reporting
 conversion_reporting >> page_view_reporting

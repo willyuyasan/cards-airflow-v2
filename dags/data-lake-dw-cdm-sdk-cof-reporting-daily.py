@@ -238,6 +238,22 @@ productviewed_reporting_jar_task = {
     ]
 }
 
+ProductListViewed_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_COF_SDK_daily_lookback_days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_COF_COHESION_Tenant"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.ProductListViewed",
+        "ACCOUNT=" + Variable.get("DBX_COF_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-cof-reporting-daily',
          schedule_interval='0 9 * * *',
@@ -309,6 +325,16 @@ with DAG('data-lake-dw-cdm-sdk-cof-reporting-daily',
         task_id='product-clicked-reporting',
         new_cluster=large_task_cluster,
         spark_jar_task=productclicked_reporting_jar_task,
+        libraries=reporting_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
+    product_ListViewed_reporting = FinServDatabricksSubmitRunOperator(
+        task_id='product-clicked-reporting',
+        new_cluster=large_task_cluster,
+        spark_jar_task=ProductListViewed_reporting_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,

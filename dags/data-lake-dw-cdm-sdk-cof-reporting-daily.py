@@ -332,7 +332,7 @@ with DAG('data-lake-dw-cdm-sdk-cof-reporting-daily',
     )
 
     product_ListViewed_reporting = FinServDatabricksSubmitRunOperator(
-        task_id='product-clicked-reporting',
+        task_id='product-ListViewed-reporting',
         new_cluster=large_task_cluster,
         spark_jar_task=ProductListViewed_reporting_jar_task,
         libraries=reporting_libraries,

@@ -30,7 +30,7 @@ default_args = {
 }
 
 # Config Root
-cfg_root = '/home/airflow/airflow/dags/core_staging'
+cfg_root = '/usr/local/airflow/dags/core_staging'
 DUMP_FILEPATH = str(Variable.get('cccom_dump_file_path'))
 source_user_connection = 'core-prod-ro-user'
 

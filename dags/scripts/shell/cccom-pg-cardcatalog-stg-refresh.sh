@@ -4,6 +4,7 @@
 echo "Start  time: $(date)"
 
 FILEPATH=${DUMP_FILEPATH}
+FILEPATH+="/"
 SCHEMATODUMP=cardcatalog
 DBUSER=${PGSQL_USER}
 

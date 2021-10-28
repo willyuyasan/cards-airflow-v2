@@ -2,6 +2,7 @@
 
 # setting variables
 FILEPATH=${DUMP_FILEPATH}
+FILEPATH+="/"
 FILENAME=vacuum_list_tables_{{params.file_suffix}}.sql
 LOG_FILE=vacuum_list_tables_{{params.file_suffix}}.log
 

@@ -2,6 +2,7 @@
 # Dev and Qa env.
 #
 FILEPATH=${DUMP_FILEPATH}
+FILEPATH+="/"
 SCHEMATODUMP=pay_manager
 DBUSER=${PGSQL_USER}
 

@@ -4,7 +4,7 @@ from airflow.models import Variable
 from datetime import datetime, timedelta
 from airflow.operators.bash_operator import BashOperator
 from airflow.hooks.base_hook import BaseHook
-from rvairflow import slack_hook as sh
+# from rvairflow import slack_hook as sh
 
 default_args = {
     'owner': 'airflow',
@@ -13,7 +13,7 @@ default_args = {
     'email': ['rzagade@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
+    # 'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name")),
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
     'provide_context': True

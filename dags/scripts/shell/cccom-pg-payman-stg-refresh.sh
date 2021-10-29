@@ -5,7 +5,8 @@ FILEPATH=${DUMP_FILEPATH}
 FILEPATH+="/"
 SCHEMATODUMP=pay_manager
 DBUSER=${PGSQL_USER}
-set PGPASSWORD = ${PAYMANPASS}
+sudo PGPASSWORD="${PAYMANPASS}"
+
 if [ {{params.refresh}} == 'dev' ] || [ {{params.refresh}} == 'qa' ]
 then
   exit 0
@@ -15,28 +16,32 @@ SQL="${SQL} and ( tablename in ( 'flyway_schema_history', 'schema_version' ) or 
 SQL="${SQL} tablename like '%2020%' or tablename like '%2021%' or tablename like '%2bd%' ) "
 SQL="${SQL} group by schemaname;"
 echo "====execute1 ==="
-EXTBLIST=`sudo PGPASSWORD="${PAYMANPASS}" psql -U ${DBUSER} --host {{params.dbhost}} --port 5432 -d {{params.db}} -t -c "${SQL}"`
+EXTBLIST= psql -U ${DBUSER} --host {{params.dbhost}} --port 5432 -d {{params.db}} -t -c "${SQL}"
 #  echo $PGPASSWORD
-echo "end"
+echo "end1"
 # prep the list of table to be refreshed and that list will be used for Truncate , drop FK and add FK steps
 SQL="select array_to_string(array_agg(''''||tablename||'''' order by tablename ASC), ', ') from pg_tables where schemaname = '${SCHEMATODUMP}'"
 SQL="${SQL} and ( tablename not in ( 'flyway_schema_history', 'schema_version' ) and tablename not like '%old%' and tablename not like '%2019%' and"
 SQL="${SQL} tablename not like '%2020%' and tablename not like '%2021%' and tablename not like '%2bd%' )"
 SQL="${SQL} group by schemaname;"
-INCLUDETBLIST=`PGPASSWORD="${PAYMANPASS}" psql -U ${DBUSER} --host {{params.dbhost}} --port 5432 -d {{params.db}} -t -c "${SQL}"`
-
+echo "====execute2 ==="
+# INCLUDETBLIST=`PGPASSWORD="${PAYMANPASS}" psql -U ${DBUSER} --host {{params.dbhost}} --port 5432 -d {{params.db}} -t -c "${SQL}"`
+INCLUDETBLIST= psql -U ${DBUSER} --host {{params.dbhost}} --port 5432 -d {{params.db}} -t -c "${SQL}"
+echo "====end ==="
 
 rm -f ${FILEPATH}${SCHEMATODUMP}_backup_*.sql.gz
-
-PGPASSWORD="${PAYMANPASS}" pg_dump10 -Fc -w  --file ${FILEPATH}/${SCHEMATODUMP}_backup_$(date +"%m_%d_%Y").sql --host {{params.dbhost}} --port 5432 --username ${DBUSER} --verbose --format=p --inserts --data-only ${EXTBLIST} --schema ${SCHEMATODUMP} {{params.db}}
-
+echo "====execute3 ==="
+# PGPASSWORD="${PAYMANPASS}" pg_dump10 -Fc -w  --file ${FILEPATH}/${SCHEMATODUMP}_backup_$(date +"%m_%d_%Y").sql --host {{params.dbhost}} --port 5432 --username ${DBUSER} --verbose --format=p --inserts --data-only ${EXTBLIST} --schema ${SCHEMATODUMP} {{params.db}}
+pg_dump10 -Fc -w  --file ${FILEPATH}/${SCHEMATODUMP}_backup_$(date +"%m_%d_%Y").sql --host {{params.dbhost}} --port 5432 --username ${DBUSER} --verbose --format=p --inserts --data-only ${EXTBLIST} --schema ${SCHEMATODUMP} {{params.db}}
+echo "====end ==="
 
 # prep the FK list for Drop
 SQL="SELECT 'ALTER TABLE '||nsp.nspname||'.'||rpad(rel.relname,30,' ')||'DROP CONSTRAINT '||con.conname||';' FROM pg_catalog.pg_constraint con INNER JOIN pg_catalog.pg_class rel "
 SQL="${SQL} ON rel.oid = con.conrelid and rel.relname in ( ${INCLUDETBLIST} ) INNER JOIN pg_catalog.pg_namespace nsp ON nsp.oid = con.connamespace WHERE nsp.nspname = '${SCHEMATODUMP}' and con.contype = 'f';"
-
-PGPASSWORD="${PAYMANPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_drop_fk.sql
-
+echo "====execute4 ==="
+#PGPASSWORD="${PAYMANPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_drop_fk.sql
+psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_drop_fk.sql
+echo "====end ==="
 
 # prep the FK list for add
 
@@ -53,16 +58,18 @@ SQL="select distinct 'ALTER TABLE '||tco.table_schema||'.'||tco.table_name||'   
       where tco.constraint_type = 'FOREIGN KEY'
         and tco.constraint_schema = '${SCHEMATODUMP}'
         and tco.table_name in ( ${INCLUDETBLIST} );"
-
-PGPASSWORD="${PAYMANPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_add_fk.sql
+echo "====execute5 ==="
+# PGPASSWORD="${PAYMANPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_add_fk.sql
+psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_add_fk.sql
 
 # prep the Truncate list
 
 SQL="select 'TRUNCATE table '||table_schema||'.'||table_name||' ;' from information_schema.tables where table_schema = '${SCHEMATODUMP}'"
 SQL="${SQL} and table_type = 'BASE TABLE' and table_name in ( ${INCLUDETBLIST} );"
 
-PGPASSWORD="${PAYMANPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_truncate.sql
-
+# PGPASSWORD="${PAYMANPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_truncate.sql
+psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_truncate.sql
+echo "====end ==="
 
 # actual refresh steps
 

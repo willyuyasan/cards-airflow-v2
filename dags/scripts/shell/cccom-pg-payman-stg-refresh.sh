@@ -16,9 +16,16 @@ SQL="select array_to_string(array_agg('-T '||schemaname||'.'||tablename order by
 SQL="${SQL} and ( tablename in ( 'flyway_schema_history', 'schema_version' ) or tablename like '%old%' or tablename like '%2019%' or"
 SQL="${SQL} tablename like '%2020%' or tablename like '%2021%' or tablename like '%2bd%' ) "
 SQL="${SQL} group by schemaname;"
+echo "Start"
+echo ${PAYMANPASS}
+echo ${DBUSER}
+echo {{params.dbhost}}
+echo {{params.db}}
+echo ${SQL}
+echo "====execute==="
 EXTBLIST=`PGPASSWORD="${PAYMANPASS}" psql -U ${DBUSER} --host {{params.dbhost}} --port 5432 -d {{params.db}} -t -c "${SQL}"`
-
-
+echo $PGPASSWORD
+echo "end"
 # prep the list of table to be refreshed and that list will be used for Truncate , drop FK and add FK steps
 SQL="select array_to_string(array_agg(''''||tablename||'''' order by tablename ASC), ', ') from pg_tables where schemaname = '${SCHEMATODUMP}'"
 SQL="${SQL} and ( tablename not in ( 'flyway_schema_history', 'schema_version' ) and tablename not like '%old%' and tablename not like '%2019%' and"

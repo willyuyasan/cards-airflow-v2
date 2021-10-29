@@ -8,7 +8,7 @@ A script that will update all important data from Mantle to the AWS Staging envi
 from airflow import DAG
 from airflow.operators import BashOperator
 from datetime import datetime, timedelta
-from rvairflow import slack_hook as sh
+# from rvairflow import slack_hook as sh
 from airflow.operators.python_operator import PythonOperator
 import MySQLdb
 from airflow.hooks.base_hook import BaseHook
@@ -25,8 +25,8 @@ default_args = {
     'email_on_retry': False,
     'retries': 1,
     'max_active_runs': 1,
-    'retry_delay': timedelta(minutes=1),
-    'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name"))
+    'retry_delay': timedelta(minutes=1)
+    # 'on_failure_callback': sh.slack_failure_callback(slack_connection_id=Variable.get("slack-connection-name"))
 }
 
 # Config Root

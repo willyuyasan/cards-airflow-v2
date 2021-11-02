@@ -214,7 +214,7 @@ productclicked_reporting_jar_task = {
                 datetime.now() - (timedelta(days=int(int(Variable.get("DBX_COF_SDK_daily_lookback_days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TENANTS=" + Variable.get("DBX_COF_COHESION_Tenant"),
+        "TENANTS=" + Variable.get("DBX_COF_COHESION_Tenants"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.ProductClicked",
         "ACCOUNT=" + Variable.get("DBX_COF_Account"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
@@ -230,7 +230,7 @@ productviewed_reporting_jar_task = {
                 datetime.now() - (timedelta(days=int(int(Variable.get("DBX_COF_SDK_daily_lookback_days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TENANTS=" + Variable.get("DBX_COF_COHESION_Tenant"),
+        "TENANTS=" + Variable.get("DBX_COF_COHESION_Tenants"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.ProductViewed",
         "ACCOUNT=" + Variable.get("DBX_COF_Account"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
@@ -246,7 +246,7 @@ ProductListViewed_reporting_jar_task = {
                 datetime.now() - (timedelta(days=int(int(Variable.get("DBX_COF_SDK_daily_lookback_days")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TENANTS=" + Variable.get("DBX_COF_COHESION_Tenant"),
+        "TENANTS=" + Variable.get("DBX_COF_COHESION_Tenants"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.ProductListViewed",
         "ACCOUNT=" + Variable.get("DBX_COF_Account"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),

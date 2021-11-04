@@ -940,7 +940,7 @@ ProductList_staging_jar_task = {
 }
 
 # DAG Creation Step
-with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
+with DAG(DAG_NAME,
          schedule_interval='30 8 * * *',
          dagrun_timeout=timedelta(hours=3),
          catchup=False,

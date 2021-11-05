@@ -101,7 +101,7 @@ pss_reporting_jar_task = {
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.reporting.PaidSearchSummary",
         "ACCOUNT=" + Variable.get("DBX_AMEX_BUSINESS_Account"),
         "WRITE_BUCKET=" + Variable.get("DBX_AMEX_Bucket"),
-        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+        "READ_BUCKET=" + Variable.get("CDM_READ_BUCKET")
     ]
 }
 

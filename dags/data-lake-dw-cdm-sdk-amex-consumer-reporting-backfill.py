@@ -100,8 +100,9 @@ pss_reporting_jar_task = {
         "TENANTS=" + Variable.get("DBX_AMEX_CONSUMER_Tenant_Id"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.common.reporting.PaidSearchSummary",
         "ACCOUNT=" + Variable.get("DBX_AMEX_CONSUMER_Account"),
+        "PAID_SEARCH_COMPANY_ID=" + Variable.get("AMEX_PAIDSEARCH_COMPANY_ID"),
         "WRITE_BUCKET=" + Variable.get("DBX_AMEX_Bucket"),
-        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+        "READ_BUCKET=" + Variable.get("CDM_READ_BUCKET")
     ]
 }
 

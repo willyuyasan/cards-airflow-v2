@@ -255,7 +255,7 @@ paid_search_reporting_jar_task = {
 }
 
 # DAG Creation Step
-with DAG('data-lake-dw-cdm-sdk-amex-consumer-reporting-hourly_cdmupgrade',
+with DAG(DAG_NAME,
          schedule_interval='0 0-6,11-23 * * *',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,

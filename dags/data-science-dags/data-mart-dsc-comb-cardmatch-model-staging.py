@@ -354,6 +354,14 @@ oopfi_model_training_notebook_task = {
     'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train',
 }
 
+prosper_model_training_notebook_task = {
+    'base_parameters': {
+        "issuer": "Prosper",
+        "card_ids": "8090"
+    },
+    'notebook_path': '/Projects/CardMatch/Combined/CardMatch_python_train',
+}
+
 # Model Deployment Notebook Task
 model_deployment_notebook_task = {
     'base_parameters': {
@@ -672,6 +680,16 @@ with DAG('data-mart-dsc-comb-cardmatch-model-staging',
         polling_period_seconds=120
     )
 
+    prosper_model_training_step = FinServDatabricksSubmitRunOperator(
+        task_id='Prosper-model-training-step',
+        new_cluster=small_task_cluster,
+        notebook_task=prosper_model_training_notebook_task,
+        libraries=model_step_libraries,
+        timeout_seconds=3600,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+
     model_deployment_step = FinServDatabricksSubmitRunOperator(
         task_id='model-combine-deployment-step',
         new_cluster=small_task_cluster,
@@ -692,7 +710,7 @@ ccdc_etl_notebook_step >> [
     jasper_model_training_step, greenlight_model_training_step,
     petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step, synchrony_model_training_step,
     sofi_model_training_step, premier_model_training_step, mission_lane_model_training_step, upgrade_model_training_step,
-    usbank_model_training_step, oopfi_model_training_step
+    usbank_model_training_step, oopfi_model_training_step, prosper_model_training_step
 ]
 
 brcc_etl_notebook_step >> [
@@ -704,7 +722,7 @@ brcc_etl_notebook_step >> [
     jasper_model_training_step, greenlight_model_training_step,
     petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step, synchrony_model_training_step,
     sofi_model_training_step, premier_model_training_step, mission_lane_model_training_step, upgrade_model_training_step,
-    usbank_model_training_step, oopfi_model_training_step
+    usbank_model_training_step, oopfi_model_training_step, prosper_model_training_step
 ]
 
 tpg_etl_notebook_step >> [
@@ -716,7 +734,7 @@ tpg_etl_notebook_step >> [
     jasper_model_training_step, greenlight_model_training_step,
     petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step, synchrony_model_training_step,
     sofi_model_training_step, premier_model_training_step, mission_lane_model_training_step, upgrade_model_training_step,
-    usbank_model_training_step, oopfi_model_training_step
+    usbank_model_training_step, oopfi_model_training_step, prosper_model_training_step
 ]
 
 [avant_model_training_step, boa_model_training_step, capital_bank_model_training_step,
@@ -727,5 +745,5 @@ tpg_etl_notebook_step >> [
  jasper_model_training_step, greenlight_model_training_step,
  petal_model_training_step, wells_fargo_model_training_step, deserve_model_training_step, synchrony_model_training_step,
  sofi_model_training_step, premier_model_training_step, mission_lane_model_training_step, upgrade_model_training_step,
- usbank_model_training_step, oopfi_model_training_step
+ usbank_model_training_step, oopfi_model_training_step, prosper_model_training_step
  ] >> model_deployment_step

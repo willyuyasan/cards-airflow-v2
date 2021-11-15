@@ -24,7 +24,7 @@ echo "First Connection End"
 echo "EXTBLIST : "
 echo $EXTBLIST
 # prep the list of table to be refreshed and that list will be used for Truncate , drop FK and add FK steps
-SQL="select array_to_string(array_agg(''''||tablename||'''' order by tablename ASC), ', ') from pg_tables where schemaname = '${SCHEMATODUMP}'"
+SQL="select array_to_string(array_agg(''''||tablename||'''' order by tablename ASC), ' ') from pg_tables where schemaname = '${SCHEMATODUMP}'"
 SQL="${SQL} and ( tablename not in ( 'flyway_schema_history', 'schema_version' ) and tablename not like '%old%' and tablename not like '%2019%' and"
 SQL="${SQL} tablename not like '%2020%' and tablename not like '%2021%' and tablename not like '%2bd%' )"
 SQL="${SQL} group by schemaname;"

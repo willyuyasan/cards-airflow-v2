@@ -10,8 +10,8 @@ mysql -u ${MYSQL_DB_USER} -p${MYSQL_DB_PASS} -h ${MYSQL_DBHOST} -AN -e"${SQL}" >
 # connect to Postgresql to load the data dumped in the previous step
 PGPASSWORD="${DIMPASSWORD}" psql -h ${PGSQL_DIM_HOST} -d ${PGSQL_DIM_DB} -U ${PGSQL_DIM_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh.sql -o ${DUMP_FILEPATH}/arp_dim_affiliates_refresh_out.log
 
+ls -lhrt ${DUMP_FILEPATH}/arp_dim_refresh.sql
 rm ${DUMP_FILEPATH}/arp_dim_refresh.sql
-
 
 SQL="select concat('select affiliate_reporting.proc_dim_websites_refresh(',a.website_id,',''',a.affiliate_id,''',''', replace(a.url,'''','''''') /*replace(replace(replace(a.url,'''',''''''),'=\\','=\\\\'),'/?','//?')*/, ''',''', a.status, ''',''',now(),''',''', now(),''');') from cccomus.partner_websites a where a.deleted = 0;"
 mysql -u ${MYSQL_DB_USER} -p${MYSQL_DB_PASS} -h ${MYSQL_DBHOST} -AN -e"${SQL}" > ${DUMP_FILEPATH}/arp_dim_refresh.sql
@@ -19,6 +19,7 @@ mysql -u ${MYSQL_DB_USER} -p${MYSQL_DB_PASS} -h ${MYSQL_DBHOST} -AN -e"${SQL}" >
 # connect to Postgresql to load the data dumped in the previous step
 PGPASSWORD="${DIMPASSWORD}" psql -h ${PGSQL_DIM_HOST} -d ${PGSQL_DIM_DB} -U ${PGSQL_DIM_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh.sql -o ${DUMP_FILEPATH}/arp_dim_websites_refresh_out.log
 
+ls -lhrt ${DUMP_FILEPATH}/arp_dim_refresh.sql
 rm ${DUMP_FILEPATH}/arp_dim_refresh.sql
 
 SQL="select concat('select affiliate_reporting.proc_dim_categories_refresh(', a.page_id,',''',replace(a.page_name,'''',''''''),''',''', a.insert_time,''',''', now(),''');') from cccomus.pages a where a.deleted = 0;"
@@ -27,9 +28,14 @@ mysql -u ${MYSQL_DB_USER} -p${MYSQL_DB_PASS} -h ${MYSQL_DBHOST} -AN -e"${SQL}" >
 # connect to Postgresql to load the data dumped in the previous step
 PGPASSWORD="${DIMPASSWORD}" psql -h ${PGSQL_DIM_HOST} -d ${PGSQL_DIM_DB} -U ${PGSQL_DIM_USER} -f ${DUMP_FILEPATH}/arp_dim_refresh.sql -o ${DUMP_FILEPATH}/arp_dim_categories_refresh_out.log
 
+ls -lhrt ${DUMP_FILEPATH}/arp_dim_refresh.sql
 rm ${DUMP_FILEPATH}/arp_dim_refresh.sql
 
 # housekeeping
+ls -lhrt ${DUMP_FILEPATH}/arp_dim_affiliates_refresh_out.log
+ls -lhrt ${DUMP_FILEPATH}/arp_dim_websites_refresh_out.log
+ls -lhrt ${DUMP_FILEPATH}/arp_dim_categories_refresh_out.log
+
 rm ${DUMP_FILEPATH}/arp_dim_affiliates_refresh_out.log
 rm ${DUMP_FILEPATH}/arp_dim_websites_refresh_out.log
 rm ${DUMP_FILEPATH}/arp_dim_categories_refresh_out.log

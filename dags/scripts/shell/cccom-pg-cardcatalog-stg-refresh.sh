@@ -36,22 +36,22 @@ echo $INCLUDETBLIST
 # prep the copy to csv list of table to be refreshed- creating csv file with data
 SQL="select '\copy '||schemaname||'.'||tablename||' to '''||'${FILEPATH}'||tablename||'.csv'' with delimiter '','' csv header;' "
 SQL="${SQL} from pg_tables where schemaname = '${SCHEMATODUMP}' and tablename in ( ${INCLUDETBLIST} ) Order by tablename;"
-PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost}} --port 5432 -d {{params.db}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_copy_tb_data_to_csv_file.sql
+`PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost}} --port 5432 -d {{params.db}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_copy_tb_data_to_csv_file.sql`
 
 # prep the copy to csv list of table to be refreshed- loading the tables from csv file
 SQL="select '\copy '||schemaname||'.'||tablename||' from '''||'${FILEPATH}'||tablename||'.csv'' with delimiter '','' csv header;' "
 SQL="${SQL} from pg_tables where schemaname = '${SCHEMATODUMP}' and tablename in ( ${INCLUDETBLIST} ) Order by tablename;"
-PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost}} --port 5432 -d {{params.db}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_copy_tb_data_from_csv_file.sql
+`PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost}} --port 5432 -d {{params.db}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_copy_tb_data_from_csv_file.sql`
 
 # actual dumping
-PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost}} --port 5432 -d {{params.db}} -q -f ${FILEPATH}${SCHEMATODUMP}_copy_tb_data_to_csv_file.sql
+`PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost}} --port 5432 -d {{params.db}} -q -f ${FILEPATH}${SCHEMATODUMP}_copy_tb_data_to_csv_file.sql`
 
 
 # prep the FK list for Drop
 SQL="SELECT 'ALTER TABLE '||nsp.nspname||'.'||rpad(rel.relname,30,' ')||'DROP CONSTRAINT '||con.conname||';' FROM pg_catalog.pg_constraint con INNER JOIN pg_catalog.pg_class rel "
 SQL="${SQL} ON rel.oid = con.conrelid and rel.relname in ( ${INCLUDETBLIST} ) INNER JOIN pg_catalog.pg_namespace nsp ON nsp.oid = con.connamespace WHERE nsp.nspname = '${SCHEMATODUMP}' and con.contype = 'f';"
 
-PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_drop_fk.sql
+`PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_drop_fk.sql`
 
 
 # prep the FK list for add
@@ -67,26 +67,26 @@ SQL="${SQL} join information_schema.key_column_usage rel_kcu  on rco.unique_cons
 SQL="${SQL} and rco.unique_constraint_name = rel_kcu.constraint_name and kcu.ordinal_position = rel_kcu.ordinal_position "
 SQL="${SQL} where tco.constraint_type = 'FOREIGN KEY' and tco.constraint_schema = '${SCHEMATODUMP}' and tco.table_name in ( ${INCLUDETBLIST} );"
 
-PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_add_fk.sql
+`PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_add_fk.sql`
 
 # prep the Truncate list
 
 SQL="select 'TRUNCATE table '||table_schema||'.'||table_name||' ;' from information_schema.tables where table_schema = '${SCHEMATODUMP}'"
 SQL="${SQL} and table_type = 'BASE TABLE' and table_name in ( ${INCLUDETBLIST} );"
 
-PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_truncate.sql
+`PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_truncate.sql`
 
 
 # actual refresh steps
 
-PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -q -f ${FILEPATH}${SCHEMATODUMP}_drop_fk.sql
-PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -q -f ${FILEPATH}${SCHEMATODUMP}_truncate.sql
-PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -q -f ${FILEPATH}${SCHEMATODUMP}_copy_tb_data_from_csv_file.sql
-PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -q -f ${FILEPATH}${SCHEMATODUMP}_add_fk.sql
+`PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -q -f ${FILEPATH}${SCHEMATODUMP}_drop_fk.sql`
+`PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -q -f ${FILEPATH}${SCHEMATODUMP}_truncate.sql`
+`PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -q -f ${FILEPATH}${SCHEMATODUMP}_copy_tb_data_from_csv_file.sql`
+`PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -q -f ${FILEPATH}${SCHEMATODUMP}_add_fk.sql`
 
 
 #fix the sequence issue - going out of sync
-PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "truncate table public.cardcatalog_seq_verify;"
+`PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "truncate table public.cardcatalog_seq_verify;"`
 
 SQL="select 'insert into public.cardcatalog_seq_verify ( schema_name, tab_name, seq_name, b_max_id_val, b_last_value_seq)"
 SQL="${SQL} values (''' || aa.table_schema||''' , '''|| aa.table_name || ''' , '''|| aa.seq_name||''' ,( select max(' || "
@@ -97,14 +97,14 @@ SQL="${SQL} where table_schema = 'cardcatalog' and table_name   not in ('flyway_
 SQL="${SQL} order by table_schema, table_name, column_name) bb where bb.seq_name like 'cardcatalog.%' ) aa;"
 
 
-PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_sequence_verify_get.sql
-PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -q -f ${FILEPATH}${SCHEMATODUMP}_sequence_verify_get.sql
+`PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_sequence_verify_get.sql`
+`PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -q -f ${FILEPATH}${SCHEMATODUMP}_sequence_verify_get.sql`
 
 SQL="select 'SELECT setval(''' || seq_name || ''', ' || b_max_id_val || ', true);' from public.cardcatalog_seq_verify"
 SQL="${SQL} where b_max_id_val is not null and ( b_max_id_val <> b_last_value_seq and b_last_value_seq < b_max_id_val );"
 
-PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_sequence_set_exec.sql
-PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -q -f ${FILEPATH}${SCHEMATODUMP}_sequence_set_exec.sql
+`PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_sequence_set_exec.sql`
+`PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -q -f ${FILEPATH}${SCHEMATODUMP}_sequence_set_exec.sql`
 
 SQL="select 'update public.cardcatalog_seq_verify set a_max_id_val = ( select max(' || aa.column_name || ') from ' ||"
 SQL="${SQL} aa.table_schema || '.' || aa.table_name || '), a_last_value_seq = ( select last_value from ' || aa.seq_name ||"
@@ -114,8 +114,8 @@ SQL="${SQL} replace((replace(column_default,'nextval(''','')),'''::regclass)',''
 SQL="${SQL} where table_schema     = 'cardcatalog' and table_name not in ('flyway_schema_history') and ordinal_position = 1"
 SQL="${SQL} order by  table_schema, table_name, column_name ) aa; "
 
-PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_sequence_verify_upd.sql
-PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -q -f ${FILEPATH}${SCHEMATODUMP}_sequence_verify_upd.sql
+`PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -t -c "${SQL}" -o ${FILEPATH}${SCHEMATODUMP}_sequence_verify_upd.sql`
+`PGPASSWORD="${CARDCATPASS}" psql -U ${DBUSER} --host {{params.dbhost_to}} --port 5432 -d {{params.db_to}} -q -f ${FILEPATH}${SCHEMATODUMP}_sequence_verify_upd.sql`
 
 # house keeping
 tar -czf ${FILEPATH}${SCHEMATODUMP}_dump.tar.gz ${FILEPATH}*.csv

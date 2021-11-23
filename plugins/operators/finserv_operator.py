@@ -172,13 +172,13 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
         except AirflowException as ex:
             # TODO: Write some more detail on why the task failed
             # Still try and pull the logs if the run fails
-            self._log_paths(context)
-            self._print_logs()
+            # self._log_paths(context)
+            # self._print_logs()
             raise ex
-        finally:
-            # Try and gather details about logging options in this cluster
-            self._log_paths(context)
-            self._print_logs()
+        # finally:
+        #     # Try and gather details about logging options in this cluster
+        #     self._log_paths(context)
+        #     self._print_logs()
 
     def _print_logs(self):
         """

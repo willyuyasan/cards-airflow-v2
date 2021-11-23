@@ -131,10 +131,10 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
                 host = hook.databricks_conn.host
 
                 if 'token' in hook.databricks_conn.extra_dejson:
-                    self.log.info('Using token auth.')
+                    # self.log.info('Using token auth.')
                     auth = _TokenAuth(hook.databricks_conn.extra_dejson['token'])
                 else:
-                    self.log.info('Using basic auth.')
+                    # self.log.info('Using basic auth.')
                     auth = (hook.databricks_conn.login, hook.databricks_conn.password)
 
                 url = f"https://{host}/{endpoint}"
@@ -145,10 +145,11 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
                     timeout=hook.timeout_seconds,
                 )
                 if response.ok:
-                    self.log.info(
-                        "Cluster permissions successfully set: %s",
-                        json.dumps(response.json(), indent=2),
-                    )
+                    pass
+                    # self.log.info(
+                    #     "Cluster permissions successfully set: %s",
+                    #     json.dumps(response.json(), indent=2),
+                    # )
                 else:
                     self.log.warning(
                         "Failed to set cluster permissions: %s, %s, %s",
@@ -163,7 +164,7 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
             retry_delay=self.databricks_retry_delay)
 
     def execute(self, context):
-        self.log.debug("Running {} with parameters:\n{}".format(self.job_name, pformat(self.json)))
+        # self.log.debug("Running {} with parameters:\n{}".format(self.job_name, pformat(self.json)))
         # Attempt to execute the Databricks job
         try:
             self.start_sidecar()
@@ -193,7 +194,7 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
                 if spark_filelist is not None:
                     for f in spark_filelist['files']:
                         if not f['is_dir']:
-                            self.log.info(f['path'])
+                            # self.log.info(f['path'])
 
                             if f['path'].endswith('.gz') and 'stderr' in f['path']:
                                 self.log.info("The gzipped file is present on this location, please read the file from that location %s", f['path'])

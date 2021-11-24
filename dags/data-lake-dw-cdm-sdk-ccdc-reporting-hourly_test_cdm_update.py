@@ -24,7 +24,7 @@ default_args = {
 # token variable
 airflow_svc_token = "databricks_airflow_svc_token"
 ACCOUNT = 'cards'
-DAG_NAME = 'data-lake-dw-cdm-sdk-ccdc-reporting-hourly-cdm-update'
+DAG_NAME = 'data-lake-dw-cdm-sdk-ccdc-reporting-hourly-cdmupdate'
 
 
 LOG_PATH = {

@@ -241,7 +241,7 @@ productClicked_reporting_jar_task = {
 }
 
 # DAG Creation Step
-with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-hourly',
+with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-hourly-cdm-update',
          schedule_interval='0 0-6,11-23 * * *',
          dagrun_timeout=timedelta(hours=1),
          catchup=False,

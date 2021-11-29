@@ -246,7 +246,7 @@ attribution_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=730))).strftime(
+            datetime.now() - (timedelta(days=7))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
@@ -263,7 +263,7 @@ anonymous_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-            datetime.now() - (timedelta(days=730))).strftime(
+            datetime.now() - (timedelta(days=7))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),

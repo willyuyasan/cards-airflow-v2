@@ -258,6 +258,22 @@ field_inputted_staging_jar_task = {
     ]
 }
 
+field_selected_staging_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TABLES=" + "com.redventures.cdm.cohesion.staging.FieldSelected",
+        "ACCOUNT=" + "cards",
+        "READ_BUCKET=" + "rv-core-pipeline",
+        "TENANTS=" + Variable.get("DBX_TPG_CCDC_SDK_Tenants"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
 location_staging_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
@@ -532,6 +548,7 @@ content_meta_data_tracked_staging_jar_task = {
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
+
 
 # TPG APP specific
 mobile_element_clicked_jar_task = {
@@ -1017,6 +1034,16 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
+    field_selected_staging = FinServDatabricksSubmitRunOperator(
+            task_id='field-selected-staging',
+            new_cluster=extra_small_task_custom_cluster,
+            spark_jar_task=field_selected_staging_jar_task,
+            libraries=staging_libraries,
+            timeout_seconds=3600,
+            databricks_conn_id=airflow_svc_token,
+            polling_period_seconds=120
+    )
+
     location_staging = FinServDatabricksSubmitRunOperator(
         task_id='location-staging',
         new_cluster=extra_small_task_custom_cluster,
@@ -1446,7 +1473,7 @@ paidsearch_staging >> traffic_sources_staging
 
 # CCDC Staging Dependencies
 [page_view_staging, page_metrics_staging, product_clicked_staging, product_viewed_staging, element_clicked_staging,
- element_viewed_staging, cookie_identified_staging, field_inputted_staging, device_staging, location_staging,
+ element_viewed_staging, cookie_identified_staging, field_inputted_staging, field_selected_staging, device_staging, location_staging,
  decsion_staging, traffic_sources_staging, form_submitted_staging, paidsearch_staging, hoppageviewed_staging,
  tpg_ccdc_ot_summary_staging, ProductList_staging] >> ccdc_staging_tables
 

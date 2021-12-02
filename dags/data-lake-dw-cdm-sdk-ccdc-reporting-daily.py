@@ -375,6 +375,54 @@ productClicked_reporting_jar_task = {
     ]
 }
 
+elementClicked_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("CCDC_DAILY_LOOKBACK_DAYS")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.ccdc.reporting.ElementClicked",
+        "ACCOUNT=" + Variable.get("DBX_CCDC_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CCDC_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
+elementViewed_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("CCDC_DAILY_LOOKBACK_DAYS")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.ccdc.reporting.ElementViewed",
+        "ACCOUNT=" + Variable.get("DBX_CCDC_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CCDC_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
+field_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("CCDC_DAILY_LOOKBACK_DAYS")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.ccdc.reporting.Field",
+        "ACCOUNT=" + Variable.get("DBX_CCDC_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CCDC_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
 # DAG Creation Step
 with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
          schedule_interval='0 9 * * *',
@@ -496,6 +544,36 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
         task_id='productClicked-reporting',
         new_cluster=medium_task_cluster,
         spark_jar_task=productClicked_reporting_jar_task,
+        libraries=reporting_libraries,
+        timeout_seconds=9000,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+
+    elementClicked_reporting = FinServDatabricksSubmitRunOperator(
+        task_id='elementClicked-reporting',
+        new_cluster=medium_task_cluster,
+        spark_jar_task=elementClicked_reporting_jar_task,
+        libraries=reporting_libraries,
+        timeout_seconds=9000,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+
+    elementViewed_reporting = FinServDatabricksSubmitRunOperator(
+        task_id='elementViewed-reporting',
+        new_cluster=medium_task_cluster,
+        spark_jar_task=elementViewed_reporting_jar_task,
+        libraries=reporting_libraries,
+        timeout_seconds=9000,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
+
+    field_reporting = FinServDatabricksSubmitRunOperator(
+        task_id='field-reporting',
+        new_cluster=medium_task_cluster,
+        spark_jar_task=field_reporting_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=9000,
         databricks_conn_id=airflow_svc_token,

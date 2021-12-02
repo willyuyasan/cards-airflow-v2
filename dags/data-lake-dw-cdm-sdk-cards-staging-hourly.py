@@ -1006,7 +1006,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
     )
 
     field_selected_staging = FinServDatabricksSubmitRunOperator(
-            task_id='field-inputted-staging',
+            task_id='field-selected-staging',
             new_cluster=extra_small_task_custom_cluster,
             spark_jar_task=field_selected_staging_jar_task,
             libraries=staging_libraries,

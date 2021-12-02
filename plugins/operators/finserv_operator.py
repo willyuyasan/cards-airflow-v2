@@ -145,6 +145,7 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
                     timeout=hook.timeout_seconds,
                 )
                 if response.ok:
+                    pass
                     self.log.info(
                         "Cluster permissions successfully set: %s",
                         json.dumps(response.json(), indent=2),
@@ -171,79 +172,7 @@ class FinServDatabricksSubmitRunOperator(DatabricksSubmitRunOperator):
             self.stop_sidecar()
         except AirflowException as ex:
             # TODO: Write some more detail on why the task failed
-            # Still try and pull the logs if the run fails
-            self._log_paths(context)
-            self._print_logs()
             raise ex
-        finally:
-            # Try and gather details about logging options in this cluster
-            self._log_paths(context)
-            self._print_logs()
-
-    def _print_logs(self):
-        """
-        Try and output the related Spark and DBX Cluster logs if available.
-        """
-        if self.log_type is not None:
-            hook = self.get_hook()
-            try:
-                # Retrieve Spark Logs
-                self.log.info(f"Spark logs will be stored in {self.spark_logs}")
-                spark_filelist = hook.list_dbfs(self.spark_logs)
-                if spark_filelist is not None:
-                    for f in spark_filelist['files']:
-                        if not f['is_dir']:
-                            self.log.info(f['path'])
-
-                            if f['path'].endswith('.gz') and 'stderr' in f['path']:
-                                self.log.info("The gzipped file is present on this location, please read the file from that location %s", f['path'])
-                            elif 'stderr' in f['path']:
-                                for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n', "\n").split("\n"):
-                                    self.log.error(line)
-                            else:
-                                for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n', "\n").split("\n"):
-                                    self.log.info(line)
-
-                # Retrieve Executor Logs
-                self.log.info(f"Executor logs will be stored in {self.exec_logs}")
-                exec_filelist = hook.list_dbfs(self.exec_logs)
-                if exec_filelist is not None:
-                    for app in exec_filelist['files']:
-                        for executor in hook.list_dbfs(app['path'])['files']:
-                            for f in hook.list_dbfs(executor['path'])['files']:
-                                if not f['is_dir']:
-                                    self.log.info(f['path'])
-
-                                    if f['path'].endswith('.gz') and 'stderr' in f['path']:
-                                        self.log.info("The gzipped file is present on this location, please read the file from that location %s", f['path'])
-                                    elif 'stderr' in f['path']:
-                                        for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n', "\n").split("\n"):
-                                            self.log.error(line)
-                                    else:
-                                        for line in hook.read_dbfs(f['path']).decode('utf-8').replace('\n', "\n").split("\n"):
-                                            self.log.info(line)
-            except zlib.error as e:
-                self.log.info(e)
-
-    def _log_paths(self, context):
-        """
-        Read in the cluster_log_conf parameter from the cluster running this job and extract the possible location of
-        spark and executor logs. These will be stored as parameters spark_logs and exec_logs within this class
-        :param context: Task context
-        """
-        self.log_type = None
-        self.log_dest = None
-
-        if 'cluster_log_conf' in self.json['new_cluster'] and len(self.json['new_cluster']['cluster_log_conf'].keys()):
-            self.log_type = list(self.json['new_cluster']['cluster_log_conf'].keys())[0]
-            self.log_dest = self.json['new_cluster']['cluster_log_conf'][self.log_type]['destination']
-            if self._cluster_id is not None:
-                self.spark_logs = '{}/{}/driver'.format(self.log_dest, self._cluster_id)
-                self.exec_logs = '{}/{}/executor'.format(self.log_dest, self._cluster_id)
-            else:
-                self.cluster_id()
-                self.spark_logs = '{}/{}/driver'.format(self.log_dest, self._cluster_id)
-                self.exec_logs = '{}/{}/executor'.format(self.log_dest, self._cluster_id)
 
     @property
     def cluster_id(self):

@@ -190,20 +190,12 @@ runner_params = RunnerParams(tenants=Variable.get("DBX_CARDS_SDK_Tenants"),
                              custom_parameter__dbx_secrets_scope='airflow')
 
 # Notebook Task Parameter Setup:
-session_staging_jar_task = {
-    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
-    'parameters': [
-        "RUN_FREQUENCY=" + "hourly",
-        "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("DBX_SDK_Daily_Lookback_Days")))))).strftime(
-            "%Y-%m-%d"),
-        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
-        "TENANTS=" + Variable.get("DBX_CARDS_SDK_Tenants"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.common.staging.Session",
-        "lookBackDays=" + "10",
-        "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
-    ]
-}
+tables = 'com.redventures.cdm.datamart.cards.common.staging.Session'
+session_staging_jar_task = JarTask(cluster=small_task_custom_cluster,
+               params=runner_params,
+               main_class="com.redventures.cdm.datamart.cards.Runner",
+               jar_libraries=staging_libraries,
+               tables=tables)
 
 # DAG Creation Step
 with DAG('mikes-cdmsubmit-dag',
@@ -222,11 +214,7 @@ with DAG('mikes-cdmsubmit-dag',
         job_name='session-staging',
         new_cluster=small_task_custom_cluster,
         # task=session_staging_jar_task,
-        task=JarTask(cluster=small_task_custom_cluster,
-                     params=runner_params,
-                     main_class=session_staging_jar_task['main_class_name'],
-                     jar_libraries=staging_libraries,
-                     tables='com.redventures.cdm.datamart.cards.common.staging.Session'),
+        task=session_staging_jar_task,
         # libraries=staging_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,

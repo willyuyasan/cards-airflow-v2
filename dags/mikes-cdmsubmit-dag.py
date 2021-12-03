@@ -17,8 +17,8 @@ default_args = {
     'email': ['vmalhotra@redventures.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'on_failure_callback': sh.slack_failure_callback(slack_connection_id='{{ var.value.slack-connection-name }}'),
-    'retries': 2,
+    # 'on_failure_callback': sh.slack_failure_callback(slack_connection_id='{{ var.value.slack-connection-name }}'),
+    # 'retries': 2,
     'retry_delay': timedelta(minutes=5),
     # 'op_kwargs': cfg_dict,
     'provide_context': True,
@@ -44,7 +44,7 @@ small_task_custom_cluster = {
     'driver_node_type_id': 'm5a.xlarge',
     # 'num_workers': 4,
     # 'auto_termination_minutes': 0,
-    'cluster_log_conf': LOG_PATH,
+    # 'cluster_log_conf': LOG_PATH,
     'spark_conf': {
         'spark.sql.sources.partitionOverwriteMode': 'dynamic',
         'spark.driver.extraJavaOptions': '-Dconfig.resource=' + '{{ var.value.SDK_CONFIG_FILE }}',
@@ -127,6 +127,5 @@ with DAG('mikes-cdmsubmit-dag',
         libraries=staging_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120,
-        log_retry=0
+        polling_period_seconds=120
     )

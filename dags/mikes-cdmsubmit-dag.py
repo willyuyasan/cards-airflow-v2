@@ -71,7 +71,7 @@ small_task_custom_cluster = {
     # },
 }
 ct = ClusterCustomTags(cluster_type="Development", partner="B814", product="DatabricksDevelopment", owner="cdm", created_by='cdm-databricks_svc')
-env = SparkEnvVars(cdm_secret_scope='airflow', api_secret_scope='airflow')
+env = SparkEnvVars(cdm_secret_scope='cards', api_secret_scope='cards')
 cluster = NewCluster(num_workers=4, spark_env_obj=env, custom_tags_obj=ct, **small_task_custom_cluster)
 
 

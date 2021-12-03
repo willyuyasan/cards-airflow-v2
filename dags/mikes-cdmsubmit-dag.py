@@ -42,7 +42,7 @@ small_task_custom_cluster = {
     'spark_version': '7.3.x-scala2.12',
     'node_type_id': 'm5a.xlarge',
     'driver_node_type_id': 'm5a.xlarge',
-    # 'num_workers': 4,
+    'num_workers': 4,
     # 'auto_termination_minutes': 0,
     # 'cluster_log_conf': LOG_PATH,
     'spark_conf': {
@@ -72,7 +72,7 @@ small_task_custom_cluster = {
 }
 ct = ClusterCustomTags(cluster_type="Development", partner="B814", product="DatabricksDevelopment", owner="cdm", created_by='cdm-databricks_svc')
 env = SparkEnvVars(cdm_secret_scope='cards', api_secret_scope='cards')
-cluster = NewCluster(num_workers=4, spark_env_obj=env, custom_tags_obj=ct, **small_task_custom_cluster)
+cluster = NewCluster(spark_env_obj=env, custom_tags_obj=ct, **small_task_custom_cluster)
 
 
 # Libraries
@@ -89,12 +89,12 @@ staging_libraries = [
 # Notebook Task Parameter Setup:
 tables = 'com.redventures.cdm.datamart.cards.common.staging.Session'
 
-runner_params = RunnerParams(tenants='{{ var.value.DBX_CARDS_SDK_Tenants }}',
+runner_params = RunnerParams(tenants=Variable.get('DBX_CARDS_SDK_Tenants'),
                              account=ACCOUNT,
                              read_bucket='rv-core-pipeline',
-                             write_bucket='{{ var.value.DBX_CARDS_Bucket }}',
-                             paid_search_company_id='{{ var.value.CARDS_PAIDSEARCH_COMPANY_IDS }}',
-                             environment='{{ var.value.environment }}',
+                             write_bucket=Variable.get('DBX_CARDS_Bucket'),
+                             paid_search_company_id=Variable.get('CARDS_PAIDSEARCH_COMPANY_IDS'),
+                             environment=Variable.get('environment'),
                              tables=tables,
                              custom_parameter__dbx_secrets_scope='airflow')
 

@@ -22,7 +22,7 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
     # 'op_kwargs': cfg_dict,
     'provide_context': True,
-    'cluster_permissions': '{{ var.value.DE_DBX_CLUSTER_PERMISSIONS }}'
+    'cluster_permissions': Variable.get("DE_DBX_CLUSTER_PERMISSIONS")
 }
 
 # token variable
@@ -47,11 +47,11 @@ small_task_custom_cluster = {
     # 'cluster_log_conf': LOG_PATH,
     'spark_conf': {
         'spark.sql.sources.partitionOverwriteMode': 'dynamic',
-        'spark.driver.extraJavaOptions': '-Dconfig.resource=' + '{{ var.value.SDK_CONFIG_FILE }}',
+        'spark.driver.extraJavaOptions': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE"),
         'spark.databricks.clusterUsageTags.autoTerminationMinutes': '60'
     },
     'spark_env_vars': {
-        'java_opts': '-Dconfig.resource=' + '{{ var.value.SDK_CONFIG_FILE }}'
+        'java_opts': '-Dconfig.resource=' + Variable.get("SDK_CONFIG_FILE")
     },
     # "aws_attributes": {
     "availability": "SPOT_WITH_FALLBACK",

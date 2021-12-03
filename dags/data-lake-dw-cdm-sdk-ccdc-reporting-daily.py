@@ -347,7 +347,7 @@ productList_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("CCDC_DAILY_LOOKBACK_DAYS")))))).strftime(
+            datetime.now() - (timedelta(days=int(int(Variable.get("CCDC_DAILY_LOOKBACK_DAYS")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
@@ -364,7 +364,7 @@ productClicked_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("CCDC_DAILY_LOOKBACK_DAYS")))))).strftime(
+            datetime.now() - (timedelta(days=int(int(Variable.get("CCDC_DAILY_LOOKBACK_DAYS")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
@@ -380,7 +380,7 @@ elementClicked_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("CCDC_DAILY_LOOKBACK_DAYS")))))).strftime(
+            datetime.now() - (timedelta(days=int(int(Variable.get("CCDC_DAILY_LOOKBACK_DAYS")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
@@ -396,7 +396,7 @@ elementViewed_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("CCDC_DAILY_LOOKBACK_DAYS")))))).strftime(
+            datetime.now() - (timedelta(days=int(int(Variable.get("CCDC_DAILY_LOOKBACK_DAYS")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
@@ -412,11 +412,27 @@ field_reporting_jar_task = {
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
         "START_DATE=" + (
-                datetime.now() - (timedelta(days=int(int(Variable.get("CCDC_DAILY_LOOKBACK_DAYS")))))).strftime(
+            datetime.now() - (timedelta(days=int(int(Variable.get("CCDC_DAILY_LOOKBACK_DAYS")))))).strftime(
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
         "TABLES=" + "com.redventures.cdm.datamart.cards.ccdc.reporting.Field",
+        "ACCOUNT=" + Variable.get("DBX_CCDC_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CCDC_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
+form_summary_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("CCDC_DAILY_LOOKBACK_DAYS")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.ccdc.reporting.FormSummary",
         "ACCOUNT=" + Variable.get("DBX_CCDC_Account"),
         "WRITE_BUCKET=" + Variable.get("DBX_CCDC_Bucket"),
         "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
@@ -580,9 +596,18 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
         polling_period_seconds=60
     )
 
+    form_summary_reporting = FinServDatabricksSubmitRunOperator(
+        task_id='form-summary-reporting',
+        new_cluster=medium_task_cluster,
+        spark_jar_task=form_summary_reporting_jar_task,
+        libraries=reporting_libraries,
+        timeout_seconds=9000,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
 # Dependencies
 ccdc_staging_tables >> [conversion_reporting, productList_reporting, productClicked_reporting,
-                        elementClicked_reporting, elementViewed_reporting, field_reporting]
+                        elementClicked_reporting, elementViewed_reporting, field_reporting, form_summary_reporting]
 
 # outcomes update reporting dependencies
 conversion_reporting >> conversion_outcomes_update_reporting

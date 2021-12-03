@@ -122,7 +122,7 @@ with DAG('mikes-cdmsubmit-dag',
 
     session_staging = CdmDatabricksSubmitRunOperator(
         job_name='session-staging',
-        new_cluster=cluster,
+        # new_cluster=cluster,
         task=session_staging_jar_task,
         libraries=staging_libraries,
         timeout_seconds=3600,

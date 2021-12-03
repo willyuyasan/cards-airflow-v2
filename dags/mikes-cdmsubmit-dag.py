@@ -96,7 +96,7 @@ runner_params = RunnerParams(tenants=Variable.get('DBX_CARDS_SDK_Tenants'),
                              paid_search_company_id=Variable.get('CARDS_PAIDSEARCH_COMPANY_IDS'),
                              environment=Variable.get('environment'),
                              tables=tables,
-                             custom_parameter__dbx_secrets_scope='airflow')
+                             custom_parameter__dbx_secrets_scope='cards')
 
 
 session_staging_jar_task = JarTask(cluster=cluster,

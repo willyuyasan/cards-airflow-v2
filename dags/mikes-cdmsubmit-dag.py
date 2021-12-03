@@ -9,6 +9,7 @@ from rvairflow.dbx.dbx_operator import CdmDatabricksSubmitRunOperator
 from rvairflow.dbx.task import NewCluster, JarTask, NotebookParams, NotebookTask, SparkEnvVars, ClusterCustomTags, DagDefaultArgs
 from rvairflow.cdm.params import RunnerParams
 from rvairflow import slack_hook as sh
+from datetime import datetime
 
 default_args = {
     'owner': 'airflow',
@@ -95,6 +96,7 @@ runner_params = RunnerParams(tenants=Variable.get('DBX_CARDS_SDK_Tenants'),
                              write_bucket=Variable.get('DBX_CARDS_Bucket'),
                              paid_search_company_id=Variable.get('CARDS_PAIDSEARCH_COMPANY_IDS'),
                              environment=Variable.get('environment'),
+                             etl_time=datetime.now().isoformat(),
                              tables=tables,
                              custom_parameter__dbx_secrets_scope='cards')
 

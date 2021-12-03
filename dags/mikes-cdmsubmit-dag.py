@@ -127,5 +127,6 @@ with DAG('mikes-cdmsubmit-dag',
         libraries=staging_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
-        polling_period_seconds=120
+        polling_period_seconds=120,
+        log_retry=0
     )

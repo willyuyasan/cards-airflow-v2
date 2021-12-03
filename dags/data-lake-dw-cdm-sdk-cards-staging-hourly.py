@@ -1088,7 +1088,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
     )
 
     form_started_staging = FinServDatabricksSubmitRunOperator(
-            task_id='field-selected-staging',
+            task_id='form-started-staging',
             new_cluster=medium_task_custom_cluster,
             spark_jar_task=form_started_staging_jar_task,
             libraries=staging_libraries,
@@ -1097,7 +1097,7 @@ with DAG('data-lake-dw-cdm-sdk-cards-staging-hourly',
             polling_period_seconds=120
      )
     form_continue_staging = FinServDatabricksSubmitRunOperator(
-            task_id='field-selected-staging',
+            task_id='form-continue-staging',
             new_cluster=medium_task_custom_cluster,
             spark_jar_task=form_continue_staging_jar_task,
             libraries=staging_libraries,

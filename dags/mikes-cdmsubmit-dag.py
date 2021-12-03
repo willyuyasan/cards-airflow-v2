@@ -54,14 +54,14 @@ small_task_custom_cluster = {
         'java_opts': '-Dconfig.resource=' + '{{ var.value.SDK_CONFIG_FILE }}'
     },
     # "aws_attributes": {
-        "availability": "SPOT_WITH_FALLBACK",
-        'ebs_volume_count': 1,
-        'ebs_volume_size': 100,
-        'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
-        'first_on_demand': '2',
-        'spot_bid_price_percent': '60',
-        'zone_id': 'us-east-1b',
-        "instance_profile_arn": Variable.get("DBX_CARDS_IAM_ROLE") # "'{{ var.value.DBX_CARDS_IAM_ROLE }}',
+    "availability": "SPOT_WITH_FALLBACK",
+    'ebs_volume_count': 1,
+    'ebs_volume_size': 100,
+    'ebs_volume_type': 'GENERAL_PURPOSE_SSD',
+    'first_on_demand': '2',
+    'spot_bid_price_percent': '60',
+    'zone_id': 'us-east-1b',
+    "instance_profile_arn": Variable.get("DBX_CARDS_IAM_ROLE")  # "'{{ var.value.DBX_CARDS_IAM_ROLE }}',
     # },
     # 'custom_tags': {
     #     'Partner': 'B814',
@@ -100,12 +100,10 @@ runner_params = RunnerParams(tenants='{{ var.value.DBX_CARDS_SDK_Tenants }}',
 
 
 session_staging_jar_task = JarTask(cluster=cluster,
-               params=runner_params,
-               main_class="com.redventures.cdm.datamart.cards.Runner",
-               jar_libraries=staging_libraries,
-               tables=tables)
-
-
+                                   params=runner_params,
+                                   main_class="com.redventures.cdm.datamart.cards.Runner",
+                                   jar_libraries=staging_libraries,
+                                   tables=tables)
 
 # DAG Creation Step
 with DAG('mikes-cdmsubmit-dag',
@@ -119,7 +117,8 @@ with DAG('mikes-cdmsubmit-dag',
     # 1. Replace task_id with job_name
     # 2. Replace spark_jar_task with task
     # 3.
-    # Optional. convert variable.get() to {{ var.value.<variable_name> }}. Replace Variable.get\(\"(.*?)\"\) with \'\{\{ var.value.$1 \}\}\'
+    # Optional. convert variable.get() to {{ var.value.<variable_name> }}.
+    # Replace Variable.get\(\"(.*?)\"\) with \'\{\{ var.value.$1 \}\}\'
 
     session_staging = CdmDatabricksSubmitRunOperator(
         job_name='session-staging',

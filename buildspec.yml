@@ -2,5 +2,11 @@ version: 0.2
 phases:
   build:
     commands:
-      - if [ ! -z ${CODEBUILD_DAGS} ]; then rsync -avz --delete dags/ ${CODEBUILD_DAGS}/; fi
+      - echo "DAG Deployment"
+      - if [ ! -z ${CODEBUILD_DAGS} ]; then echo "Syncing"; rsync -avz --delete --exclude tests dags/ ${CODEBUILD_DAGS}/; fi
+      - if [ ! -z ${CODEBUILD_DAGS} ]; then echo "Cleanup bytecode"; find ${CODEBUILD_DAGS} -type f -name "*.pyc" -delete; fi
+      - if [ ! -z ${CODEBUILD_DAGS} ]; then echo "Cleanup __pycache__"; find ${CODEBUILD_DAGS} -type d -name "__pycache__" -delete; fi
+      - if [ ! -z ${CODEBUILD_DAGS} ]; then echo "MD5 Hash"; find ${CODEBUILD_DAGS} -type f -exec md5sum {} \; | tee ${CODEBUILD_DAGS}/CHECKSUM.md5 ; fi
+      - if [ ! -z ${CODEBUILD_DAGS} ]; then echo "SHA256 Hash"; find ${CODEBUILD_DAGS} -type f -exec sha256sum {} \; | tee ${CODEBUILD_DAGS}/CHECKSUM.sha256 ; fi
+      - if [ ! -z ${CODEBUILD_DAGS} ]; then echo "Chown Airflow"; AIRFLOW_UID=50000; AIRFLOW_GID=50000; chown -Rv "${AIRFLOW_UID}:root" ${CODEBUILD_DAGS}; fi
       - if [ ! -z ${CODEBUILD_PLUGINS} ]; then rsync -avz --delete plugins/ ${CODEBUILD_PLUGINS}/; fi

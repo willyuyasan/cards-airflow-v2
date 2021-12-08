@@ -2,11 +2,6 @@ version: 0.2
 phases:
   build:
     commands:
-      - echo "DAG Deployment"
-      - echo "Syncing"; rsync -avz --delete --exclude tests dags/ /usr/local/airflow/dags/
-      - echo "Cleanup bytecode"; find /usr/local/airflow/dags -type f -name "*.pyc" -delete
-      - echo "Cleanup __pycache__"; find /usr/local/airflow/dags -type d -name "__pycache__" -delete
-      - echo "MD5 Hash"; find /usr/local/airflow/dags -type f -exec md5sum {} \; | tee /usr/local/airflow/dags/CHECKSUM.md5
-      - echo "SHA256 Hash"; find /usr/local/airflow/dags -type f -exec sha256sum {} \; | tee /usr/local/airflow/dags/CHECKSUM.sha256
-      - echo "Chown Airflow"; AIRFLOW_UID=50000; AIRFLOW_GID=50000; chown -Rv "${AIRFLOW_UID}:root" /usr/local/airflow/dags
-      - rsync -avz --delete plugins/ /usr/local/airflow/plugins/
+      - env | grep -i DAG
+      - rsync -avz --delete --exclude tests dags/ /dags/
+      - rsync -avz --delete plugins/ /plugins/

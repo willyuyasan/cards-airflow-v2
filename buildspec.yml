@@ -3,5 +3,7 @@ phases:
   build:
     commands:
       - env | grep -i DAG
-      - rsync -avz --delete --exclude tests dags/ /dags/
+      - md5sum /dags/test_rs_dag.py
+      - rsync -avz --delete dags/ /dags/
+      - md5sum /dags/test_rs_dag.py
       - rsync -avz --delete plugins/ /plugins/

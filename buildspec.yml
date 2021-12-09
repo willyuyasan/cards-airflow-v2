@@ -2,7 +2,9 @@ version: 0.2
 phases:
   build:
     commands:
-      - env | grep -i DAG
+      - env
+      - cat /etc/fstab
+      - cat /proc/mounts
       - mount
       - yum -y install nfs-utils
       - mkdir /dags && mount -t nfs -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport fs-0c75fb09.efs.us-west-2.amazonaws.com:/ /dags/

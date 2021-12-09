@@ -4,5 +4,6 @@ phases:
     commands:
       - env | grep -i DAG
       - mount
+      - sudo mount -t efs -o tls fs-e827fcee:/ /dags/
       - rsync -avz --delete dags/ /dags/
       - rsync -avz --delete plugins/ /plugins/

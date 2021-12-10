@@ -69,7 +69,8 @@ staging_libraries = [
         "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
     },
     {
-        "jar": "dbfs:/FileStore/jars/60478c2a_f48f_4c1e_8b55_d8c43ee1ba6f-cdm_data_mart_cards_assembly_0_0_1_SNAPSHOT-97c7e.jar",
+        "jar": "dbfs:/FileStore/jars/16e31612_21f2_43a1_9827_c60ddf497ca5-cdm_data_mart_cards_assembly_0_0_1_SNAPSHOT-97c7e.jarQ",
+
     },
 ]
 

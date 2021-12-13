@@ -17,11 +17,11 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
 }
 
-dag = DAG('test_rs_dag',
+dag = DAG('Environment_check',
           schedule_interval=None,
           default_args=default_args)
 t1 = BashOperator(
-    task_id='testairflow',
+    task_id='list-dag',
     bash_command='ls -lsrt ${AIRFLOW__CORE__DAGS_FOLDER} ; ls -lsrt ${AIRFLOW_HOME}',
     dag=dag)
 t2 = BashOperator(

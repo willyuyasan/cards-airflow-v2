@@ -254,7 +254,7 @@ ProductListViewed_reporting_jar_task = {
     ]
 }
 
-partner_cookie_adobe_reporting_jar_task = {
+partner_cookie_reporting_jar_task = {
     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
     'parameters': [
         "RUN_FREQUENCY=" + "hourly",
@@ -263,7 +263,7 @@ partner_cookie_adobe_reporting_jar_task = {
             "%Y-%m-%d"),
         "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
         "TENANTS=" + Variable.get("DBX_COF_COHESION_Tenants"),
-        "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.PartnerCookieCapturedAdobe",
+        "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.PartnerCookieCaptured",
         "ACCOUNT=" + Variable.get("DBX_COF_Account"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
         "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
@@ -391,9 +391,9 @@ with DAG('data-lake-dw-cdm-sdk-cof-reporting-daily',
     )
 
     partner_cookie_adobe_reporting = FinServDatabricksSubmitRunOperator(
-        task_id='partner-cookie-adobe-reporting',
+        task_id='partner-cookie-reporting',
         new_cluster=large_task_cluster,
-        spark_jar_task=partner_cookie_adobe_reporting_jar_task,
+        spark_jar_task=partner_cookie_reporting_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,

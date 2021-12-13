@@ -72,6 +72,7 @@ staging_libraries = [
         "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/" + Variable.get(
             "environment") + "/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
 
+
     },
 ]
 

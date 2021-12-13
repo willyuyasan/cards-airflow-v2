@@ -69,8 +69,8 @@ staging_libraries = [
         "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
     },
     {
-        "jar": "dbfs:/FileStore/jars/afb3623f_5810_40ea_a7d0_25ed70cbe184-cdm_data_mart_cards_assembly_0_0_1_SNAPSHOT-97c7e.jar",
-
+        "jar": "dbfs:/Libraries/JVM/cdm-data-mart-cards/" + Variable.get(
+            "environment") + "/scala-2.12/cdm-data-mart-cards-assembly-0.0.1-SNAPSHOT.jar",
 
     },
 ]

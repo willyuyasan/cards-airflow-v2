@@ -199,7 +199,21 @@ field_reporting_jar_task = {
         "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
     ]
 }
-
+form_summary_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+            datetime.now() - (timedelta(days=int(int(Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + Variable.get("CCDC_BACKFILL_LOOKBACK_TODATE"),
+        "TENANTS=" + Variable.get("DBX_CCDC_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.ccdc.reporting.FormSummary",
+        "ACCOUNT=" + Variable.get("DBX_CCDC_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_CCDC_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
 # product_reporting_jar_task = {
 #     'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
 #     'parameters': [
@@ -360,7 +374,15 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-backfill',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
-
+    form_summary_reporting = FinServDatabricksSubmitRunOperator(
+        task_id='form-summary-reporting',
+        new_cluster=medium_task_cluster,
+        spark_jar_task=form_summary_reporting_jar_task,
+        libraries=reporting_libraries,
+        timeout_seconds=14400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
     # product_reporting = FinServDatabricksSubmitRunOperator(
     #     task_id='product-reporting',
     #     new_cluster=medium_task_cluster,

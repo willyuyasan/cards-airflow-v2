@@ -2,15 +2,59 @@ version: 0.2
 phases:
   build:
     commands:
+      # Environment details
       - env
       - cat /etc/fstab
       - cat /proc/mounts
       - mount | grep nfs
-      - yum -y install nfs-utils
-      - if [[ "${CODEBUILD_WEBHOOK_TRIGGER}" == "branch/develop" ]]; then DAGS_MOUNT=fs-0c75fb09.efs.us-west-2.amazonaws.com; fi
-      - if [[ "${CODEBUILD_WEBHOOK_TRIGGER}" == "branch/master" ]]; then DAGS_MOUNT=fs-d93473dc.efs.us-west-2.amazonaws.com; fi
-      - if [[ "${CODEBUILD_WEBHOOK_TRIGGER}" == "branch/main" ]]; then DAGS_MOUNT=fs-d93473dc.efs.us-west-2.amazonaws.com; fi
-      - mkdir /dags && mount -t nfs -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport ${DAGS_MOUNT}:/ /dags/
+      # Mount any missing EFS volumes (bug as of 2021-12-03)
+      - |
+          cat > /tmp/remount_efs.sh <<EOF
+          #!/bin/bash
+          MOUNT_OPTS="rw,relatime,vers=4.1,rsize=1048576,wsize=1048576,namlen=255,hard,noresvport,proto=tcp,timeo=600,retrans=2,sec=sys,clientaddr=127.0.0.1,local_lock=none,addr=127.0.0.1,port"
+          EFS_MOUNTS=\$(cat /codebuild/input/variables.json | jq '.variables | .[] | select(.value | startswith("/")) | .value' | tr -d '"')
+
+          i=0
+          for fd in \${EFS_MOUNTS}; do
+            let i=i+1
+            let next_i=i+1
+            STUNNEL_PORT=""
+            echo "Checking: \${fd}"
+            if ! mountpoint \${fd}; then
+              STUNNEL_PORT=\$(sed -n "/\[efs_service_\${i}\]/,/\[efs_service_\${next_i}\]/p" /codebuild/input/stunnel.conf | grep accept | awk '{print \$3;}' | awk -F":" '{print \$2;}' | tr -d "\n")
+
+              # Install nfs4 mount if not available
+              if ! which mount.nfs4 &> /dev/null; then
+                echo "Installing nfs-utils to mount missing volumes"
+                yum -y install nfs-utils
+              fi
+
+              # Only try and mount if we were able to figure out the port
+              if [[ "\${STUNNEL_PORT}" != "" ]]; then
+                if [[ ! -d \${fd} ]]; then
+                  mkdir \${fd}
+                fi
+                mount -t nfs4 -o \${MOUNT_OPTS}=\${STUNNEL_PORT} 127.0.0.1:/ \${fd}
+              else
+                echo "Unable to determine the port for \${fd}. Skipping"
+              fi
+            fi
+          done
+          EOF
+          chmod +x /tmp/remount_efs.sh
+      - /tmp/remount_efs.sh
       - mount | grep nfs
-      - rsync -avz --delete dags/ /dags/
-      - rsync -avz --delete plugins/ /plugins/
+      # DAG replication
+      - echo "DAG Deployment"
+      - if ! mountpoint ${CODEBUILD_DAGS} &> /dev/null; then echo "${CODEBUILD_DAGS} is unmounted. Failing build."; exit 1; fi
+      - if [ ! -z ${CODEBUILD_DAGS} ]; then echo "Syncing"; rsync -avz --delete --exclude tests dags/ ${CODEBUILD_DAGS}/; fi
+      - if [ ! -z ${CODEBUILD_DAGS} ]; then echo "Chown Airflow"; AIRFLOW_UID=50000; AIRFLOW_GID=50000; chown -Rv "${AIRFLOW_UID}:root" ${CODEBUILD_DAGS}; fi
+      - if [ ! -z ${CODEBUILD_DAGS} ]; then echo "MD5 Hash"; find ${CODEBUILD_DAGS} -type f -exec md5sum {} \; | tee ${CODEBUILD_DAGS}/CHECKSUM.md5 ; fi
+      - echo "DONE"
+      # Plugin replication
+      - echo "Plugin Deployment"
+      - if ! mountpoint ${CODEBUILD_PLUGINS} &> /dev/null; then echo "${CODEBUILD_DAGS} is unmounted. Failing build."; exit 1; fi
+      - if [ ! -z ${CODEBUILD_PLUGINS} ]; then echo "Syncing"; rsync -avz --delete --exclude tests plugins/ ${CODEBUILD_PLUGINS}/; fi
+      - if [ ! -z ${CODEBUILD_PLUGINS} ]; then echo "Chown Airflow"; AIRFLOW_UID=50000; AIRFLOW_GID=50000; chown -Rv "${AIRFLOW_UID}:root" ${CODEBUILD_PLUGINS}; fi
+      - if [ ! -z ${CODEBUILD_PLUGINS} ]; then echo "MD5 Hash"; find ${CODEBUILD_PLUGINS} -type f -exec md5sum {} \; | tee ${CODEBUILD_PLUGINS}/CHECKSUM.md5 ; fi
+      - echo "DONE"

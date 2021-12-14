@@ -109,7 +109,7 @@ class FinServDatabricksSubmitRunOperatorNew(CdmDatabricksSubmitRunOperator):
                        jar_libraries=libraries,
                        tables=spark_jar_params.get('tables'))
 
-        self.libraries=libraries
+        self.libraries = libraries
 
         super(CdmDatabricksSubmitRunOperator, self).__init__(
             job_name=task_id.replace('-', '_'),

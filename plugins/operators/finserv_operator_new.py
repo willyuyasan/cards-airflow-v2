@@ -109,23 +109,22 @@ class FinServDatabricksSubmitRunOperatorNew(CdmDatabricksSubmitRunOperator):
                        jar_libraries=libraries,
                        tables=spark_jar_params.get('tables'))
 
-        self.libraries = libraries
-        self.new_cluster = new_cluster
-        self.timeout_seconds = timeout_seconds
-        self.polling_period_seconds = polling_period_seconds
-        self.databricks_retry_limit = databricks_retry_limit
-        self.databricks_retry_delay = databricks_retry_delay
-        self.do_xcom_push = do_xcom_push
-        self.log_retry = log_retry
-        self.log_sleep = log_sleep
-        self.cluster_id = None
-        self._get_run_response = None
-        self.hook = None
-        self.cluster_permissions = cluster_permissions
+        # self.libraries = libraries
+        # self.new_cluster = new_cluster
+        # self.timeout_seconds = timeout_seconds
+        # self.polling_period_seconds = polling_period_seconds
+        # self.databricks_retry_limit = databricks_retry_limit
+        # self.databricks_retry_delay = databricks_retry_delay
+        # self.do_xcom_push = do_xcom_push
+        # self.log_retry = log_retry
+        # self.log_sleep = log_sleep
+        # self.cluster_id = None
+        # self._get_run_response = None
+        # self.hook = None
+        # self.cluster_permissions = cluster_permissions
 
-        super(CdmDatabricksSubmitRunOperator, self).__init__(
+        super().__init__(
             job_name=task_id.replace('-', '_'),
             task=task,
-            databricks_conn_id=databricks_conn_id,
-            task_id=task_id
+            databricks_conn_id=databricks_conn_id
         )

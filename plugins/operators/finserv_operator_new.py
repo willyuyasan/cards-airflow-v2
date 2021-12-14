@@ -126,5 +126,6 @@ class FinServDatabricksSubmitRunOperatorNew(CdmDatabricksSubmitRunOperator):
         super().__init__(
             job_name=task_id.replace('-', '_'),
             task=task,
-            databricks_conn_id=databricks_conn_id
+            databricks_conn_id=databricks_conn_id,
+            libraries=libraries
         )

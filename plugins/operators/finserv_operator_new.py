@@ -110,7 +110,7 @@ class FinServDatabricksSubmitRunOperatorNew(CdmDatabricksSubmitRunOperator):
                        tables=spark_jar_params.get('tables'))
 
         super(CdmDatabricksSubmitRunOperator, self).__init__(
-            job_name=task_id.replace('-','_'),
+            job_name=task_id.replace('-', '_'),
             task=task,
             databricks_conn_id=databricks_conn_id,
             task_id=task_id

@@ -12,6 +12,7 @@ import copy
 # All the required fields are documented here -
 # https://docs.databricks.com/dev-tools/api/latest/jobs.html#jobssparksubmittask
 
+
 class FinServDatabricksSubmitRunOperator(CdmDatabricksSubmitRunOperator):
     """Execute a Spark job on Databricks."""
 

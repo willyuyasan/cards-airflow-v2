@@ -65,6 +65,7 @@ class FinServDatabricksSubmitRunOperator(CdmDatabricksSubmitRunOperator):
             :param log_retry: {int} -- Number of times to pull logs from DBFS. (default: {5})
             :param log_sleep: {int} -- Seconds to wait between log read failures. {default: {20}}
         """
+        print('cdm cluster perm', cluster_permissions[0])
 
         # Update finserv operator cluster information to match cdm format
         new_cluster = copy.deepcopy(new_cluster)
@@ -95,18 +96,12 @@ class FinServDatabricksSubmitRunOperator(CdmDatabricksSubmitRunOperator):
                            jar_libraries=libraries,
                            tables=spark_jar_params.get('tables'))
         else:
-            spark_jar_params = {param.split('=')[0].lower(): param.split('=')[1] for param in spark_jar_task['parameters'] if param.split('=')[0].lower() in runner_param_list}
-            runner_params = RunnerParams(environment=env_name,
-                                         etl_time=datetime.now().isoformat(),
-                                         custom_parameter__dbx_secrets_scope='cards',
-                                         **spark_jar_params)
+            nb_params = NotebookParams(**notebook_task['base_parameters'])
 
             # Finally, define task using runner and cluster definitions
             task = NotebookTask(cluster=cluster,
-                                params=runner_params,
-                                main_class=spark_jar_task['main_class_name'],
-                                jar_libraries=libraries,
-                                tables=spark_jar_params.get('tables'))
+                                params=nb_params,
+                                notebook_path=notebook_task['notebook_path'])
 
         # Pass parameters to CDM class
         super().__init__(

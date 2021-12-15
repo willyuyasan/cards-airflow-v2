@@ -103,7 +103,6 @@ class FinServDatabricksSubmitRunOperator(CdmDatabricksSubmitRunOperator):
                                 params=nb_params,
                                 notebook_path=notebook_task['notebook_path'])
 
-
         # Pass parameters to CDM class
         super().__init__(
             job_name=task_id.replace('-', '_'),

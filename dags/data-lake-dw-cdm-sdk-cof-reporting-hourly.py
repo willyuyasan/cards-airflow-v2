@@ -282,7 +282,7 @@ partner_cookie_reporting_jar_task = {
         "TABLES=" + "com.redventures.cdm.datamart.cards.cof.reporting.PartnerCookieCaptured",
         "ACCOUNT=" + Variable.get("DBX_COF_Account"),
         "WRITE_BUCKET=" + Variable.get("DBX_CARDS_Bucket"),
-        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+        "READ_BUCKET=" + "rv-core-pipeline"
     ]
 }
 

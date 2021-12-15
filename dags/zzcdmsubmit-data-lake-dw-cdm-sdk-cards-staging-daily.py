@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.contrib.operators.databricks_operator import DatabricksSubmitRunOperator
-from operators.finserv_operator_new import FinServDatabricksSubmitRunOperatorNew
+from operators.finserv_cdm_operator import FinServDatabricksSubmitRunOperator
 from rvairflow import slack_hook as sh
 
 default_args = {
@@ -1011,7 +1011,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
          catchup=False,
          max_active_runs=1,
          default_args=default_args) as dag:
-    session_staging = FinServDatabricksSubmitRunOperatorNew(
+    session_staging = FinServDatabricksSubmitRunOperator(
         task_id='session-staging',
         new_cluster=small_task_custom_cluster,
         spark_jar_task=session_staging_jar_task,
@@ -1021,7 +1021,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    traffic_sources_staging = FinServDatabricksSubmitRunOperatorNew(
+    traffic_sources_staging = FinServDatabricksSubmitRunOperator(
         task_id='traffic-sources-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=traffic_sources_staging_jar_task,
@@ -1031,7 +1031,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    page_view_staging = FinServDatabricksSubmitRunOperatorNew(
+    page_view_staging = FinServDatabricksSubmitRunOperator(
         task_id='page-view-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=page_view_staging_jar_task,
@@ -1041,7 +1041,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    page_view_staging_cof = FinServDatabricksSubmitRunOperatorNew(
+    page_view_staging_cof = FinServDatabricksSubmitRunOperator(
         task_id='page_view_staging_cof',
         new_cluster=medium_task_custom_cluster,
         spark_jar_task=page_view_staging_cof_jar_task,
@@ -1051,7 +1051,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    cookie_identified_staging = FinServDatabricksSubmitRunOperatorNew(
+    cookie_identified_staging = FinServDatabricksSubmitRunOperator(
         task_id='cookie-identified-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=cookie_identified_staging_jar_task,
@@ -1061,7 +1061,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    ProductList_staging = FinServDatabricksSubmitRunOperatorNew(
+    ProductList_staging = FinServDatabricksSubmitRunOperator(
         task_id='productList-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=ProductList_staging_jar_task,
@@ -1071,7 +1071,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    field_inputted_staging = FinServDatabricksSubmitRunOperatorNew(
+    field_inputted_staging = FinServDatabricksSubmitRunOperator(
         task_id='field-inputted-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=field_inputted_staging_jar_task,
@@ -1081,7 +1081,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    field_selected_staging = FinServDatabricksSubmitRunOperatorNew(
+    field_selected_staging = FinServDatabricksSubmitRunOperator(
         task_id='field-selected-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=field_selected_staging_jar_task,
@@ -1091,7 +1091,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    location_staging = FinServDatabricksSubmitRunOperatorNew(
+    location_staging = FinServDatabricksSubmitRunOperator(
         task_id='location-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=location_staging_jar_task,
@@ -1101,7 +1101,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    device_staging = FinServDatabricksSubmitRunOperatorNew(
+    device_staging = FinServDatabricksSubmitRunOperator(
         task_id='device-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=device_staging_jar_task,
@@ -1111,7 +1111,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    decsion_staging = FinServDatabricksSubmitRunOperatorNew(
+    decsion_staging = FinServDatabricksSubmitRunOperator(
         task_id='decision-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=decision_staging_jar_task,
@@ -1121,7 +1121,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    page_metrics_staging = FinServDatabricksSubmitRunOperatorNew(
+    page_metrics_staging = FinServDatabricksSubmitRunOperator(
         task_id='page-metrics-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=page_metrics_staging_jar_task,
@@ -1130,7 +1130,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
-    form_submitted_staging = FinServDatabricksSubmitRunOperatorNew(
+    form_submitted_staging = FinServDatabricksSubmitRunOperator(
         task_id='form-submitted-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=form_submitted_staging_jar_task,
@@ -1139,7 +1139,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
-    form_started_staging = FinServDatabricksSubmitRunOperatorNew(
+    form_started_staging = FinServDatabricksSubmitRunOperator(
         task_id='form-started-staging',
         new_cluster=medium_task_custom_cluster,
         spark_jar_task=form_started_staging_jar_task,
@@ -1149,7 +1149,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    form_continue_staging = FinServDatabricksSubmitRunOperatorNew(
+    form_continue_staging = FinServDatabricksSubmitRunOperator(
         task_id='form-continue-staging',
         new_cluster=medium_task_custom_cluster,
         spark_jar_task=form_continue_staging_jar_task,
@@ -1158,7 +1158,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120
     )
-    form_outcome_received_staging = FinServDatabricksSubmitRunOperatorNew(
+    form_outcome_received_staging = FinServDatabricksSubmitRunOperator(
         task_id='form-outcome-received-staging',
         new_cluster=small_task_custom_cluster,
         spark_jar_task=form_outcome_received_jar_task,
@@ -1168,7 +1168,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    product_clicked_staging = FinServDatabricksSubmitRunOperatorNew(
+    product_clicked_staging = FinServDatabricksSubmitRunOperator(
         task_id='product-clicked-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=product_clicked_staging_jar_task,
@@ -1178,7 +1178,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    product_viewed_staging = FinServDatabricksSubmitRunOperatorNew(
+    product_viewed_staging = FinServDatabricksSubmitRunOperator(
         task_id='product-viewed-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=product_viewed_staging_jar_task,
@@ -1188,7 +1188,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    element_clicked_staging = FinServDatabricksSubmitRunOperatorNew(
+    element_clicked_staging = FinServDatabricksSubmitRunOperator(
         task_id='element-clicked-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=element_clicked_staging_jar_task,
@@ -1198,7 +1198,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    element_viewed_staging = FinServDatabricksSubmitRunOperatorNew(
+    element_viewed_staging = FinServDatabricksSubmitRunOperator(
         task_id='element-viewed-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=element_viewed_staging_jar_task,
@@ -1208,7 +1208,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    amp_page_viewed_staging = FinServDatabricksSubmitRunOperatorNew(
+    amp_page_viewed_staging = FinServDatabricksSubmitRunOperator(
         task_id='amp-page-viewed-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=amp_page_viewed_staging_jar_task,
@@ -1218,7 +1218,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    paidsearch_staging = FinServDatabricksSubmitRunOperatorNew(
+    paidsearch_staging = FinServDatabricksSubmitRunOperator(
         task_id='paidsearch-staging',
         new_cluster=medium_task_custom_cluster,
         spark_jar_task=paidsearch_staging_jar_task,
@@ -1228,7 +1228,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    hoppageviewed_staging = FinServDatabricksSubmitRunOperatorNew(
+    hoppageviewed_staging = FinServDatabricksSubmitRunOperator(
         task_id='hoppageviewed-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=hoppageviewed_staging_jar_task,
@@ -1238,7 +1238,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    tpg_ccdc_ot_summary_staging = FinServDatabricksSubmitRunOperatorNew(
+    tpg_ccdc_ot_summary_staging = FinServDatabricksSubmitRunOperator(
         task_id='tpg-ccdc-ot-summary-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=tpg_ccdc_ot_summary_staging_jar_task,
@@ -1248,7 +1248,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    cookies_staging = FinServDatabricksSubmitRunOperatorNew(
+    cookies_staging = FinServDatabricksSubmitRunOperator(
         task_id='cookies-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=cookies_staging_jar_task,
@@ -1258,7 +1258,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    pqo_offer_received_staging = FinServDatabricksSubmitRunOperatorNew(
+    pqo_offer_received_staging = FinServDatabricksSubmitRunOperator(
         task_id='pqo-offer-received-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=pqo_offer_received_staging_jar_task,
@@ -1268,7 +1268,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    pqo_offer_requested_staging = FinServDatabricksSubmitRunOperatorNew(
+    pqo_offer_requested_staging = FinServDatabricksSubmitRunOperator(
         task_id='pqo-offer-requested-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=pqo_offer_requested_staging_jar_task,
@@ -1278,7 +1278,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    pzn_offers_received_staging = FinServDatabricksSubmitRunOperatorNew(
+    pzn_offers_received_staging = FinServDatabricksSubmitRunOperator(
         task_id='pzn-offers-received-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=pzn_offers_received_staging_jar_task,
@@ -1288,7 +1288,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    twilio_call_connected_staging = FinServDatabricksSubmitRunOperatorNew(
+    twilio_call_connected_staging = FinServDatabricksSubmitRunOperator(
         task_id='twilio-call-connected-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=twilio_call_connected_staging_jar_task,
@@ -1298,7 +1298,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    twilio_call_transferred_staging = FinServDatabricksSubmitRunOperatorNew(
+    twilio_call_transferred_staging = FinServDatabricksSubmitRunOperator(
         task_id='twilio-call-transferred-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=twilio_call_transferred_staging_jar_task,
@@ -1308,7 +1308,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=120
     )
 
-    amex_ot_details_staging = FinServDatabricksSubmitRunOperatorNew(
+    amex_ot_details_staging = FinServDatabricksSubmitRunOperator(
         task_id='amex-ot-details-staging',
         new_cluster=large_task_custom_cluster,
         spark_jar_task=ot_details_staging_jar_task,
@@ -1318,7 +1318,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=240
     )
 
-    amex_ot_summary_staging = FinServDatabricksSubmitRunOperatorNew(
+    amex_ot_summary_staging = FinServDatabricksSubmitRunOperator(
         task_id='amex-ot-summary-staging',
         new_cluster=medium_task_custom_cluster,
         spark_jar_task=ot_summary_staging_jar_task,
@@ -1328,7 +1328,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=240
     )
 
-    content_meta_data_tracked_staging = FinServDatabricksSubmitRunOperatorNew(
+    content_meta_data_tracked_staging = FinServDatabricksSubmitRunOperator(
         task_id='content-meta-data-tracked-staging',
         new_cluster=small_task_custom_cluster,
         spark_jar_task=content_meta_data_tracked_staging_jar_task,
@@ -1338,7 +1338,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=240
     )
 
-    ot_raw_staging = FinServDatabricksSubmitRunOperatorNew(
+    ot_raw_staging = FinServDatabricksSubmitRunOperator(
         task_id='ot-raw-staging',
         new_cluster=small_task_custom_cluster,
         spark_jar_task=ot_raw_staging_jar_task,
@@ -1348,7 +1348,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=60
     )
 
-    ot_metadata_raw_staging = FinServDatabricksSubmitRunOperatorNew(
+    ot_metadata_raw_staging = FinServDatabricksSubmitRunOperator(
         task_id='ot-meta-data-raw-staging',
         new_cluster=small_task_custom_cluster,
         spark_jar_task=ot_metadata_raw_staging_jar_task,
@@ -1358,7 +1358,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=60
     )
 
-    mobile_element_clicked_staging = FinServDatabricksSubmitRunOperatorNew(
+    mobile_element_clicked_staging = FinServDatabricksSubmitRunOperator(
         task_id='mobile-element-clicked-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=mobile_element_clicked_jar_task,
@@ -1367,7 +1367,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=60
     )
-    mobile_form_backed_staging = FinServDatabricksSubmitRunOperatorNew(
+    mobile_form_backed_staging = FinServDatabricksSubmitRunOperator(
         task_id='mobile-form-backed-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=mobile_form_backed_jar_task,
@@ -1376,7 +1376,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=60
     )
-    mobile_form_continued_staging = FinServDatabricksSubmitRunOperatorNew(
+    mobile_form_continued_staging = FinServDatabricksSubmitRunOperator(
         task_id='mobile-form-continued-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=mobile_form_continued_jar_task,
@@ -1385,7 +1385,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=60
     )
-    mobile_form_errored_staging = FinServDatabricksSubmitRunOperatorNew(
+    mobile_form_errored_staging = FinServDatabricksSubmitRunOperator(
         task_id='mobile-form-errored-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=mobile_form_errored_jar_task,
@@ -1394,7 +1394,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=60
     )
-    mobile_form_exited_staging = FinServDatabricksSubmitRunOperatorNew(
+    mobile_form_exited_staging = FinServDatabricksSubmitRunOperator(
         task_id='mobile-form-exited-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=mobile_form_exited_jar_task,
@@ -1403,7 +1403,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=60
     )
-    mobile_form_outcome_received_staging = FinServDatabricksSubmitRunOperatorNew(
+    mobile_form_outcome_received_staging = FinServDatabricksSubmitRunOperator(
         task_id='mobile-form-outcome-received-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=mobile_form_outcome_received_jar_task,
@@ -1412,7 +1412,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=60
     )
-    mobile_form_started_staging = FinServDatabricksSubmitRunOperatorNew(
+    mobile_form_started_staging = FinServDatabricksSubmitRunOperator(
         task_id='mobile-form-started-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=mobile_form_started_jar_task,
@@ -1421,7 +1421,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=60
     )
-    mobile_form_submitted_staging = FinServDatabricksSubmitRunOperatorNew(
+    mobile_form_submitted_staging = FinServDatabricksSubmitRunOperator(
         task_id='mobile-form-submitted-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=mobile_form_submitted_jar_task,
@@ -1430,7 +1430,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=60
     )
-    mobile_product_clicked_staging = FinServDatabricksSubmitRunOperatorNew(
+    mobile_product_clicked_staging = FinServDatabricksSubmitRunOperator(
         task_id='mobile-product-clicked-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=mobile_product_clicked_jar_task,
@@ -1439,7 +1439,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=60
     )
-    mobile_product_viewed_staging = FinServDatabricksSubmitRunOperatorNew(
+    mobile_product_viewed_staging = FinServDatabricksSubmitRunOperator(
         task_id='mobile-product-viewed-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=mobile_product_viewed_jar_task,
@@ -1448,7 +1448,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=60
     )
-    mobile_screen_engaged_staging = FinServDatabricksSubmitRunOperatorNew(
+    mobile_screen_engaged_staging = FinServDatabricksSubmitRunOperator(
         task_id='mobile-screen-engaged-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=mobile_screen_engaged_jar_task,
@@ -1457,7 +1457,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=60
     )
-    mobile_screen_refreshed_staging = FinServDatabricksSubmitRunOperatorNew(
+    mobile_screen_refreshed_staging = FinServDatabricksSubmitRunOperator(
         task_id='mobile-screen-refreshed-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=mobile_screen_refreshed_jar_task,
@@ -1466,7 +1466,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=60
     )
-    mobile_screen_viewed_staging = FinServDatabricksSubmitRunOperatorNew(
+    mobile_screen_viewed_staging = FinServDatabricksSubmitRunOperator(
         task_id='mobile-screen-viewed-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=mobile_screen_viewed_jar_task,
@@ -1476,7 +1476,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         polling_period_seconds=60
     )
 
-    mobile_application_backgrounded = FinServDatabricksSubmitRunOperatorNew(
+    mobile_application_backgrounded = FinServDatabricksSubmitRunOperator(
         task_id='mobile-application-backgrounded-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=mobile_application_backgrounded_jar_task,
@@ -1485,7 +1485,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=60
     )
-    mobile_lpupdated_staging = FinServDatabricksSubmitRunOperatorNew(
+    mobile_lpupdated_staging = FinServDatabricksSubmitRunOperator(
         task_id='mobile-lpupdated-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=mobile_lpupdated_jar_task,
@@ -1494,7 +1494,7 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=60
     )
-    mobile_MXresponse_captured_staging = FinServDatabricksSubmitRunOperatorNew(
+    mobile_MXresponse_captured_staging = FinServDatabricksSubmitRunOperator(
         task_id='mobile-mxresponse-captured-staging',
         new_cluster=extra_small_task_custom_cluster,
         spark_jar_task=mobile_MXresponse_captured_jar_task,

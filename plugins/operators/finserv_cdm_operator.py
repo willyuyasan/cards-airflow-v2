@@ -103,10 +103,10 @@ class FinServDatabricksSubmitRunOperator(CdmDatabricksSubmitRunOperator):
 
             # Finally, define task using runner and cluster definitions
             task = NotebookTask(cluster=cluster,
-                           params=runner_params,
-                           main_class=spark_jar_task['main_class_name'],
-                           jar_libraries=libraries,
-                           tables=spark_jar_params.get('tables'))
+                                params=runner_params,
+                                main_class=spark_jar_task['main_class_name'],
+                                jar_libraries=libraries,
+                                tables=spark_jar_params.get('tables'))
 
         # Pass parameters to CDM class
         super().__init__(

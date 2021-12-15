@@ -78,21 +78,35 @@ class FinServDatabricksSubmitRunOperator(CdmDatabricksSubmitRunOperator):
         ct = ClusterCustomTags(**custom_tags)
         env = SparkEnvVars(cdm_secret_scope='cards', api_secret_scope='cards')
         cluster = NewCluster(spark_env_obj=env, custom_tags_obj=ct, **new_cluster)
+        runner_param_list = [param.lower() for param in cdm_const.RUNNER_PARAMETERS.keys()]
 
         # Define runner for CDM
-        runner_param_list = [param.lower() for param in cdm_const.RUNNER_PARAMETERS.keys()]
-        spark_jar_params = {param.split('=')[0].lower(): param.split('=')[1] for param in spark_jar_task['parameters'] if param.split('=')[0].lower() in runner_param_list}
-        runner_params = RunnerParams(environment=env_name,
-                                     etl_time=datetime.now().isoformat(),
-                                     custom_parameter__dbx_secrets_scope='cards',
-                                     **spark_jar_params)
+        if spark_jar_task:
+            spark_jar_params = {param.split('=')[0].lower(): param.split('=')[1] for param in spark_jar_task['parameters'] if param.split('=')[0].lower() in runner_param_list}
+            runner_params = RunnerParams(environment=env_name,
+                                         etl_time=datetime.now().isoformat(),
+                                         custom_parameter__dbx_secrets_scope='cards',
+                                         **spark_jar_params)
 
-        # Finally, define task using runner and cluster definitions
-        task = JarTask(cluster=cluster,
-                       params=runner_params,
-                       main_class=spark_jar_task['main_class_name'],
-                       jar_libraries=libraries,
-                       tables=spark_jar_params.get('tables'))
+            # Finally, define task using runner and cluster definitions
+            task = JarTask(cluster=cluster,
+                           params=runner_params,
+                           main_class=spark_jar_task['main_class_name'],
+                           jar_libraries=libraries,
+                           tables=spark_jar_params.get('tables'))
+        else:
+            spark_jar_params = {param.split('=')[0].lower(): param.split('=')[1] for param in spark_jar_task['parameters'] if param.split('=')[0].lower() in runner_param_list}
+            runner_params = RunnerParams(environment=env_name,
+                                         etl_time=datetime.now().isoformat(),
+                                         custom_parameter__dbx_secrets_scope='cards',
+                                         **spark_jar_params)
+
+            # Finally, define task using runner and cluster definitions
+            task = NotebookTask(cluster=cluster,
+                                params=runner_params,
+                                main_class=spark_jar_task['main_class_name'],
+                                jar_libraries=libraries,
+                                tables=spark_jar_params.get('tables'))
 
         # Pass parameters to CDM class
         super().__init__(

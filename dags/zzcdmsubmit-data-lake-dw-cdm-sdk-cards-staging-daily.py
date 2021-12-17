@@ -21,23 +21,7 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
     # 'op_kwargs': cfg_dict,
     'provide_context': True,
-    # 'cluster_permissions': Variable.get("DE_DBX_CLUSTER_PERMISSIONS")
-    'cluster_permissions': json.dumps({
-        "access_control_list": [
-            {
-                "permission_level": "CAN_MANAGE",
-                "user_name": "rshukla@redventures.net"
-            },
-            {
-                "permission_level": "CAN_MANAGE",
-                "user_name": "kbhargavaram@redventures.net"
-            },
-            {
-                "permission_level": "CAN_MANAGE",
-                "user_name": "mdey@redventures.net"
-            }
-        ]
-    })
+    'cluster_permissions': Variable.get("DE_DBX_CLUSTER_PERMISSIONS")
 }
 
 # token variable

@@ -211,6 +211,5 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         libraries=staging_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
-        # cluster_permissions="{{ var.value.DE_DBX_CLUSTER_PERMISSIONS }}",
         polling_period_seconds=120
     )

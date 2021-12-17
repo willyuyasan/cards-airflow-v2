@@ -7,6 +7,7 @@ from airflow.contrib.operators.databricks_operator import DatabricksSubmitRunOpe
 from operators.finserv_cdm_operator import FinServDatabricksSubmitRunOperator
 # from operators.finserv_operator import FinServDatabricksSubmitRunOperator
 from rvairflow import slack_hook as sh
+import json
 
 default_args = {
     'owner': 'airflow',
@@ -210,6 +211,5 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         libraries=staging_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
-        # cluster_permissions="{{ var.value.CLUSTER_PERMISSIONS }}",
         polling_period_seconds=120
     )

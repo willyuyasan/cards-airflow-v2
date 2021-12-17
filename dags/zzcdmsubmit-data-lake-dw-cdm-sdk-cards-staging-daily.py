@@ -7,6 +7,7 @@ from airflow.contrib.operators.databricks_operator import DatabricksSubmitRunOpe
 from operators.finserv_cdm_operator import FinServDatabricksSubmitRunOperator
 # from operators.finserv_operator import FinServDatabricksSubmitRunOperator
 from rvairflow import slack_hook as sh
+import json
 
 default_args = {
     'owner': 'airflow',
@@ -20,7 +21,23 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
     # 'op_kwargs': cfg_dict,
     'provide_context': True,
-    'cluster_permissions': Variable.get("DE_DBX_CLUSTER_PERMISSIONS")
+    # 'cluster_permissions': Variable.get("DE_DBX_CLUSTER_PERMISSIONS")
+    'cluster_permissions': json.dumps({
+        "access_control_list": [
+            {
+                "permission_level": "CAN_MANAGE",
+                "user_name": "rshukla@redventures.net"
+            },
+            {
+                "permission_level": "CAN_MANAGE",
+                "user_name": "kbhargavaram@redventures.net"
+            },
+            {
+                "permission_level": "CAN_MANAGE",
+                "user_name": "mdey@redventures.net"
+            }
+        ]
+    })
 }
 
 # token variable
@@ -210,6 +227,6 @@ with DAG('zzcdmsubmit-data-lake-dw-cdm-sdk-cards-staging-daily',
         libraries=staging_libraries,
         timeout_seconds=3600,
         databricks_conn_id=airflow_svc_token,
-        # cluster_permissions="{{ var.value.CLUSTER_PERMISSIONS }}",
+        # cluster_permissions="{{ var.value.DE_DBX_CLUSTER_PERMISSIONS }}",
         polling_period_seconds=120
     )

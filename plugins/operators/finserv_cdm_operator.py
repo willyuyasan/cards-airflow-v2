@@ -4,7 +4,10 @@ from rvairflow.dbx.task import NewCluster, JarTask, NotebookParams, NotebookTask
 from rvairflow.cdm.params import RunnerParams
 from rvairflow.cdm import const as cdm_const
 from datetime import datetime
-import copy
+# from requests.auth import AuthBase
+import requests
+import json
+from copy import deepcopy
 
 """
 """
@@ -68,7 +71,7 @@ class FinServDatabricksSubmitRunOperator(CdmDatabricksSubmitRunOperator):
         print('cdm cluster perm', cluster_permissions[0])
 
         # Update finserv operator cluster information to match cdm format
-        new_cluster = copy.deepcopy(new_cluster)
+        new_cluster = deepcopy(new_cluster)
         log_path = new_cluster.pop('cluster_log_conf')['dbfs']['destination']
         custom_tags = new_cluster.pop('custom_tags')
         env_name = log_path.split('/')[-3]
@@ -123,3 +126,53 @@ class FinServDatabricksSubmitRunOperator(CdmDatabricksSubmitRunOperator):
             existing_cluster_id=existing_cluster_id,
             **kwargs
         )
+
+    def update_cluster_permissions(self):
+        if not self._CdmDatabricksSubmitRunOperator__stop_sidecar:
+            if not self.cluster_permissions:
+                self.log.warning("Cluster permissions not set: no configuration found.")
+            else:
+                endpoint = f"api/2.0/permissions/clusters/{self.cluster_id}"
+                hook = self.get_hook()
+                host = hook.databricks_conn.host
+
+                if 'token' in hook.databricks_conn.extra_dejson:
+                    self.log.info('Using token auth.')
+                    auth = _TokenAuth(hook.databricks_conn.extra_dejson['token'])
+                else:
+                    self.log.info('Using basic auth.')
+                    auth = (hook.databricks_conn.login, hook.databricks_conn.password)
+
+                url = f"https://{host}/{endpoint}"
+                response = requests.patch(
+                    url,
+                    json=self.deserialized_of(self.cluster_permissions),
+                    auth=auth,
+                    timeout=hook.timeout_seconds,
+                )
+                if response.ok:
+                    pass
+                    self.log.info(
+                        "Cluster permissions successfully set: %s",
+                        json.dumps(response.json(), indent=2),
+                    )
+                else:
+                    self.log.warning(
+                        "Failed to set cluster permissions: %s, %s, %s",
+                        str(response),
+                        response.text,
+                    )
+
+
+class _TokenAuth(requests.auth.AuthBase):
+    """
+    Helper class for requests Auth field. AuthBase requires you to implement the __call__
+    magic function.
+    """
+
+    def __init__(self, token):
+        self.token = token
+
+    def __call__(self, r):
+        r.headers['Authorization'] = 'Bearer ' + self.token
+        return r

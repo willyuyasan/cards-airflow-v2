@@ -89,7 +89,7 @@ with DAG('data-lake-dw-cdm-sdk-amex-corporate-marketing',
          max_active_runs=1,
          default_args=default_args) as dag:
 
-    amex-corporate-marketing = FinServDatabricksSubmitRunOperator(
+    amex_corporate_marketing_task = FinServDatabricksSubmitRunOperator(
       task_id='amex-corporate-marketing-reporting',
       new_cluster=task_cluster,
       spark_jar_task=corporate_marketing_jar_task,

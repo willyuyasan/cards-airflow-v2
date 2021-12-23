@@ -35,7 +35,7 @@ task_cluster = {
     'spark_version': '7.3.x-scala2.12',
     'node_type_id': Variable.get("DBX_SMALL_CLUSTER"),
     'driver_node_type_id': Variable.get("DBX_SMALL_CLUSTER"),
-    'num_workers': Variable.get("DBX_SMALL_CLUSTER"),
+    'num_workers': Variable.get("DBX_SMALL_CLUSTER_NUM_NODES"),
     'auto_termination_minutes': 0,
     'dbfs_cluster_log_conf': 'dbfs://home/cluster_log',
     'spark_conf': {

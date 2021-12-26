@@ -116,10 +116,9 @@ def mysql_table_to_s3(**kwargs):
         print('Failed to read data from MySQL connection: ' + str(sys.exc_info()))
         raise Exception('Failed to read data from MySQL connection')
     finally:
-        if conn.is_connected():
-            cursor.close()
-            conn.close()
-            print("MySQL connection is closed")
+        cursor.close()
+        conn.close()
+        print("MySQL connection is closed")
 
 
 def pgsql_table_to_s3(**kwargs):

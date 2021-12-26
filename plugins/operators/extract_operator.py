@@ -87,38 +87,30 @@ def mysql_table_to_s3(**kwargs):
     else:
         print('Query file not found')
         return
-    try:
-        mysql = MySqlHook(mysql_conn_id='mysql_ro_conn')
-        print('Dumping MySQL query results to local file')
-        conn = mysql.get_conn()
-        cursor = conn.cursor()
-        cursor.itersize = iter_size
-        cursor.execute(query)
-        if kwargs.get('compress'):
-            print('Compress File mysql to s3 process')
-            compressed_file(cursor, kwargs)
-            cursor.close()
-            conn.close()
-        else:
-            ts = str(time.time()).replace('.', '_')
-            # outfile = f'/home/airflow/mysql_{ts}.csv'
-            outfile = f'/scratch/mysql_{ts}.csv'
-            with open(outfile, 'w', newline='') as f:
-                csv_writer = csv.writer(f)
-                csv_writer.writerows(cursor)
-                f.flush()
-                cursor.close()
-                conn.close()
-            print('mysql to s3 Temp Data File = ' + outfile)
-            print('mysql to s3 Temp Data File size = ' + str(os.stat(outfile).st_size)+" Bytes.")
-            outfile_to_S3(outfile, kwargs)
-    except Exception as e:
-        print('Failed to read data from MySQL connection: ' + str(sys.exc_info()))
-        raise Exception('Failed to read data from MySQL connection')
-    finally:
+    mysql = MySqlHook(mysql_conn_id='mysql_ro_conn')
+    print('Dumping MySQL query results to local file')
+    conn = mysql.get_conn()
+    cursor = conn.cursor()
+    cursor.itersize = iter_size
+    cursor.execute(query)
+    if kwargs.get('compress'):
+        print('Compress File mysql to s3 process')
+        compressed_file(cursor, kwargs)
         cursor.close()
         conn.close()
-        print("MySQL connection is closed")
+    else:
+        ts = str(time.time()).replace('.', '_')
+        # outfile = f'/home/airflow/mysql_{ts}.csv'
+        outfile = f'/scratch/mysql_{ts}.csv'
+        with open(outfile, 'w', newline='') as f:
+            csv_writer = csv.writer(f)
+            csv_writer.writerows(cursor)
+            f.flush()
+            cursor.close()
+            conn.close()
+        print('mysql to s3 Temp Data File = ' + outfile)
+        print('mysql to s3 Temp Data File size = ' + str(os.stat(outfile).st_size)+" Bytes.")
+        outfile_to_S3(outfile, kwargs)
 
 
 def pgsql_table_to_s3(**kwargs):

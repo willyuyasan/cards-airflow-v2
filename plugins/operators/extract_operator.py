@@ -21,6 +21,7 @@ import gzip
 import csv
 import io
 import json
+import sys
 
 conn = BaseHook.get_connection('appsflyer')
 BASE_URI = conn.host

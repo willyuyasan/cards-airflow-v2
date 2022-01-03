@@ -4,6 +4,7 @@ from rvairflow.dbx.task import NewCluster, JarTask, NotebookParams, NotebookTask
 from rvairflow.cdm.params import RunnerParams
 from rvairflow.cdm import const as cdm_const
 from datetime import datetime
+from airflow.models import Variable
 # from requests.auth import AuthBase
 import requests
 import json
@@ -68,18 +69,18 @@ class FinServDatabricksSubmitRunOperator(CdmDatabricksSubmitRunOperator):
             :param log_retry: {int} -- Number of times to pull logs from DBFS. (default: {5})
             :param log_sleep: {int} -- Seconds to wait between log read failures. {default: {20}}
         """
-        print('cdm cluster perm', cluster_permissions[0])
+        # Get environment
+        env_name = Variable.get('environment')
 
         # Update finserv operator cluster information to match cdm format
         new_cluster = deepcopy(new_cluster)
-        log_path = new_cluster.pop('cluster_log_conf')['dbfs']['destination']
-        custom_tags = new_cluster.pop('custom_tags')
-        env_name = log_path.split('/')[-3]
-        del new_cluster['auto_termination_minutes']
-        new_cluster.update(new_cluster.pop('aws_attributes'))
+        rem_list = ['cluster_log_conf', 'auto_termination_minutes', 'dbfs_cluster_log_conf']
+        for rk in rem_list:
+            dummy = new_cluster.pop(rk, None)
+        ct = ClusterCustomTags(**new_cluster.pop('custom_tags', {}))
+        new_cluster.update(new_cluster.pop('aws_attributes', {}))
 
         # Define cluster for CDM
-        ct = ClusterCustomTags(**custom_tags)
         env = SparkEnvVars(cdm_secret_scope='cards', api_secret_scope='cards')
         cluster = NewCluster(spark_env_obj=env, custom_tags_obj=ct, **new_cluster)
         runner_param_list = [param.lower() for param in cdm_const.RUNNER_PARAMETERS.keys()]

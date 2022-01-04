@@ -184,7 +184,7 @@ reporting_libraries = [
         "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
     },
     {
-        "jar": "dbfs:/FileStore/jars/a74aec35_401d_42fd_8454_2a834f04c7e1-cdm_data_mart_cards_assembly_0_0_1_SNAPSHOT-97c7e.jar",
+        "jar": "dbfs:/FileStore/jars/3eebb62a_2674_4b65_99ea_ef52b34f1d44-cdm_data_mart_cards_assembly_0_0_1_SNAPSHOT-97c7e.jar",
     }
 ]
 

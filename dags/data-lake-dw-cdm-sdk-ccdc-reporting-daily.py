@@ -613,15 +613,15 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
         polling_period_seconds=60
     )
 
-     clientrequested_reporting = FinServDatabricksSubmitRunOperator(
-            task_id='field-reporting',
-            new_cluster=medium_task_cluster,
-            spark_jar_task=clientrequested_reporting_jar_task,
-            libraries=reporting_libraries,
-            timeout_seconds=9000,
-            databricks_conn_id=airflow_svc_token,
-            polling_period_seconds=60
-        )
+    clientrequested_reporting = FinServDatabricksSubmitRunOperator(
+        task_id='field-reporting',
+        new_cluster=medium_task_cluster,
+        spark_jar_task=clientrequested_reporting_jar_task,
+        libraries=reporting_libraries,
+        timeout_seconds=9000,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=60
+    )
 
     form_summary_reporting = FinServDatabricksSubmitRunOperator(
         task_id='form-summary-reporting',

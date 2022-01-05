@@ -614,7 +614,7 @@ with DAG('data-lake-dw-cdm-sdk-ccdc-reporting-daily',
     )
 
     clientrequested_reporting = FinServDatabricksSubmitRunOperator(
-        task_id='field-reporting',
+        task_id='clientrequested_reporting',
         new_cluster=medium_task_cluster,
         spark_jar_task=clientrequested_reporting_jar_task,
         libraries=reporting_libraries,

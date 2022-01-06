@@ -18,5 +18,5 @@ ifnull(external_visit_id,'') as external_visit_id,
 ifnull(keyword_id, '') as keyword_id,
 ifnull(replace(replace(replace(referer_url,char(0),''),char(9),' '),'\n',''),'') as referrer_url
 from cccomus.transactions_click
-where date_inserted >= (last_day(now()) + interval 1 day - interval 1 month)
+where date_inserted >= (last_day(now()) + interval 1 day - interval 2 month)
 and date_inserted < now();

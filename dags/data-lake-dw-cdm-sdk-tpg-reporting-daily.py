@@ -355,6 +355,24 @@ amp_reporting_jar_task = {
     ]
 }
 
+
+iterable_mapping_reporting_jar_task = {
+    'main_class_name': "com.redventures.cdm.datamart.cards.Runner",
+    'parameters': [
+        "RUN_FREQUENCY=" + "hourly",
+        "START_DATE=" + (
+                datetime.now() - (timedelta(days=int(int(Variable.get("TPG_LONG_LOOKBACK_DAYS")))))).strftime(
+            "%Y-%m-%d"),
+        "END_DATE=" + datetime.now().strftime("%Y-%m-%d"),
+        "TENANTS=" + Variable.get("DBX_TPG_Tenant_Id"),
+        "TABLES=" + "com.redventures.cdm.datamart.cards.tpg.reporting.IterableMapping",
+        "ACCOUNT=" + Variable.get("DBX_TPG_Account"),
+        "WRITE_BUCKET=" + Variable.get("DBX_TPG_Bucket"),
+        "READ_BUCKET=" + Variable.get("DBX_CARDS_Bucket")
+    ]
+}
+
+
 # dimension base params
 dimension_tables_notebook_task['base_parameters'].update(base_params_staging)
 
@@ -429,6 +447,16 @@ with DAG('data-lake-dw-cdm-sdk-tpg-reporting-daily',
         task_id='amp-reporting',
         new_cluster=new_medium_task_cluster,
         spark_jar_task=amp_reporting_jar_task,
+        libraries=reporting_libraries,
+        timeout_seconds=8400,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=240
+    )
+
+    iterable_mapping_reporting = FinServDatabricksSubmitRunOperator(
+        task_id='iterable-mapping-reporting',
+        new_cluster=new_medium_task_cluster,
+        spark_jar_task=iterable_mapping_reporting_jar_task,
         libraries=reporting_libraries,
         timeout_seconds=8400,
         databricks_conn_id=airflow_svc_token,

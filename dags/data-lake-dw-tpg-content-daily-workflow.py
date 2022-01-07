@@ -31,7 +31,7 @@ airflow_svc_token = "databricks_airflow_svc_token"
 
 
 small_task_cluster = {
-    'spark_version': '5.3.x-scala2.11',
+    'spark_version': '9.1.x-scala2.12',
     'node_type_id': Variable.get("DBX_SMALL_CLUSTER"),
     'driver_node_type_id': Variable.get("DBX_SMALL_CLUSTER"),
     'num_workers': Variable.get("DBX_SMALL_CLUSTER_NUM_NODES"),
@@ -71,6 +71,9 @@ notebook_libraries = [
         "jar": "dbfs:/data-common-jars/production/data_common_2_0_0.jar",
     },
     {
+        "jar": "dbfs:/Libraries/JVM/data-common/data-common-3.0.1-2.jar",
+    },
+    {
         "jar": "dbfs:/FileStore/jars/8a230257_57b0_4170_9d58_57ab8b160f78-scalapb_models_assembly_bom_1_326_0-c0937.jar",
     },
     {
@@ -88,6 +91,13 @@ content_roi_notebook_task = {
     },
     'notebook_path': '/Production/cards-data-analytics-tpg-audience/' + Variable.get("DBX_TPG_AUDIENCE_CODE_ENV") + '/ContentROI/TPGContentROI',
 }
+content_model_notebook_task = {
+    'base_parameters': {
+        "redshiftEnvironment": Variable.get("DBX_TPG_Audience_Analytics_redshiftEnvironment"),
+        "maxAnonSize": "250"
+    },
+    'notebook_path': '/Production/cards-data-analytics-tpg-audience/' + Variable.get("DBX_TPG_AUDIENCE_CODE_ENV") + '/ContentTagging/TPGContentModel',
+}
 
 # DAG Creation Step
 with DAG('data-lake-dw-tpg-content-daily-workflow',
@@ -103,6 +113,17 @@ with DAG('data-lake-dw-tpg-content-daily-workflow',
         task_id='content-roi',
         new_cluster=small_task_cluster,
         notebook_task=content_roi_notebook_task,
+        libraries=notebook_libraries,
+        timeout_seconds=6000,
+        databricks_conn_id=airflow_svc_token,
+        polling_period_seconds=120
+    )
+    # Content Model Workflow
+
+    content_model = FinServDatabricksSubmitRunOperator(
+        task_id='content-model',
+        new_cluster=small_task_cluster,
+        notebook_task=content_model_notebook_task,
         libraries=notebook_libraries,
         timeout_seconds=6000,
         databricks_conn_id=airflow_svc_token,

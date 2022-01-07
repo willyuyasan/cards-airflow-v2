@@ -81,6 +81,15 @@ notebook_libraries = [
     },
 ]
 
+model_notebook_libraries = [
+    {
+        "jar": "dbfs:/FileStore/jars/a750569c_d6c0_425b_bf2a_a16d9f05eb25-RedshiftJDBC42_1_2_1_1001-0613f.jar",
+    },
+    {
+        "jar": "dbfs:/Libraries/JVM/data-common/data-common-3.0.1-2.jar",
+    }
+]
+
 # Notebook Task Parameter Setup:
 content_roi_notebook_task = {
     'base_parameters': {
@@ -124,7 +133,7 @@ with DAG('data-lake-dw-tpg-content-daily-workflow',
         task_id='content-model',
         new_cluster=small_task_cluster,
         notebook_task=content_model_notebook_task,
-        libraries=notebook_libraries,
+        libraries=model_notebook_libraries,
         timeout_seconds=6000,
         databricks_conn_id=airflow_svc_token,
         polling_period_seconds=120

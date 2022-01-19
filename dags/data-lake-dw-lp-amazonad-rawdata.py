@@ -69,20 +69,20 @@ with DAG('data-lake-dw-lp-amazonad',
          max_active_runs=1
          ) as dag:
 
-#     extract_amazonad_data = PythonOperator(
-#         task_id="extract_amazonad_data",
-#         python_callable=make_request)
-#
-#     load_s3_to_redshift = S3ToRedshiftOperator(
-#         s3_bucket=S3_BUCKET,
-#         s3_key=S3_KEY,
-#         redshift_conn_id='cards-redshift-cluster',
-#         aws_conn_id='appsflyer_aws_s3_connection_id',
-#         schema=Variable.get("APPSFLYER_SCHEMA"),
-#         table=Variable.get("APPSFLYER_TABLE"),
-#         copy_options=['csv', "IGNOREHEADER 1", "region 'us-east-1'", "timeformat 'auto'"],
-#         task_id='load_s3_to_redshift',
-#     )
+    extract_amazonad_data = PythonOperator(
+        task_id="extract_amazonad_data",
+        python_callable=make_request)
+
+    load_s3_to_redshift = S3ToRedshiftOperator(
+        s3_bucket=S3_BUCKET,
+        s3_key=S3_KEY,
+        redshift_conn_id='cards-redshift-cluster',
+        aws_conn_id='appsflyer_aws_s3_connection_id',
+        # schema=Variable.get("APPSFLYER_SCHEMA"),
+        # table=Variable.get("APPSFLYER_TABLE"),
+        copy_options=['csv', "IGNOREHEADER 1", "region 'us-east-1'", "timeformat 'auto'"],
+        task_id='load_s3_to_redshift',
+    )
 
 # Dependencies
 #extract_amazonad_data >> load_s3_to_redshift

@@ -11,7 +11,7 @@ from rvairflow import slack_hook as sh
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    # 'start_date': datetime(2021, 6, 12, 00, 00, 00),
+    'start_date': datetime(2021, 6, 12, 00, 00, 00),
     'email': ["atripathi@redventures.com"],
     'email_on_failure': False,
     'email_on_retry': False,
@@ -32,33 +32,32 @@ default_args = {
 
 
 def make_request(**kwargs):
-
-    # params = {
-    #     'api_token': Variable.get("APPSFLYER_API_TOKEN_V1"),
-    #     'from': (datetime.now() - (timedelta(days=int(int(Variable.get("APPSFLYER_LONG_LOOKBACK_DAYS")))))).strftime("%Y-%m-%d"),
-    #     'to': datetime.now().strftime("%Y-%m-%d")
-    # }
+    params = {
+        # 'api_token': Variable.get("APPSFLYER_API_TOKEN_V1"),
+        # 'from': (datetime.now() - (timedelta(days=int(int(Variable.get("APPSFLYER_LONG_LOOKBACK_DAYS")))))).strftime("%Y-%m-%d"),
+        # 'to': datetime.now().strftime("%Y-%m-%d")
+    }
     #
     # response = requests.get(BASE_URI, params=params)
     # export_string = response.text
     # out_file = Variable.get("APPSFLYER_OUTFILE")
 
-    if os.path.exists(out_file):
-        os.remove(out_file)
-
-    f = open(out_file, "w")
-    f.write(export_string)
-    f.close()
-
-    s3 = boto3.client('s3')
-    filename = 'installs_report_' + params['to']
-
-    with open(out_file, "rb") as f:
-        response = s3.upload_fileobj(f, S3_BUCKET, '%s%s' % (location, filename))
-    print(response)
-
-    if os.path.exists(out_file):
-        os.remove(out_file)
+    # if os.path.exists(out_file):
+    #     os.remove(out_file)
+    #
+    # f = open(out_file, "w")
+    # f.write(export_string)
+    # f.close()
+    #
+    # s3 = boto3.client('s3')
+    # filename = 'installs_report_' + params['to']
+    #
+    # with open(out_file, "rb") as f:
+    #     response = s3.upload_fileobj(f, S3_BUCKET, '%s%s' % (location, filename))
+    # print(response)
+    #
+    # if os.path.exists(out_file):
+    #     os.remove(out_file)
 
 
 with DAG('data-lake-dw-lp-amazonad',
@@ -73,16 +72,16 @@ with DAG('data-lake-dw-lp-amazonad',
         task_id="extract_amazonad_data",
         python_callable=make_request)
 
-    load_s3_to_redshift = S3ToRedshiftOperator(
-        s3_bucket=S3_BUCKET,
-        s3_key=S3_KEY,
-        redshift_conn_id='cards-redshift-cluster',
-        aws_conn_id='appsflyer_aws_s3_connection_id',
-        # schema=Variable.get("APPSFLYER_SCHEMA"),
-        # table=Variable.get("APPSFLYER_TABLE"),
-        copy_options=['csv', "IGNOREHEADER 1", "region 'us-east-1'", "timeformat 'auto'"],
-        task_id='load_s3_to_redshift',
-    )
+    # load_s3_to_redshift = S3ToRedshiftOperator(
+    #     s3_bucket=S3_BUCKET,
+    #     s3_key=S3_KEY,
+    #     redshift_conn_id='cards-redshift-cluster',
+    #     aws_conn_id='appsflyer_aws_s3_connection_id',
+    #     # schema=Variable.get("APPSFLYER_SCHEMA"),
+    #     # table=Variable.get("APPSFLYER_TABLE"),
+    #     copy_options=['csv', "IGNOREHEADER 1", "region 'us-east-1'", "timeformat 'auto'"],
+    #     task_id='load_s3_to_redshift',
+    #  )
 
 # Dependencies
 #extract_amazonad_data >> load_s3_to_redshift

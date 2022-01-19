@@ -11,7 +11,7 @@ from rvairflow import slack_hook as sh
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2021, 6, 12, 00, 00, 00),
+    # 'start_date': datetime(2021, 6, 12, 00, 00, 00),
     'email': ["atripathi@redventures.com"],
     'email_on_failure': False,
     'email_on_retry': False,
@@ -61,14 +61,14 @@ def make_request(**kwargs):
         os.remove(out_file)
 
 
-# with DAG('data-lake-dw-lp-amazonad',
-#          default_args=default_args,
-#          dagrun_timeout=timedelta(hours=3),
-#          schedule_interval='0 09 * * *',
-#          catchup=False,
-#          max_active_runs=1
-#          ) as dag:
-#
+with DAG('data-lake-dw-lp-amazonad',
+         default_args=default_args,
+         dagrun_timeout=timedelta(hours=3),
+         # schedule_interval='0 09 * * *',
+         catchup=False,
+         max_active_runs=1
+         ) as dag:
+
 #     extract_amazonad_data = PythonOperator(
 #         task_id="extract_amazonad_data",
 #         python_callable=make_request)
@@ -85,4 +85,4 @@ def make_request(**kwargs):
 #     )
 
 # Dependencies
-extract_amazonad_data >> load_s3_to_redshift
+#extract_amazonad_data >> load_s3_to_redshift

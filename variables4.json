@@ -1,0 +1,22 @@
+{
+    "SENDGRID_TOKEN": "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",
+    "SLACK_TOKEN": "xoxb-271428946608-afFxkXQLk4KrB9H7FFVywIt7",
+    "SQL_LOC": "/home/airflow/airflow/dags/data-warehouse/sql",
+    "SUMO_ACCESS_ID": "suMx3xrgJw4OE6",
+    "SUMO_ACCESS_KEY": "GuJe45Q9iACSqEpx5r5UP9NdnwKOrkdDZO6MlHz18jYuIWLtIqg1vcatrKsXWf2w",
+    "TPG_APP_LONG_LOOKBACK_DAYS": 14,
+    "TPG_APP_SHORT_LOOKBACK_DAYS": 3,
+    "TPG_LONG_LOOKBACK_DAYS": 91,
+    "TPG_SHORT_LOOKBACK_DAYS": 3,
+    "Twilio_Global_Tenant_Id": "src_1hVf7pFXUKnZz3tOouEoy2pqeKQ",
+    "sendgrid_settings": {
+        "from": "capitalOneFeed@creditcards.com",
+        "subject": "New Changes from CapitalOne",
+        "to": [
+            "dash.team@creditcards.com"
+        ],
+        "token": "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"
+    },
+    "slack-connection-name": "cards-data-airflow-app-qa",
+    "slack-connection-travel-name": "travel-data-airflow-app-qa"
+}

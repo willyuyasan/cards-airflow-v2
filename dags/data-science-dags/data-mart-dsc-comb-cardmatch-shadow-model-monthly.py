@@ -3,7 +3,7 @@ from airflow import DAG
 from airflow.models import Variable
 from datetime import datetime, timedelta
 from airflow.operators import ExternalTaskSensor
-from operators.finserv_operator import FinServDatabricksSubmitRunOperator
+from operators.finserv_cdm_operator import FinServDatabricksSubmitRunOperator
 from rvairflow import slack_hook as sh
 
 # Define the default args
